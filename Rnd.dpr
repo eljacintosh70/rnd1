@@ -1,12 +1,20 @@
 program Rnd;
 
+{$IFDEF FPC}
+  {$MODE Delphi}
+{$ENDIF}
+
 uses
-  Vcl.Forms,
+{$IFnDEF FPC}
+{$ELSE}
+  Interfaces,
+{$ENDIF}
+  Forms,
   FrRnd in 'FrRnd.pas' {Form2},
   RndBase in 'RndBase.pas',
   RndParser in 'RndParser.pas';
 
-{$R *.res}
+{.$R *.res}
 
 begin
   Application.Initialize;

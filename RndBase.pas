@@ -1,10 +1,14 @@
 unit RndBase;
 
+{$IFDEF FPC}
+  {$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses
   Classes, SysUtils,
-  System.Generics.Collections;
+  Generics.Collections;
 
 type
   IDatum = interface

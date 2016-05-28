@@ -1,5 +1,9 @@
 unit RndParser;
 
+{$IFDEF FPC}
+  {$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses
