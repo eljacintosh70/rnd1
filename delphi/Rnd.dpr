@@ -3,8 +3,9 @@ program Rnd;
 uses
   Vcl.Forms,
   FrRnd in 'FrRnd.pas' {Form2},
-  RndBase in 'RndBase.pas',
-  RndParser in 'RndParser.pas';
+  RndBase in '..\common\RndBase.pas',
+  RndParser in '..\common\RndParser.pas',
+  RndClass in '..\common\RndClass.pas';
 
 {$R *.res}
 
