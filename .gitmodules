@@ -1,0 +1,3 @@
+[submodule "Generics"]
+	path = generics.collections
+	url = https://github.com/dathox/generics.collections

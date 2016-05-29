@@ -36,40 +36,49 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="6">
+    <Units Count="7">
       <Unit0>
         <Filename Value="Rnd.dpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="FrRnd.pas"/>
+        <Filename Value="../common/RndBase.pas"/>
         <IsPartOfProject Value="True"/>
-        <HasResources Value="True"/>
       </Unit1>
       <Unit2>
-        <Filename Value="RndBase.pas"/>
+        <Filename Value="../common/RndClass.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit2>
       <Unit3>
-        <Filename Value="RndParser.pas"/>
+        <Filename Value="../common/RndParser.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit3>
       <Unit4>
-        <Filename Value="generics.collections.pas"/>
+        <Filename Value="../common/FrRnd.pas"/>
+        <HasResources Value="True"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Generics.Collections"/>
       </Unit4>
       <Unit5>
-        <Filename Value="generics.defaults.pas"/>
+        <Filename Value="../generics.collections/src/generics.collections.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Generics.Collections"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../generics.collections/src/generics.defaults.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Generics.Defaults"/>
-      </Unit5>
+      </Unit6>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
+    <Target>
+      <Filename Value="out/Rnd"/>
+    </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="../generics.collections/src"/>
+      <UnitOutputDirectory Value="tmp"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>

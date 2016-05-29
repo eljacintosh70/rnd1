@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="7">
+      <Unit0>
+        <Filename Value="Rnd.dpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos X="15" Y="6"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="../common/FrRnd.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="../common/RndBase.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="42"/>
+        <CursorPos X="3" Y="57"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="../common/RndParser.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../generics.collections/src/generics.collections.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Generics.Collections"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="20"/>
+        <CursorPos X="24" Y="35"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="../generics.collections/src/generics.defaults.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Generics.Defaults"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="117"/>
+        <CursorPos X="67" Y="124"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../common/RndClass.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit6>
+    </Units>
+    <JumpHistory Count="7" HistoryIndex="6">
+      <Position1>
+        <Filename Value="../generics.collections/src/generics.collections.pas"/>
+      </Position1>
+      <Position2>
+        <Filename Value="../common/RndBase.pas"/>
+      </Position2>
+      <Position3>
+        <Filename Value="../generics.collections/src/generics.defaults.pas"/>
+      </Position3>
+      <Position4>
+        <Filename Value="../generics.collections/src/generics.defaults.pas"/>
+        <Caret Line="131" Column="44" TopLine="116"/>
+      </Position4>
+      <Position5>
+        <Filename Value="../generics.collections/src/generics.defaults.pas"/>
+        <Caret Line="87" Column="48" TopLine="55"/>
+      </Position5>
+      <Position6>
+        <Filename Value="../generics.collections/src/generics.defaults.pas"/>
+        <Caret Line="131" Column="44" TopLine="117"/>
+      </Position6>
+      <Position7>
+        <Filename Value="Rnd.dpr"/>
+        <Caret Line="13" Column="54"/>
+      </Position7>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>
