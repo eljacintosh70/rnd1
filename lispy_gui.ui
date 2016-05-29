@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>931</width>
+    <height>415</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>lispy - Un intérprete de Lisp</string>
+  </property>
+  <widget class="QPlainTextEdit" name="editLispyCommand">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>10</y>
+     <width>921</width>
+     <height>160</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Sunken</enum>
+   </property>
+   <property name="verticalScrollBarPolicy">
+    <enum>Qt::ScrollBarAlwaysOn</enum>
+   </property>
+   <property name="horizontalScrollBarPolicy">
+    <enum>Qt::ScrollBarAsNeeded</enum>
+   </property>
+   <property name="documentTitle">
+    <string/>
+   </property>
+   <property name="lineWrapMode">
+    <enum>QPlainTextEdit::NoWrap</enum>
+   </property>
+   <property name="plainText">
+    <string notr="true">#Comentarios son lineas comenzando con '#'
+#Las lineas en blanco se ignoran y quedan eliminadas en la salida
+#No usar acentos pues no he hecho esa parte aun
+(quote (testing 1 (2.0) -3.14e159))
+(+ 2 2)
+(+ (* 2 100) (* 1 10))
+(if (&gt; 6 5) (+ 1 1) (+ 2 2))
+(if (&lt; 6 5) (+ 1 1) (+ 2 2))
+(define x 3)
+(begin (define x 1) (set! x (+ x 1)) (+ x 1))
+((lambda (x) (+ x x)) 5)
+(define twice (lambda (x) (* 2 x)))
+(define compose (lambda (f g) (lambda (x) (f (g x)))))
+((compose list twice) 5)
+(define repeat (lambda (f) (compose f f)))
+((repeat twice) 5)
+
+#Un factorial:
+(define fact (lambda (n) (if (&lt;= n 1) 1 (* n (fact (- n 1))))))
+(fact 3)
+(fact 50)
+(define abs (lambda (n) ((if (&gt; n 0) + -) 0 n)))
+(list (abs -3) (abs 0) (abs 3))
+(define combine (lambda (f) (lambda (x y) (if (null? x) (quote ()) (f (list (car x) (car y)) ((combine f) (cdr x) (cdr y)))))))
+(define zip (combine cons))
+(zip (list 1 2 3 4) (list 5 6 7 8))
+(define riff-shuffle (lambda (deck) (begin (define take (lambda (n seq) (if (&lt;= n 0) (quote ()) (cons (car seq) (take (- n 1) (cdr seq)))))) (define drop (lambda (n seq) (if (&lt;= n 0) seq (drop (- n 1) (cdr seq))))) (define mid (lambda (seq) (/ (length seq) 2))) ((combine append) (take (mid deck) deck) (drop (mid deck) deck)))))
+(riff-shuffle (list 1 2 3 4 5 6 7 8))
+((repeat riff-shuffle) (list 1 2 3 4 5 6 7 8))
+(riff-shuffle (riff-shuffle (riff-shuffle (list 1 2 3 4 5 6 7 8))))
+#Otro factorial
+(define (factorial n acc) (if (= n 0) acc (factorial (- n 1) (* n acc))))
+(define (fact n) (factorial n 1))
+(fact 50)
+</string>
+   </property>
+   <property name="cursorWidth">
+    <number>2</number>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnQuit">
+   <property name="geometry">
+    <rect>
+     <x>820</x>
+     <y>180</y>
+     <width>98</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+  </widget>
+  <widget class="QPlainTextEdit" name="editOutput">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>220</y>
+     <width>921</width>
+     <height>180</height>
+    </rect>
+   </property>
+   <property name="verticalScrollBarPolicy">
+    <enum>Qt::ScrollBarAlwaysOn</enum>
+   </property>
+   <property name="cursorWidth">
+    <number>2</number>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnEvaluate">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>180</y>
+     <width>98</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&amp;Evaluate</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnClearInput">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>180</y>
+     <width>98</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Clear Input</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>btnQuit</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>875</x>
+     <y>199</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>476</x>
+     <y>192</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btnEvaluate</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>DoEvaluate()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>61</x>
+     <y>195</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>340</x>
+     <y>180</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btnClearInput</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>DoClearInput()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>195</x>
+     <y>202</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>282</x>
+     <y>193</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>DoEvaluate()</slot>
+  <slot>DoClearInput()</slot>
+ </slots>
+</ui>
