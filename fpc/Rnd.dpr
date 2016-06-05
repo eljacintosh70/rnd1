@@ -13,6 +13,7 @@ uses
   RndBase in '../common/RndBase.pas',
   RndClass in '../common/RndClass.pas',
   RndParser in '../common/RndParser.pas',
+  RndFunc in '../common/RndFunc.pas',
   FrRnd in 'FrRnd.pas' {Form2};
 
 {.$R *.res}

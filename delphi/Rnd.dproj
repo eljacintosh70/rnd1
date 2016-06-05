@@ -82,6 +82,7 @@
         <DCCReference Include="..\common\RndBase.pas"/>
         <DCCReference Include="..\common\RndParser.pas"/>
         <DCCReference Include="..\common\RndClass.pas"/>
+        <DCCReference Include="..\common\RndFunc.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

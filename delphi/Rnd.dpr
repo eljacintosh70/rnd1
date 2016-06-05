@@ -5,7 +5,8 @@ uses
   FrRnd in 'FrRnd.pas' {Form2},
   RndBase in '..\common\RndBase.pas',
   RndParser in '..\common\RndParser.pas',
-  RndClass in '..\common\RndClass.pas';
+  RndClass in '..\common\RndClass.pas',
+  RndFunc in '..\common\RndFunc.pas';
 
 {$R *.res}
 

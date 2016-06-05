@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
-  RndBase, RndParser;
+  RndBase, RndParser, RndFunc;
 
 type
   TForm2 = class(TForm)
@@ -40,9 +40,11 @@ begin
   Parser := TParser.Create(s);
   Parser.GetNextTerm(Term);
 
-  Strm := TStringStream.Create('', TEncoding.Unicode);
-  Term.Write(Strm);
-  s := Strm.DataString;
+  s := Display(Term);
+  Memo2.Lines.Add(s);
+
+  Term := Term.Eval;
+  s := Display(Term);
   Memo2.Lines.Add(s);
 end;
 

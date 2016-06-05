@@ -53,9 +53,11 @@ begin
   Parser := TParser.Create(s);
   Parser.GetNextTerm(Term);
 
-  Strm := TStringStream.Create(''{, TEncoding.Unicode});
-  Term.Write(Strm);
-  s := Strm.DataString;
+  s := Display(Term);
+  Memo2.Lines.Add(s);
+
+  Term := Term.Eval;
+  s := Display(Term);
   Memo2.Lines.Add(s);
 end;
 

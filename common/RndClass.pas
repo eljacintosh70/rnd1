@@ -1,5 +1,9 @@
 unit RndClass;
 
+{$IFDEF FPC}
+  {$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses
@@ -45,7 +49,7 @@ type
     property Value: IDatum read GetValue write SetValue;
   end;
 
-  TLambda = class(TDatum, ILambda)
+  TSyntax = class(TDatum, ISyntax)
   public
     function Eval: IDatum; override;
     procedure Write(Stream: TStream); override;
@@ -116,14 +120,14 @@ end;
 
 function TNode.Eval: IDatum;
 var
-  Lst: INode;
   Value2: IDatum;
-  Lambda: ILambda;
+  Lambda: ISyntax;
 begin
-  Lst := EvalItems;
-  Value2 := Lst.Value;
-  if Supports(Value2, ILambda, Lambda) then
-    Result := Lambda.Apply(Lst.Next);
+  Value2 := Value.Eval;
+  if Supports(Value2, ISyntax, Lambda) then
+    Result := Lambda.Apply(Next)
+  else
+    Error('function expected');
 end;
 
 function TNode.EvalItems: INode;
@@ -171,12 +175,12 @@ end;
 
 { TLambda }
 
-function TLambda.Eval: IDatum;
+function TSyntax.Eval: IDatum;
 begin
-  Result := ILambda(Self)
+  Result := ISyntax(Self)
 end;
 
-procedure TLambda.Write(Stream: TStream);
+procedure TSyntax.Write(Stream: TStream);
 begin
   WriteString(Stream, Format('%p', [Self]));
 end;
