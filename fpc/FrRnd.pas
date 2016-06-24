@@ -47,7 +47,6 @@ var
   s: String;
   Parser: TParser;
   Term: IDatum;
-  Strm: TStringStream;
 begin
   s := Memo1.Lines.Text;
   Parser := TParser.Create(s);

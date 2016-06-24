@@ -20,22 +20,22 @@ procedure Error(Msg: String); overload;
 procedure Error(MsgFm: String; Val: IDatum); overload;
 
 type
-  ISymbol = interface(IDatum)
+  IValue<T> = interface(IDatum)
+    function GetValue: T;
+    procedure SetValue(const AValue: T);
+    property Value: T read GetValue write SetValue;
+  end;
+
+  ISymbol = interface(IValue<IDatum>)
     ['{6033F2D0-2486-42E0-B7BD-AB5391206152}']
     function Name: String;
-    function GetValue: IDatum;
-    procedure SetValue(AValue: IDatum);
-    property Value: IDatum read GetValue write SetValue;
   end;
 function MakeSymbol(Name: String): ISymbol;
 procedure NeedSymbol(Name: IDatum; var Sym: ISymbol);
 
 type
-  INode = interface(IDatum)
+  INode = interface(IValue<IDatum>)
     ['{8E8AF832-E561-4687-A1EC-3F50059FC3F4}']
-    function GetValue: IDatum;
-    procedure SetValue(AValue: IDatum);
-    property Value: IDatum read GetValue write SetValue;
     function Next: INode;
     procedure WriteValues(Stream: TStream);
     function EvalItems: INode;
@@ -51,11 +51,8 @@ type
   end;
 
 type
-  INumber = interface(IDatum)
+  INumber = interface(IValue<Double>)
     ['{AE186958-8ECF-486E-BE62-4BB53AD7C96E}']
-    function GetValue: Double;
-    procedure SetValue(AValue: Double);
-    property Value: Double read GetValue write SetValue;
   end;
 function MakeNumber(Num: Double): INumber;
 procedure NeedNumber(Datum: IDatum; var Val: Double);

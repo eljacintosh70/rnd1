@@ -91,7 +91,6 @@
     </Parsing>
     <Linking>
       <Debugging>
-        <TrashVariables Value="True"/>
         <GenGProfCode Value="True"/>
         <UseExternalDbgSyms Value="True"/>
       </Debugging>

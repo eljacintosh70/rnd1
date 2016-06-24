@@ -15,12 +15,17 @@ type
     pStart: PChar;
     len: Word;
     Kind: TTokenKind;
+    Val: IDatum;
   end;
 
-  TTokenizer = class
+  TLexer = class
   protected
     Buf: String;
     pStart, pCurr, pEnd: PChar;
+    function BuildToken(ps, p: PChar; out Token: TTokenInfo; Kind: TTokenKind;
+      const Val: IDatum): Boolean;
+    function ScanIdent(ps, p: PChar; out Token: TTokenInfo): Boolean;
+    function ScanNum(ps, p: PChar; out Token: TTokenInfo): Boolean;
   public
     constructor Create(s: String);
     function GetNext(out Token: TTokenInfo): Boolean;
@@ -28,7 +33,7 @@ type
 
   TParser = class
   protected
-    Tokenizer: TTokenizer;
+    Lexer: TLexer;
   public
     constructor Create(s: String);
     destructor Destroy; override;
@@ -38,9 +43,9 @@ type
 
 implementation
 
-{ TTokenizer }
+{ TLexer }
 
-constructor TTokenizer.Create(s: String);
+constructor TLexer.Create(s: String);
 begin
   Buf := s;
   pStart := Pointer(Buf);
@@ -48,9 +53,63 @@ begin
   pEnd := pStart + Length(Buf);
 end;
 
-function TTokenizer.GetNext(out Token: TTokenInfo): Boolean;
+function TLexer.BuildToken(ps, p: PChar; out Token: TTokenInfo;
+  Kind: TTokenKind; const Val: IDatum): Boolean;
+begin
+  pCurr := p;
+  Token.Kind := Kind;
+  Token.pStart := ps;
+  Token.len := p - ps;
+  Token.Val := Val;
+  Result := True;
+end;
+
+function TLexer.ScanIdent(ps, p: PChar; out Token: TTokenInfo): Boolean;
 var
-  p: PChar;
+  s: String;
+  Val: IDatum;
+begin
+  while (p < pEnd) do
+  begin
+    case p^ of
+      '(', ')', #0..#$20: break;
+    end;
+    Inc(p);
+  end;
+  SetString(s, ps, p - ps);
+  Val := MakeSymbol(s);
+  Result := BuildToken(ps, p, Token, tkSymbol, Val);
+end;
+
+function TLexer.ScanNum(ps, p: PChar; out Token: TTokenInfo): Boolean;
+var
+  s: String;
+  Num: Double;
+  Val: IDatum;
+begin
+  while (p < pEnd) do
+  begin
+    case p^ of
+      '(', ')', #0..#$20: break;
+    end;
+    Inc(p);
+  end;
+  SetString(s, ps, p - ps);
+  if TryStrToFloat(s, Num) then
+  begin
+    Val := MakeNumber(Num);
+    Result := BuildToken(ps, p, Token, tkNum, Val);
+  end
+  else
+  begin       // o es mejor regresar false ?
+    Val := MakeSymbol(s);
+    Result := BuildToken(ps, p, Token, tkSymbol, Val);
+  end;
+end;
+
+function TLexer.GetNext(out Token: TTokenInfo): Boolean;
+var
+  p, ps: PChar;
 begin
   Result := False;
   p := pCurr;
@@ -62,29 +121,38 @@ begin
       if (p >= pEnd) then
         Exit;
     end;
-    Token.pStart := p;
+    ps := p;
     case p^ of
+      ';': begin   // saltar comentarios
+             while (p < pEnd) do
+               case p^ of
+                 #10: begin
+                        Inc(p);
+                        break;
+                      end
+               else Inc(p);
+               end;
+             Continue;
+           end;
       '(': begin
-             Token.Kind := tkLPar;
              Inc(p);
+             Result := BuildToken(ps, p, Token, tkLPar, nil);
            end;
       ')': begin
-             Token.Kind := tkRPar;
              Inc(p);
+             Result := BuildToken(ps, p, Token, tkRPar, nil);
            end;
-    else   begin
-             Token.Kind := tkOther;
-             repeat
-               Inc(p);
-               case p^ of
-                 '(', ')', #0..#$20: break;
-               end;
-             until (p >= pEnd);
-           end;
+      '0'..'9': Result := ScanNum(ps, p, Token);
+      '-': begin
+             Inc(p);
+             case p^ of
+               '0'..'9': Result := ScanNum(ps, p, Token);
+             else
+               Result := ScanIdent(ps, p, Token);
+             end;
+           end
+       else   Result := ScanIdent(ps, p, Token);
     end;
-    pCurr := p;
-    Token.len := p - Token.pStart;
-    Result := True;
     Exit;
   end;
 end;
@@ -93,12 +161,12 @@ end;
 
 constructor TParser.Create(s: String);
 begin
-  Tokenizer := TTokenizer.Create(s);
+  Lexer := TLexer.Create(s);
 end;
 
 destructor TParser.Destroy;
 begin
-  Tokenizer.Free;
+  Lexer.Free;
   inherited Destroy;
 end;
 
@@ -115,28 +183,15 @@ end;
 function TParser.GetNextTerm(out Term: IDatum): Boolean;
 var
   Token: TTokenInfo;
-  p: PChar;
-  s: String;
-  Num: Double;
 begin
   Result := False;
-  if Tokenizer.GetNext(Token) then
+  if Lexer.GetNext(Token) then
   begin
     case Token.Kind of
       tkLPar: Term := GetNextList;
       tkRPar: Exit;
       else
-        p := Token.pStart;
-        SetString(s, p, Token.len);
-        case p^ of
-          '-', '0'..'9':
-            if TryStrToFloat(s, Num) then
-              Term := MakeNumber(Num)
-            else
-              Term := MakeSymbol(s);
-        else
-              Term := MakeSymbol(s);
-        end;
+        Term := Token.Val;
     end;
     Result := True;
   end;

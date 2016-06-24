@@ -19,26 +19,29 @@ type
     procedure Write(Stream: TStream); virtual; abstract;
   end;
 
-  TSymbol = class(TDatum, ISymbol)
+  TBaseValue<T> = class(TDatum)
+  protected
+    FValue: T;
+    function GetValue: T;
+    procedure SetValue(const AValue: T);
+  public
+    constructor Create(const AValue: T);
+    property Value: T read GetValue write SetValue;
+  end;
+
+  TSymbol = class(TBaseValue<IDatum>, ISymbol)
   protected
     FName: String;
-    FValue: IDatum;
-    function GetValue: IDatum;
-    procedure SetValue(AValue: IDatum);
   public
     constructor Create(AName: String);
     function Eval: IDatum; override;
     procedure Write(Stream: TStream); override;
     function Name: String;
-    property Value: IDatum read GetValue write SetValue;
   end;
 
-  TNode = class(TDatum, INode)
+  TNode = class(TBaseValue<IDatum>, INode)
   protected
-    FValue: IDatum;
     FNext: INode;
-    function GetValue: IDatum;
-    procedure SetValue(AValue: IDatum);
   public
     constructor Create(AValue: IDatum; ANext: INode);
     function Eval: IDatum; override;
@@ -46,7 +49,6 @@ type
     function Next: INode;
     procedure Write(Stream: TStream); override;
     procedure WriteValues(Stream: TStream);
-    property Value: IDatum read GetValue write SetValue;
   end;
 
   TSyntax = class(TDatum, ISyntax)
@@ -56,16 +58,10 @@ type
     function Apply(Arg: INode): IDatum; virtual; abstract;
   end;
 
-  TNumber = class(TDatum, INumber)
-  protected
-    FValue: Double;
-    function GetValue: Double;
-    procedure SetValue(AValue: Double);
+  TNumber = class(TBaseValue<Double>, INumber)
   public
-    constructor Create(AValue: Double);
     function Eval: IDatum; override;
     procedure Write(Stream: TStream); override;
-    property Value: Double read GetValue write SetValue;
   end;
 
 implementation
@@ -76,6 +72,23 @@ implementation
 procedure TDatum.WriteString(Stream: TStream; s: String);
 begin
   Stream.Write(Pointer(s)^, Length(s) * SizeOf(Char));
+end;
+
+{ TBaseValue<T> }
+
+function TBaseValue<T>.GetValue: T;
+begin
+  Result := FValue
+end;
+
+procedure TBaseValue<T>.SetValue(const AValue: T);
+begin
+  FValue := AValue
+end;
+
+constructor TBaseValue<T>.Create(const AValue: T);
+begin
+  FValue := AValue
 end;
 
 { TSymbol }
@@ -90,19 +103,9 @@ begin
   Result := FValue
 end;
 
-function TSymbol.GetValue: IDatum;
-begin
-  Result := FValue
-end;
-
 function TSymbol.Name: String;
 begin
   Result := FName
-end;
-
-procedure TSymbol.SetValue(AValue: IDatum);
-begin
-  FValue := AValue
 end;
 
 procedure TSymbol.Write(Stream: TStream);
@@ -141,19 +144,9 @@ begin
   Result := cons(Value2, Next2);
 end;
 
-function TNode.GetValue: IDatum;
-begin
-  Result := FValue
-end;
-
 function TNode.Next: INode;
 begin
   Result := FNext
-end;
-
-procedure TNode.SetValue(AValue: IDatum);
-begin
-  FValue := AValue
 end;
 
 procedure TNode.Write(Stream: TStream);
@@ -187,24 +180,9 @@ end;
 
 { TNumber }
 
-constructor TNumber.Create(AValue: Double);
-begin
-  FValue := AValue
-end;
-
 function TNumber.Eval: IDatum;
 begin
   Result := INumber(Self)
-end;
-
-function TNumber.GetValue: Double;
-begin
-  Result := FValue
-end;
-
-procedure TNumber.SetValue(AValue: Double);
-begin
-  FValue := AValue
 end;
 
 procedure TNumber.Write(Stream: TStream);
