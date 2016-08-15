@@ -41,6 +41,7 @@ type
     function EvalItems: INode;
   end;
 function cons(Value: IDatum; Next: INode): INode;
+function List(const Value: array of IDatum): INode;
 function ListCount(List: INode): Integer;
 function Reverse(List: INode): INode;
 
@@ -114,6 +115,15 @@ var
 begin
   Node := TNode.Create(Value, Next);
   Result := Node;
+end;
+
+function List(const Value: array of IDatum): INode;
+var
+  i: Integer;
+begin
+  Result := nil;
+  for i := High(Value) downto Low(Value) do
+    Result := cons(Value[i], Result);
 end;
 
 function ListCount(List: INode): Integer;

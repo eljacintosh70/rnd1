@@ -2,6 +2,10 @@
 <BorlandProject>
 	<Transactions>
     <Transaction>2016/06/03 12:45:46.000.754,=D:\Rnd1\delphi\Unit1.pas</Transaction>
-    <Transaction>2016/06/03 12:46:05.000.357,D:\Rnd1\delphi\Unit1.pas=D:\Rnd1\common\RndFunc.pas</Transaction>
+    <Transaction>2016/06/03 12:46:05.000.357,D:\Rnd1\common\RndFunc.pas=D:\Rnd1\delphi\Unit1.pas</Transaction>
+    <Transaction>2016/08/14 19:09:28.000.070,=D:\Rnd\RndPas\delphi\Unit1.pas</Transaction>
+    <Transaction>2016/08/14 19:09:43.000.439,D:\Rnd\RndPas\common\RndLexerL.pas=D:\Rnd\RndPas\delphi\Unit1.pas</Transaction>
+    <Transaction>2016/08/14 19:09:56.000.534,=D:\Rnd\RndPas\common\RndParserL.pas</Transaction>
+    <Transaction>2016/08/14 19:56:15.000.791,=D:\Rnd\RndPas\common\RndLexer.pas</Transaction>
   </Transactions>
 </BorlandProject>

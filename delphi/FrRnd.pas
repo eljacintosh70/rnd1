@@ -15,7 +15,9 @@ type
     Panel1: TPanel;
     Memo2: TMemo;
     BEval: TButton;
+    BParse: TButton;
     procedure BEvalClick(Sender: TObject);
+    procedure BParseClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -44,6 +46,21 @@ begin
   Memo2.Lines.Add(s);
 
   Term := Term.Eval;
+  s := Display(Term);
+  Memo2.Lines.Add(s);
+end;
+
+procedure TForm2.BParseClick(Sender: TObject);
+var
+  s: String;
+  Parser: TParser;
+  Term: IDatum;
+  Strm: TStringStream;
+begin
+  s := Memo1.Lines.Text;
+  Parser := TParser.Create(s);
+  Parser.GetNextTerm(Term);
+
   s := Display(Term);
   Memo2.Lines.Add(s);
 end;

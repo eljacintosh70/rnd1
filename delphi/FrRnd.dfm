@@ -47,13 +47,22 @@ object Form2: TForm2
       Align = alTop
       TabOrder = 0
       object BEval: TButton
-        Left = 8
-        Top = 5
+        Left = 88
+        Top = 4
         Width = 75
         Height = 25
         Caption = '&Eval'
-        TabOrder = 0
+        TabOrder = 1
         OnClick = BEvalClick
+      end
+      object BParse: TButton
+        Left = 7
+        Top = 4
+        Width = 75
+        Height = 25
+        Caption = '&Parse'
+        TabOrder = 0
+        OnClick = BParseClick
       end
     end
     object Memo2: TMemo

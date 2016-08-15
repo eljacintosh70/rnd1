@@ -48,8 +48,9 @@ procedure DefineFunctions(const Defs: array of TLambdaEntry);
 procedure DefineNumFunctions(const Defs: array of TNumFunctionEntry);
 
 const
-  Functions: array[0..1] of TLambdaEntry = (
+  Functions: array[0..2] of TLambdaEntry = (
    (Name: 'define'; ClassId:TDefine),
+   (Name: 'set!'; ClassId:TDefine),
    (Name: 'list'; ClassId:TListFn));
   NumFunctions: array[0..3] of TNumFunctionEntry = (
    (Name: '+'; Fn: FnAdd),

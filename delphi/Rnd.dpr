@@ -6,7 +6,10 @@ uses
   RndBase in '..\common\RndBase.pas',
   RndParser in '..\common\RndParser.pas',
   RndClass in '..\common\RndClass.pas',
-  RndFunc in '..\common\RndFunc.pas';
+  RndFunc in '..\common\RndFunc.pas',
+  RndLexerL in '..\common\RndLexerL.pas',
+  RndParserL in '..\common\RndParserL.pas',
+  RndLexer in '..\common\RndLexer.pas';
 
 {$R *.res}
 
