@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{BAC6D6D0-87FF-4964-9536-D05C65865A22}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="..\..\Lib\DType.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\..\Lib\DTypeTests.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Rnd.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="DType">
+        <MSBuild Projects="..\..\Lib\DType.dproj"/>
+    </Target>
+    <Target Name="DType:Clean">
+        <MSBuild Projects="..\..\Lib\DType.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DType:Make">
+        <MSBuild Projects="..\..\Lib\DType.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DTypeTests">
+        <MSBuild Projects="..\..\Lib\DTypeTests.dproj"/>
+    </Target>
+    <Target Name="DTypeTests:Clean">
+        <MSBuild Projects="..\..\Lib\DTypeTests.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DTypeTests:Make">
+        <MSBuild Projects="..\..\Lib\DTypeTests.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Rnd">
+        <MSBuild Projects="Rnd.dproj"/>
+    </Target>
+    <Target Name="Rnd:Clean">
+        <MSBuild Projects="Rnd.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Rnd:Make">
+        <MSBuild Projects="Rnd.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="DType;DTypeTests;Rnd"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="DType:Clean;DTypeTests:Clean;Rnd:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="DType:Make;DTypeTests:Make;Rnd:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
