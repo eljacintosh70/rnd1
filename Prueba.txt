@@ -1,0 +1,31 @@
+Prueba:
+Copiar los siguientes textos.
+La linea "L:" significa presionar el botón "Eval Lisp" y muestra debajo el resultado.
+La linea "R:" es  usando "Eval Rnd" en su lugar
+
+(define (f x y)
+  (+ (* 100 x)
+     y))
+L:
+(:TDynLambda 02FA14C0)
+
+(f 1 2)
+L:
+102
+
+f(3, 4)
+R:
+304
+
+a := 5
+R:
+5
+
+b := f(a, a+2)
+R:
+507
+
+f(b, a-1)
+R:
+50704
+
