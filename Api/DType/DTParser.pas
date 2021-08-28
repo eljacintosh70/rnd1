@@ -43,12 +43,9 @@ implementation
 
 procedure CreateInt(x: Int64; out Res: TDatumRef);
 var
-  Value: TDynDatum;
+  Value: dyn;
 begin
-  if (x >= Low(FixNum)) and (x <= High(FixNum)) then
-    Value := CreateFixNum(x)
-  else
-    Value := CreateInt64NR(x);
+  Value := MakeInt64(x);
   Res.Assign(Value);
 end;
 

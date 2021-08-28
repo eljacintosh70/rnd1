@@ -239,12 +239,12 @@ begin                        // { digit } [ '.' { digit } ] [ 'E' [ '+' | '-' ] 
   if IsFloat then
   begin
     Num := StrToFloat(s);
-    Val := CreateFloNumNR(Num);
+    Val := MakeDouble(Num);
   end
   else
   begin
     NumI := StrToInt64(s);
-    Val := CreateInt64NR(NumI);
+    Val := MakeInt64(NumI);
   end;
   Result := BuildToken(ps, p, Token, tkNum, Val);
 end;

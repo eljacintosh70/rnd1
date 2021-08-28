@@ -103,6 +103,7 @@ type
     procedure Assign(AValue: TDynDatum); overload;
     procedure Assign(AValue: TDatumRef); overload;
     procedure Assign(const AValue: IDynDatum); overload;
+    procedure Assign(const AValue: dyn); overload;
     procedure Init(AValue: TDynDatum); overload;
     procedure Init(AValue: TDatumRef); overload;
     procedure cons(Car, Cdr: TDynDatum); overload;
@@ -486,7 +487,7 @@ procedure NeedParams(Params: TDynDatum; const Required: array of PDynDatum;
 {$REGION 'General'}
 function ManageRefs(const Refs: array of PDatumRef): TAutoDestroyRecord;
 
-function ConstToDatum(const Val: TVarRec): TDynDatum; stdcall;
+function ConstToDatum(const Val: TVarRec): dyn; stdcall;
 function DatumType(Datum: TDynDatum): TDatumType;
 
 function Deb(X: TDynDatum; Max: Integer = 256): String; overload;
@@ -1223,19 +1224,20 @@ function Deb(const X: IDynDatum; Max: Integer = 256): String; overload;
 
 {$endif}
 
-function ConstToDatum(const Val: TVarRec): TDynDatum; stdcall;
+function ConstToDatum(const Val: TVarRec): dyn; stdcall;
 begin
   case Val.VType of
     vtPointer, vtObject, vtInterface:  // se asume que son TDynDatum;
       begin
-        Result := Val.VPointer;
-        if not Assigned(Result) then
+        if Assigned(Val.VPointer) then
+          Result := Val.VPointer
+        else
           Result := _null;              // nil -> _null
       end;
     vtInteger:
-      Result := CreateInt32NR(Val.VInteger);    // CreateFixNum(Val.VInteger);
+      Result := MakeInt64(Val.VInteger);    // CreateFixNum(Val.VInteger);
     vtInt64:
-      Result := CreateInt64NR(Val.VInt64^);   // CreateFixNum(Val.VInt64^);
+      Result := MakeInt64(Val.VInt64^);   // CreateFixNum(Val.VInt64^);
     vtBoolean:
       if (Val.VBoolean) then
         Result := _t
@@ -1246,15 +1248,15 @@ begin
     vtWideChar:
       Result := CreateCharAtom(Val.VWideChar);             //TCharAtom.Create(Val.VWideChar);
     vtExtended:
-      Result := CreateFloNumNR(Val.VExtended^);
+      Result := MakeDouble(Val.VExtended^);
     vtString:
-      Result := CreateStringANR(@Val.VString^[1], Length(Val.VString^));
+      Result := make_string(PAnsiChar(@Val.VString^[1]), Length(Val.VString^));
     vtAnsiString:
-      Result := CreateStringANR(Val.VAnsiString, Length(AnsiString(Val.VAnsiString)));
+      Result := make_string(Val.VAnsiString, Length(AnsiString(Val.VAnsiString)));
     vtWideString:
-      Result := CreateStringWNR(Val.VWideString, Length(WideString(Val.VWideString)));
+      Result := make_string(Val.VWideString, Length(WideString(Val.VWideString)));
     vtUnicodeString:
-      Result := CreateStringWNR(Val.VUnicodeString, Length(UnicodeString(Val.VUnicodeString)));
+      Result := make_string(Val.VUnicodeString, Length(UnicodeString(Val.VUnicodeString)));
 
     {
       vtPChar:      (VPChar: PChar);
@@ -1540,6 +1542,17 @@ var
   OldValue: Pointer;
 begin
   NewValue := TDynDatum(Pointer(AValue)).NewRef;
+  OldValue := Pointer(Data);
+  Pointer(Data) := NewValue;
+  TDynDatum(OldValue).Free;
+end;
+
+procedure TDatumRef.Assign(const AValue: dyn);
+var
+  NewValue: TDynDatum;
+  OldValue: Pointer;
+begin
+  NewValue := TDynDatum(Pointer(AValue.Ref)).NewRef;
   OldValue := Pointer(Data);
   Pointer(Data) := NewValue;
   TDynDatum(OldValue).Free;

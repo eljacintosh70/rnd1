@@ -192,9 +192,9 @@ begin
 
   { TODO : por ahora... cambiar para que 1.0 -> real 1E+0 -> real}
   if X = Trunc(X) then
-    Res.Assign(CreateInt64NR(Trunc(X)))
+    Res.Assign(MakeInt64(Trunc(X)))
   else
-    Res.Assign(CreateFloNumNR(X));
+    Res.Assign(MakeDouble(X));
   Result := p;
 end;
 

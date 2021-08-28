@@ -150,7 +150,7 @@ begin
           call [Fn]
           fstp Res64
         end;
-        Result.Assign(CreateFloNumNR(PDouble(@Res64)^));
+        Result.Assign(MakeDouble(PDouble(@Res64)^));
       end;
     else
       raise Exception.Create('unsuported automated result type');
