@@ -116,7 +116,6 @@
         <DCCReference Include="..\..\Api\DType\DTScope.pas"/>
         <DCCReference Include="..\..\Api\DType\DTScript.pas"/>
         <DCCReference Include="..\..\Api\DType\DTParser.pas"/>
-        <DCCReference Include="..\..\Api\DType\AutoDestroy.pas"/>
         <DCCReference Include="..\..\Api\DynTypes.pas"/>
         <DCCReference Include="..\..\Api\Lisp\LispWrite.pas"/>
         <DCCReference Include="..\..\Api\Lisp\LispLexer.pas"/>

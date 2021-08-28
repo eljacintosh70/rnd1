@@ -96,24 +96,24 @@ begin
       end;
     atExtFunc:
       begin
-        Par.Assign(Params);
+        Par := (Params);
         EvalParams(Res, Par.Value, Scope);
         TDynFuncRTTI(Fn).Call(Result, Res.Value);
       end;
     atAutoFunc:
       begin
-        Par.Assign(Params);
+        Par := (Params);
         EvalParams(Res, Par.Value, Scope);
         TDynFuncAuto(Fn).Call(Result, Res.Value);
       end;
     atLambda:
       begin
-        Par.Assign(Params);
+        Par := (Params);
         EvalParams(Res, Par.Value, Scope);
         TDynLambda(Fn).Call(Result, Res.Value);
       end;
     else // debería ser un error
-      Result.Assign(Fn);
+      Result := (Fn);
   end;
 end;
 
@@ -133,7 +133,7 @@ begin
     Eval(A, Src[i], Scope);
     Des[i] := A.Value;
   end;
-  Result.Assign(Des);
+  Result := (Des);
 end;
 
 
@@ -146,12 +146,12 @@ begin
     Val := Scope.Value[Symbol];
     if Val <> Unbound then
     begin
-      Result.Assign(Val);
+      Result := (Val);
       Exit;
     end;
     Scope := Scope.Parent;
   end;
-  Result.Assign(Unbound);
+  Result := (Unbound);
 end;
 
 procedure EvalParams(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
@@ -160,7 +160,7 @@ var
 begin
   ManageRefs([@A, @D]);
 
-  Result.Assign(Datum);
+  Result := (Datum);
   if IsPair(Datum) then
   begin
     Eval(A, car(Datum), Scope);
@@ -185,7 +185,7 @@ begin
     atSymbol:
       EvalSymbol(Result, Datum, Scope);
     else
-      Result.Assign(Datum);
+      Result := (Datum);
   end
 end;
 
@@ -310,12 +310,12 @@ begin
     n := Length(NewNames);
   for i := 0 to n - 1 do
   begin
-    OldNameRef.Assign(InitSymbol(OldNames[i]));
+    OldNameRef := (InitSymbol(OldNames[i]));
     Name := OldNameRef.Value;
     Datum := Value[Name];
     if Datum <> Unbound then
     begin
-      NewNameRef.Assign(InitSymbol(NewNames[i]));
+      NewNameRef := (InitSymbol(NewNames[i]));
       Name := NewNameRef.Value;
       Value[Name] := Datum;
       Name := OldNameRef.Value;

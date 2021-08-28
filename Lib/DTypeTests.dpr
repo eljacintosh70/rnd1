@@ -35,7 +35,6 @@ uses
   DTScope in '..\Api\DType\DTScope.pas',
   DTScript in '..\Api\DType\DTScript.pas',
   DTParser in '..\Api\DType\DTParser.pas',
-  AutoDestroy in '..\Api\DType\AutoDestroy.pas',
   DynTypes in '..\Api\DynTypes.pas',
   LispWrite in '..\Api\Lisp\LispWrite.pas',
   LispLexer in '..\Api\Lisp\LispLexer.pas',

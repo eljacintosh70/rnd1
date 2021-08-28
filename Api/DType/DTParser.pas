@@ -46,7 +46,7 @@ var
   Value: dyn;
 begin
   Value := MakeInt64(x);
-  Res.Assign(Value);
+  Res := (Value);
 end;
 
 function IsDigit(ch: WideChar): Boolean; inline;

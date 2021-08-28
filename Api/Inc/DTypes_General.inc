@@ -69,11 +69,7 @@ begin
 end;
 
 function ManageRefs(const Refs: array of PDatumRef): TAutoDestroyRecord;
-type
-  TAutoDestroyRecord = AutoDestroy.TAutoDestroyRecord;
-  PAutoDestroyRecord = ^TAutoDestroyRecord;
 begin
-  PAutoDestroyRecord(@Result).Init(TDatumRefHelper, Slice(PPointerArray(@Refs[0])^, Length(Refs)));
 end;
 
 exports

@@ -26,7 +26,6 @@ uses
   DTScope in '..\Api\DType\DTScope.pas',
   DTScript in '..\Api\DType\DTScript.pas',
   DTParser in '..\Api\DType\DTParser.pas',
-  AutoDestroy in '..\Api\DType\AutoDestroy.pas',
   DynTypes in '..\Api\DynTypes.pas',
   LispEval in '..\Api\Lisp\LispEval.pas';
 

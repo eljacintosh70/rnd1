@@ -35,7 +35,7 @@ begin
         Method.Call(Result, Scope, Params);
       end;
     else
-      Result.Assign(Member);
+      Result := (Member);
   end;
 end;
 

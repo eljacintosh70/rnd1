@@ -264,8 +264,8 @@ end;
 constructor TDynLambda.Create(AArg, ABody: TDynDatum; AScope: IDynScope);
 begin
   inherited Create;
-  Arg.Assign(AArg);
-  Body.Assign(ABody);
+  Arg := (AArg);
+  Body := (ABody);
   Scope := AScope;
 end;
 

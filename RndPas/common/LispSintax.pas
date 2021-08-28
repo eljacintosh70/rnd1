@@ -103,7 +103,7 @@ begin                   // (Cond IfVal ElseVal)
   if IsPair(Datum) then
     Eval(Result, car(Datum), Scope)
   else
-    Result.Assign(Undefined);
+    Result := (Undefined);
 end;
 
 {
@@ -116,7 +116,7 @@ begin
   // (import (libname) procname...)
   NeedParams(Datum, [@LibName], @ProcNames);
   Lib := TSchLib.Create(LibName, ProcNames, Scope);
-  Result.Assign(Undefined);
+  Result := (Undefined);
 end;
 
 procedure TSintax1._import_on_call(out Result: TDatumRef; Datum: TDynDatum;
@@ -128,7 +128,7 @@ begin
   // (import-on-call (libname) procname...)
   NeedParams(Datum, [@LibName], @ProcNames);
   Lib := TLazyLib.Create(LibName, ProcNames, Scope);
-  Result.Assign(Undefined);
+  Result := (Undefined);
 end;
 }
 
@@ -157,14 +157,14 @@ begin
         raise Exception.Create(Format('invalid define %s . %s', [Name, Deb(Rest)]))
       end
     else
-      Result.Assign(Unbound);             // (define <variable>)
+      Result := (Unbound);             // (define <variable>)
   end
   else if IsPair(VarDatum) then
   begin
     Formal := cdr(VarDatum);
     VarDatum := car(VarDatum);
     NeedSymbol(VarDatum);  // (define (<variable> . <formal>) <body>)
-    Result.Assign(TDynLambda.Create(Formal, Rest, Scope));
+    Result := (TDynLambda.Create(Formal, Rest, Scope));
   end
   else
     raise Exception.Create(Format('invalid define %s . %s', [Deb(Datum), Deb(Rest)]));
@@ -226,7 +226,7 @@ begin
         Method.Call(Result, SubScope, Params);
       end;
     else
-      Result.Assign(Member);
+      Result := (Member);
   end;
 end;
 
@@ -256,7 +256,7 @@ begin
         DynError('record required: %s', [Deb(ObjR.Value, 200)]);
       end;
   end;
-  Result.Assign(Undefined);
+  Result := (Undefined);
 end;
 
 procedure TSintax1.quote(out Result: TDatumRef; Datum: TDynDatum;
@@ -266,7 +266,7 @@ var
 begin
   // (quote Value)
   NeedParams(Datum, [@Value]);
-  Result.Assign(Value);
+  Result := (Value);
 end;
 
 procedure TSintax1.quasiquote(out Result: TDatumRef; Datum: TDynDatum;
@@ -276,11 +276,11 @@ var
 begin
   // (quasiquote Value)
   NeedParams(Datum, [@Value]);
-  Result.Assign(Value);
+  Result := (Value);
   if IsPair(Value) then
   begin
     InitQuoteFn;
-    Result.Assign(CopyUnquoting(Value, Scope));
+    Result := (CopyUnquoting(Value, Scope));
   end;
 end;
 
@@ -293,7 +293,7 @@ begin
   // (lambda Params . FnDef)
   NeedParams(Datum, [@Params], @FnDef);
   NeedPair(Params);
-  Result.Assign(TDynLambda.Create(Params, FnDef, Scope));
+  Result := (TDynLambda.Create(Params, FnDef, Scope));
 end;
 
 var
@@ -389,11 +389,11 @@ procedure TSintax1.SetVal(out Result: TDatumRef; Datum: TDynDatum;
 var
   NameDatum: TDynDatum;
 begin
-  Result.Assign(Datum);
+  Result := (Datum);
   NameDatum := car(Datum);
   NeedSymbol(NameDatum);
   Datum := cdr(Datum);
-  Result.Assign(car(Datum));
+  Result := (car(Datum));
   Eval(Result, Result.Value, Scope);
   Scope.Value[NameDatum] := Result.Value;
 end;

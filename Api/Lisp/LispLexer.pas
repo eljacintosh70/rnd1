@@ -120,7 +120,7 @@ begin
     List := Cons(v, List);
   until False;
   Datum := ListRevToDynMemory(List);
-  Res.Assign(Datum);
+  Res := (Datum);
   Result := p;
 end;
 
@@ -157,7 +157,7 @@ begin
     List := Cons(v, List);
   until False;
   Datum := ListRevToDynMemory(List);
-  Res.Assign(Datum);
+  Res := (Datum);
   Result := p;
 end;
 
@@ -192,9 +192,9 @@ begin
 
   { TODO : por ahora... cambiar para que 1.0 -> real 1E+0 -> real}
   if X = Trunc(X) then
-    Res.Assign(MakeInt64(Trunc(X)))
+    Res := (MakeInt64(Trunc(X)))
   else
-    Res.Assign(MakeDouble(X));
+    Res := (MakeDouble(X));
   Result := p;
 end;
 
@@ -217,7 +217,7 @@ begin
     end;
 
   SetString(s, ps, p - ps);
-  Res.Assign(InitSymbol(Utf8String(s)));
+  Res := (InitSymbol(Utf8String(s)));
   Result := p;
 end;
 
@@ -236,7 +236,7 @@ begin
       '"':
         begin
           s := make_string(ps, p - ps);
-          Res.Assign(s);
+          Res := (s);
           Inc(p);
           Result := p;
           Exit;
@@ -246,7 +246,7 @@ begin
     end;
 
   s := make_string(ps, p - ps);
-  Res.Assign(s);
+  Res := (s);
   Result := p;
 end;
 
@@ -260,7 +260,7 @@ begin
   p := pCurr;
   pe := pEnd;
   Res.Kind := tkDatum;
-  Res.Ref.Assign(Unbound);
+  Res.Ref := (Unbound);
   while p < pe do
   begin
     ch := p^;
@@ -279,7 +279,7 @@ begin
           end
           else
             Res.Kind := tkUnQuote;          // ,
-          Res.Ref.Assign(Unbound);
+          Res.Ref := (Unbound);
         end;
       #0..#$20:
         begin
@@ -314,7 +314,7 @@ begin
       ')', ']':
         begin
           Res.Kind := tkRPar;
-          Res.Ref.Assign(_null);
+          Res.Ref := (_null);
         end;
       // '\':
       '#':
@@ -345,14 +345,14 @@ begin
                       '0'..'9', 'A'..'F', 'a'..'f':
                         begin
                           p := ScanIntX(p, Res.Ref);
-                          Res.Ref.Assign(MakeChar(
+                          Res.Ref := (MakeChar(
                             WideChar(FixNumValue(Res.Ref.Value))));
                         end;
                       else
-                        Res.Ref.Assign(MakeChar(WideChar(ch)));
+                        Res.Ref := (MakeChar(WideChar(ch)));
                     end;
                   else
-                    Res.Ref.Assign(MakeChar(WideChar(ch)));
+                    Res.Ref := (MakeChar(WideChar(ch)));
                 end;
               {
                 \c  char
@@ -374,9 +374,9 @@ begin
               }
               end;
             'T':
-              Res.Ref.Assign(_t);
+              Res.Ref := (_t);
             'F':
-              Res.Ref.Assign(_f);
+              Res.Ref := (_f);
             'V':                    // #vu8(
               if (Upcase(p[0]) = 'U') then
                 if (p[1] = '8') then
@@ -409,7 +409,7 @@ begin
     Exit;
   end;
   Res.Kind := tkEnd;
-  Res.Ref.Assign(Unbound);
+  Res.Ref := (Unbound);
   pCurr := p;
   Result := False;
 end;

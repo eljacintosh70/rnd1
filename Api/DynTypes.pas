@@ -95,24 +95,7 @@ type
     );
 
 
-  TDatumRef = record
-  public
-    Data: Pointer;
-  public
-    procedure Assign(AValue: Pointer); overload;
-    procedure Assign(AValue: TDynDatum); overload;
-    procedure Assign(AValue: TDatumRef); overload;
-    procedure Assign(const AValue: IDynDatum); overload;
-    procedure Assign(const AValue: dyn); overload;
-    procedure Init(AValue: TDynDatum); overload;
-    procedure Init(AValue: TDatumRef); overload;
-    procedure cons(Car, Cdr: TDynDatum); overload;
-    procedure cons(const Car: IDynDatum; Cdr: TDynDatum); overload; {$ifdef INLINE} inline; {$endif}
-    procedure cons(Car: TDynDatum; const Cdr: IDynDatum); overload; {$ifdef INLINE} inline; {$endif}
-    procedure cons(const Car, Cdr: IDynDatum); overload; {$ifdef INLINE} inline; {$endif}
-    function Value: TDynDatum; {$ifdef INLINE} inline; {$endif}
-    procedure Free;
-  end;
+  TDatumRef = dyn;
 
   IDynDatum = interface(IDyn)
     function CommandExec(Command: Integer; Res: Pointer; Data: Pointer = nil): Integer;
@@ -502,7 +485,7 @@ implementation /////////////////////////////////////////////////////////////////
 uses
 {$ifdef DTYPES}
   TypInfo, Windows,
-  AutoDestroy, MapFiles,
+  MapFiles,
   DTBool, DTInt, DTFloat, DTPair, DTArray, DTString, DTProc, DTProcRTTI,
   DTScript, DTSymbol,
 {$endif}
@@ -1463,107 +1446,6 @@ end;
 constructor EWrongType.Create(Datum: TDynDatum; const RequiredType: String);
 begin
   inherited Create(Format('Required type: %s in %s', [RequiredType, Deb(Datum)]));
-end;
-
-{ TDatumRef }
-
-procedure TDatumRef.Assign(AValue: Pointer);
-var
-  NewValue: TDynDatum;
-  OldValue: Pointer;
-begin
-  NewValue := TDynDatum(AValue).NewRef;
-  OldValue := Pointer(Data);
-  Pointer(Data) := NewValue;
-  TDynDatum(OldValue).Free;
-end;
-
-procedure TDatumRef.Assign(AValue: TDynDatum);
-var
-  NewValue: TDynDatum;
-  OldValue: Pointer;
-begin
-  NewValue := AValue.NewRef;
-  OldValue := Pointer(Data);
-  Pointer(Data) := NewValue;
-  TDynDatum(OldValue).Free;
-end;
-
-procedure TDatumRef.Assign(AValue: TDatumRef);
-var
-  NewValue: TDynDatum;
-  OldValue: Pointer;
-begin
-  NewValue := AValue.Value.NewRef;
-  OldValue := Pointer(Data);
-  Pointer(Data) := NewValue;
-  TDynDatum(OldValue).Free;
-end;
-
-procedure TDatumRef.Assign(const AValue: IDynDatum);
-var
-  NewValue: TDynDatum;
-  OldValue: Pointer;
-begin
-  NewValue := TDynDatum(Pointer(AValue)).NewRef;
-  OldValue := Pointer(Data);
-  Pointer(Data) := NewValue;
-  TDynDatum(OldValue).Free;
-end;
-
-procedure TDatumRef.Assign(const AValue: dyn);
-var
-  NewValue: TDynDatum;
-  OldValue: Pointer;
-begin
-  NewValue := TDynDatum(Pointer(AValue.Ref)).NewRef;
-  OldValue := Pointer(Data);
-  Pointer(Data) := NewValue;
-  TDynDatum(OldValue).Free;
-end;
-
-procedure TDatumRef.Init(AValue: TDynDatum);
-begin
-  Pointer(Data) := AValue.NewRef;
-end;
-
-procedure TDatumRef.Init(AValue: TDatumRef);
-begin
-  Pointer(Data) := AValue.Value.NewRef;
-end;
-
-procedure TDatumRef.cons(Car, Cdr: TDynDatum);
-begin
-  Assign(DynTypes.cons(Car, Cdr))
-end;
-
-procedure TDatumRef.cons(const Car: IDynDatum; Cdr: TDynDatum);
-begin
-  cons(TDynDatum(Pointer(Car)), TDynDatum(Pointer(Cdr)));
-end;
-
-procedure TDatumRef.cons(Car: TDynDatum; const Cdr: IDynDatum);
-begin
-  cons(TDynDatum(Pointer(Car)), TDynDatum(Pointer(Cdr)));
-end;
-
-procedure TDatumRef.cons(const Car, Cdr: IDynDatum);
-begin
-  cons(TDynDatum(Pointer(Car)), TDynDatum(Pointer(Cdr)));
-end;
-
-function TDatumRef.Value: TDynDatum;
-begin
-  Result := Pointer(Data);
-end;
-
-procedure TDatumRef.Free;
-var
-  OldValue: Pointer;
-begin
-  OldValue := Pointer(Data);
-  Data := Unbound;
-  TDynDatum(OldValue).Free;
 end;
 
 {$ifndef DTYPES}

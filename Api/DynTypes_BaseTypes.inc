@@ -3,6 +3,7 @@
   public
     Ref: IDyn;
     function Ptr: Pointer; inline;
+    function Value: TDynDatum; inline;
   public
     // debería soportar el operador Obj(arg), pero no funciona,
     // hay que llamar Obj.Invoke(arg)
@@ -18,6 +19,8 @@
     function Method(Id: dyn; Arg: array of dyn): dyn;
     // usado por el evaluador
     procedure DispatchMsg(var Message);
+  public
+    procedure cons(const Car, Cdr: dyn); inline;
   public
     class operator Implicit(const A: IDyn): dyn; inline;
     class operator Implicit(const A: dyn): IDyn; inline;

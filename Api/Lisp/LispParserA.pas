@@ -61,7 +61,7 @@ var
 begin
   if IsSymbol(QuoteFn[High(QuoteFn)].Value) then Exit;
   for i := Low(QuoteFn) to High(QuoteFn) do
-    QuoteFn[i].Assign(InitSymbol(QuoteFnName[i]));
+    QuoteFn[i] := (InitSymbol(QuoteFnName[i]));
 end;
 
 { TLispParser }
@@ -119,11 +119,11 @@ begin
     case Token.Kind of
       tkDatum: ;
       else //tkEnd, tkRPar,
-        Ref^.Assign(_Null);
+        Ref^ := (_Null);
         Exit;
     end;
     Pair := cons(Token.Ref.Value, _null);
-    Ref^.Assign(Pair);
+    Ref^ := (Pair);
     Ref := CdrRef(Pointer(Pair));
   end;
   EvalLater(TLexer(Lexer).CurPos, Res, Ref);
@@ -152,7 +152,7 @@ end;
 constructor TLazyNode.Create(const AParser: IParser; Value: TDynDatum; p: PTChar);
 begin
   Parser := AParser;
-  FCar.Init(Value);
+  FCar := (Value);
   pNext := p;
 end;
 
@@ -163,9 +163,9 @@ end;
 
 function TLazyNode.Getcdr: TDynDatum;
 begin
-  if not Assigned(FCdr.Data) then
+  if FCdr = nil then
     Setcdr(Pointer(Rest));
-  Result := FCdr.Data;
+  Result := FCdr.Ptr;
 end;
 
 function TLazyNode.Rest: IDynSeq;

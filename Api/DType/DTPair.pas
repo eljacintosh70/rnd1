@@ -189,22 +189,22 @@ end;
 
 function TDynPair.Getcar: TDynDatum;
 begin
-  Result := FCar.Value
+  Result := FCar
 end;
 
 procedure TDynPair.Setcar(const First: TDynDatum);
 begin
-  FCar.Assign(First)
+  FCar := (First)
 end;
 
 function TDynPair.Getcdr: TDynDatum;
 begin
-  Result := FCdr.Value
+  Result := FCdr
 end;
 
 procedure TDynPair.Setcdr(const First: TDynDatum);
 begin
-  FCdr.Assign(First)
+  FCdr := (First)
 end;
 
 function TDynPair.GetAsISchPair: IDynPair;
@@ -280,12 +280,12 @@ end;
 
 function TDynPair.Rest: IDynSeq;
 begin
-  Result := IDynSeq(Pointer(FCdr.Value))
+  Result := IDynSeq(FCdr.Ptr)
 end;
 
 function TDynPair.First: TDynDatum;
 begin
-  Result := FCar.Value;
+  Result := FCar;
 end;
 
 function TDynPair.Length: TArraySize;
@@ -293,20 +293,20 @@ begin
   Result := 0; // no funciona si no existe el objeto
   repeat
     Inc(Result);
-    Self := Pointer(FCdr);
+    Self := FCdr.Ptr;
   until (Self = nil);
 end;
 
 constructor TDynPair.Create(ACar, ACdr: dyn);
 begin
-  FCar.Init(TDynDatum(Pointer(ACar)));
-  FCdr.Init(TDynDatum(Pointer(ACdr)));
+  FCar := ACar;
+  FCdr := ACdr;
 end;
 
 destructor TDynPair.Destroy;
 begin
-  FCar.Free;
-  FCdr.Free;
+  FCar := nil;
+  FCdr := nil;
   inherited Destroy;
 end;
 

@@ -103,7 +103,7 @@ begin
     D := cdr(Datum);
     if not IsPair(D) then
     begin
-      Result.Assign(car(Datum));
+      Result := (car(Datum));
       Exit;
     end;
     Datum := D;
@@ -152,7 +152,7 @@ begin
       raise Exception.Create('Invalid Scope');
   end;
   Res := LoadDynLib(Path, DelphiScope, Declar);
-  Result.Assign(MakeBool(Res));
+  Result := (MakeBool(Res));
 end;
 
 end. ///////////////////////////////////////////////////////////////////////////

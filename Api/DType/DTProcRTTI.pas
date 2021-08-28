@@ -140,7 +140,7 @@ begin
           mov  edx,[edx-4]
           call [Fn]
         end;
-        Result.Assign(make_string(StrRes));
+        Result := (make_string(StrRes));
       end;
     VT_R4, VT_R8,
     VT_CY, VT_DATE:
@@ -150,7 +150,7 @@ begin
           call [Fn]
           fstp Res64
         end;
-        Result.Assign(MakeDouble(PDouble(@Res64)^));
+        Result := (MakeDouble(PDouble(@Res64)^));
       end;
     else
       raise Exception.Create('unsuported automated result type');

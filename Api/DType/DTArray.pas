@@ -224,7 +224,7 @@ begin
   DebugStr := Format('%s(%p)', [ClassName, Pointer(Self)]);
   n := FLength;
   for i := 0 to n - 1 do
-    FItems[i].Free;
+    FItems[i] := nil;
   //Destroy;
   Dispose(Pointer(Self));
 end;
@@ -244,7 +244,7 @@ begin
   n := System.Length(Arr);
   Result := TDynArray.Create(n);
   for i := 0 to n - 1 do
-    Result.FItems[i].Init(ConstToDatum(Arr[i]));
+    Result.FItems[i] := ConstToDatum(Arr[i]);
 end;
 
 class function TDynArray.Create(n: Integer; Fill: TDynDatum): TDynArray;
@@ -253,7 +253,7 @@ var
 begin
   Result := TDynArray.Create(n);
   for i := 0 to n - 1 do
-    Result.FItems[i].Init(Fill);
+    Result.FItems[i] := Fill;
 end;
 
 function TDynArray._Release: Integer;
@@ -265,12 +265,12 @@ end;
 
 function TDynArray.GetItemA(i: Integer): TDynDatum;
 begin
-  Result := FItems[i].Value
+  Result := FItems[i]
 end;
 
 procedure TDynArray.SetItemA(i: Integer; const First: TDynDatum);
 begin
-  FItems[i].Assign(First)
+  FItems[i] := First
 end;
 
 procedure TDynArray.Lock(var Block: TArrayBlock; Ofs: TArrayPos = 0; Size:

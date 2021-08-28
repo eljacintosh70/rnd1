@@ -51,7 +51,7 @@ var
 begin
   if IsSymbol(QuoteFn[High(QuoteFn)].Value) then Exit;
   for i := Low(QuoteFn) to High(QuoteFn) do
-    QuoteFn[i].Assign(InitSymbol(QuoteFnName[i]));
+    QuoteFn[i] := (InitSymbol(QuoteFnName[i]));
 end;
 
 { TCustomLispParser }
@@ -72,7 +72,7 @@ begin
     tkVector:
       begin
         Result := EvalList(Res.Ref);
-        Res.Ref.Assign(ListToDynArray(Res.Ref.Value));
+        Res.Ref := (ListToDynArray(Res.Ref.Value));
         Res.Kind := tkDatum;
       end;
     Low(TQuoteTokens)..High(TQuoteTokens):
@@ -97,7 +97,7 @@ begin
     case Token.Kind of
       tkDatum: ;
       else //tkEnd, tkRPar,
-        Res.Assign(Reverse(List));
+        Res := (Reverse(List));
         Break;
     end;
 
@@ -112,7 +112,7 @@ begin
   ManageRefs([@Token.Ref]);
 
   Result := GetNextTerm(Token);
-  Res.Assign(Token.Ref);
+  Res := (Token.Ref);
 end;
 
 destructor TCustomLispParser.Destroy;

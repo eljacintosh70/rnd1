@@ -166,9 +166,9 @@ begin
   if Assigned(Parent) then
     Parent.Call(Result, this, Params)
   else
-    Result.Assign(nil);
+    Result := (nil);
   if Assigned(List) then
-    Result.Assign(list_append([List], IDynDatum(Pointer(Result.Value))))
+    Result := (list_append([List], IDynDatum(Pointer(Result.Value))))
 end;
 
 initialization

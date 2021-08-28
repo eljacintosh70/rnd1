@@ -31,9 +31,19 @@ begin
   Result := Pointer(Ref)
 end;
 
+function dyn.Value: TDynDatum;
+begin
+  Result := Pointer(Ref)
+end;
+
 procedure dyn.DispatchMsg(var Message);
 begin
   Ref.DispatchMsg(Message);
+end;
+
+procedure dyn.cons(const Car, Cdr: dyn);
+begin
+  Ref := DynTypes.cons(Car, Cdr);
 end;
 
 class operator dyn.Implicit(const A: IDyn): dyn;
