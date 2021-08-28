@@ -337,9 +337,9 @@ const
   Unbound = TDynDatum(smInline + $80);
 
 {$REGION 'IDynInt'}
-function CreateFixNum(Value: FixNum): TDynDatum; {$ifdef INLINE} inline; {$endif}
-function CreateInt32NR(Val: Integer): TDynDatum; stdcall;
-function CreateInt64NR(Val: Int64): TDynDatum; stdcall;
+function CreateFixNum(Value: FixNum): TDynDatum; {$ifdef INLINE} inline deprecated 'use MakeInt64'; {$endif}
+function CreateInt32NR(Val: Integer): TDynDatum; stdcall deprecated 'use MakeInt64';
+function CreateInt64NR(Val: Int64): TDynDatum; stdcall deprecated 'use MakeInt64';
 
 function FixNumValue(Value: TDynDatum): FixNum; {$ifdef INLINE} inline; {$endif}
 function Int64Value(Value: TDynDatum): Int64;
@@ -350,19 +350,19 @@ procedure NeedInt64(Datum: TDynDatum; var Value: Int64);
 {$ENDREGION}
 
 {$REGION 'IDynFloat'}
-function CreateFloNumNR(Val: Extended): TDynDatum; stdcall;
+function CreateFloNumNR(Val: Extended): TDynDatum; stdcall deprecated 'use MakeDouble';
 function FloNumValue(Self: TDynDatum): Double;
 {$ENDREGION}
 
 {$REGION 'Char'}
-function CreateCharAtom(Value: WideChar): TDynDatum; {$ifdef INLINE} inline; {$endif}
+function CreateCharAtom(Value: WideChar): TDynDatum; {$ifdef INLINE} inline deprecated 'use MakeChar'; {$endif}
 {$ENDREGION}
 
 {$REGION 'Bool'}
 const
   _f = TDynDatum(akBool);
   _t = TDynDatum(akBool + $100);
-function BoolDatum(V: Boolean): TDynDatum;
+function BoolDatum(V: Boolean): TDynDatum; deprecated 'use MakeBool';
 {$ENDREGION}
 
 {$REGION 'null'}
@@ -442,8 +442,8 @@ function make_string(pData: PWideChar; cbData: Integer): IDynString; stdcall; ov
 function make_string(const s: String): IDynString; overload;
 function make_string(const s: AnsiString): IDynString; overload;
 
-function CreateStringANR(p: PAnsiChar; cb: Integer): TDynDatum; stdcall;
-function CreateStringWNR(p: PWideChar; cb: Integer): TDynDatum; stdcall;
+function CreateStringANR(p: PAnsiChar; cb: Integer): TDynDatum; stdcall deprecated 'use MakeString';
+function CreateStringWNR(p: PWideChar; cb: Integer): TDynDatum; stdcall deprecated 'use MakeString';
 {--$ifdef HAS_UNICODE_STRING}
 procedure NeedString(Datum: TDynDatum; var Value: UnicodeString); overload;
 {--$endif}
