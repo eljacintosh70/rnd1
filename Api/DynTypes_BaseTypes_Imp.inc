@@ -81,29 +81,9 @@ begin
   Result.Ref := MakeBool(A)
 end;
 
-class operator dyn.Implicit(const A: dyn): Boolean;
-begin
-  HandleMessageWithPointer_Err(A, MsgCastToBool,  @Result, @ErrCastToInt)
-end;
-
-class operator dyn.Implicit(const A: Char): dyn;
-begin
-  Result.Ref := MakeChar(A)
-end;
-
-class operator dyn.Implicit(const A: dyn): Char;
-begin
-  HandleMessageWithPointer_Err(A, MsgCastToChar,  @Result, @ErrCastToInt)
-end;
-
 class operator dyn.Implicit(const A: Int64): dyn;
 begin
   Result.Ref := MakeInt64(A)
-end;
-
-class operator dyn.Implicit(const A: dyn): Int64;
-begin
-  HandleMessageWithPointer_Err(A, MsgCastToInt64,  @Result, @ErrCastToInt)
 end;
 
 class operator dyn.Implicit(const A: Double): dyn;
@@ -111,14 +91,47 @@ begin
   Result.Ref := MakeDouble(A)
 end;
 
-class operator dyn.Implicit(const A: dyn): Double;
+class operator dyn.Implicit(const A: Char): dyn;
 begin
-  HandleMessageWithPointer_Err(A, MsgCastToDouble, @Result, @ErrCastToDouble)
+  Result.Ref := MakeChar(A)
+end;
+
+class operator dyn.Implicit(const A: AnsiChar): dyn;
+begin
+  Result.Ref := MakeChar(Char(A))
 end;
 
 class operator dyn.Implicit(const A: String): dyn;
 begin
   Result.Ref := MakeString(A)
+end;
+
+class operator dyn.Implicit(const A: dyn): Boolean;
+begin
+  HandleMessageWithPointer_Err(A, MsgCastToBool,  @Result, @ErrCastToBool)
+end;
+
+class operator dyn.Implicit(const A: dyn): Int64;
+begin
+  HandleMessageWithPointer_Err(A, MsgCastToInt64,  @Result, @ErrCastToInt)
+end;
+
+class operator dyn.Implicit(const A: dyn): Double;
+begin
+  HandleMessageWithPointer_Err(A, MsgCastToDouble, @Result, @ErrCastToDouble)
+end;
+
+class operator dyn.Implicit(const A: dyn): Char;
+begin
+  HandleMessageWithPointer_Err(A, MsgCastToChar,  @Result, @ErrCastToChar)
+end;
+
+class operator dyn.Implicit(const A: dyn): AnsiChar;
+var
+  ch: Char;
+begin
+  HandleMessageWithPointer_Err(A, MsgCastToChar,  @ch, @ErrCastToChar);
+  Result := AnsiChar(ch);
 end;
 
 class operator dyn.Implicit(const A: dyn): String;

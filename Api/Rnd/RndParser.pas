@@ -392,7 +392,8 @@ begin
       begin
         Op := SyElem;
         Next;
-        if not ExpressionList(Res) then
+        Result := ExpressionList(Res);
+        if not Result then
           Exit;
         Res := ListToDynArray(Res);
         Result := Terminal(tkRSqBr);

@@ -33,6 +33,7 @@ type
   public
     constructor Create(AStream: TStream);
     destructor Destroy; override;
+    function DatumType: TDatumType; override;
     function WriteProc(p: Pointer; cb: Integer): Boolean;
     property Stream: TStream read FStream implements IDynStream;
   end;
@@ -54,6 +55,11 @@ implementation
 constructor TDynStream.Create(AStream: TStream);
 begin
   FStream := AStream;
+end;
+
+function TDynStream.DatumType: TDatumType;
+begin
+  Result := atOpaque
 end;
 
 destructor TDynStream.Destroy;

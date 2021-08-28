@@ -30,15 +30,17 @@
     class operator Implicit(const A: dyn): TDynDatum; inline;
 
     class operator Implicit(const A: Boolean): dyn; inline;
-    class operator Implicit(const A: dyn): Boolean; inline;
-    class operator Implicit(const A: Char): dyn; inline;
-    class operator Implicit(const A: dyn): Char; inline;
-
     class operator Implicit(const A: Int64): dyn; inline;
-    class operator Implicit(const A: dyn): Int64; inline;
     class operator Implicit(const A: Double): dyn; inline;
-    class operator Implicit(const A: dyn): Double; inline;
+    class operator Implicit(const A: Char): dyn; inline;
+    class operator Implicit(const A: AnsiChar): dyn; inline;
     class operator Implicit(const A: String): dyn; inline;
+
+    class operator Implicit(const A: dyn): Boolean; inline;
+    class operator Implicit(const A: dyn): Int64; inline;
+    class operator Implicit(const A: dyn): Double; inline;
+    class operator Implicit(const A: dyn): Char; inline;
+    class operator Implicit(const A: dyn): AnsiChar; inline;
     class operator Implicit(const A: dyn): String; inline;
 
     class operator Equal(const A, B: dyn): Boolean; inline;

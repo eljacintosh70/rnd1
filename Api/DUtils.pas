@@ -38,9 +38,11 @@ type
    end;
 
 const
-  ErrCastToInt:    TDynErrorInfo = (EClass: EDynError; EMsg: 'cannot cast %s to int');
-  ErrCastToDouble: TDynErrorInfo = (EClass: EDynError; EMsg: 'cannot cast %s to double');
-  ErrCastToString: TDynErrorInfo = (EClass: EDynError; EMsg: 'cannot cast %s to string');
+  ErrCastToBool:   TDynErrorInfo = (EClass: EDynError; EMsg: 'cannot cast %t to bool');
+  ErrCastToInt:    TDynErrorInfo = (EClass: EDynError; EMsg: 'cannot cast %t to int');
+  ErrCastToDouble: TDynErrorInfo = (EClass: EDynError; EMsg: 'cannot cast %t to double');
+  ErrCastToChar:   TDynErrorInfo = (EClass: EDynError; EMsg: 'cannot cast %t to char');
+  ErrCastToString: TDynErrorInfo = (EClass: EDynError; EMsg: 'cannot cast %t to string');
 
 const
   ResOK = 0;
@@ -107,10 +109,58 @@ begin
   Result := Port.WriteStrW(Pointer(s), Length(s), skRaw);
 end;
 
+function DynTypeName(Val: dyn): string;
+begin
+  Result := TObject(Pointer(Val)).ClassName
+end;
+
 { EDynError }
 
 constructor EDynError.Create(Msg: String; const Arg: array of dyn);
+var
+  Str: TStringBuilder;
+  p, pe: PChar;
+  cb, iParam: Integer;
+  ch: Char;
 begin
+  cb := Length(Msg);
+  p := Pointer(Msg);
+  pe := p + cb;
+  Str := TStringBuilder.Create(cb);
+  iParam := 0;
+  while p < pe do
+  begin
+    ch := p^;
+    Inc(p);
+    case ch of
+      '%':
+        begin
+          ch := p^;
+          Inc(p);
+          case ch of
+            't', 'T':
+              begin
+                Str.Append(DynTypeName(Arg[iParam]));
+                Inc(iParam);
+              end;
+            'd', 'D':
+              begin
+                Str.Append(Double(Arg[iParam]));
+                Inc(iParam);
+              end;
+            's', 'S':
+              begin
+                Str.Append(String(Arg[iParam]));
+                Inc(iParam);
+              end;
+          else
+            Str.Append(ch);
+          end;
+        end;
+      else Str.Append(ch);
+    end;
+  end;
+  Msg := Str.ToString;
   inherited Create(Msg);
 end;
 

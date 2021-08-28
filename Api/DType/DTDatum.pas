@@ -63,6 +63,7 @@ type
     function GetAsIDyn: IDyn;
   public
     property AsIDyn: IDyn read GetAsIDyn {$if Declared(InlineVMT)} implements IDyn {$ifend};
+    procedure DefaultHandler(var Message); override;
   protected
     procedure DoMsgWrite(var Msg: TWriteMsg); message MsgWrite;
     procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;
@@ -98,10 +99,17 @@ type
     property AsIDynEnumerator: IDynEnumerator read GetAsIDynEnumerator {$if Declared(InlineVMT)} implements IDynEnumerator {$ifend};
   end;
 
+procedure CastError(Instance: Pointer; const TypeName: string);
+
 implementation
 
 var
   DebugStr: String;
+
+procedure CastError(Instance: Pointer; const TypeName: string);
+begin
+  DynError('TypeError: cannot cast ''%t'' object to ''%s''.', [Instance, TypeName])
+end;
 
 { TCustomInterface }
 
@@ -215,6 +223,19 @@ begin
   // a["z"](5)
   // -> KeyError: 'z'
   DynError('MethodError: ''%t'' has no method ''%s''', [IDyn(Self), Id])
+end;
+
+procedure TCustomDyn.DefaultHandler(var Message);
+var
+  Msg: TVarMessage;
+begin
+  case Msg.Msg of
+    MsgCastToBool:   CastError(Self, 'bool');
+    MsgCastToChar:   CastError(Self, 'char');
+    MsgCastToInt64:  CastError(Self, 'int');
+    MsgCastToDouble: CastError(Self, 'float');
+    MsgCastToString: CastError(Self, 'str');
+  end;
 end;
 
 procedure TCustomDyn.DispatchMsg(var Message);

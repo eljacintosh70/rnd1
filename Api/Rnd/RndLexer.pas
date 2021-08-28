@@ -151,7 +151,6 @@ function TLexer.ScanIdent(var p: PChar; out Token: TTokenInfo): Boolean;
 var
   s: String;
   ps: PChar;
-  Val: dyn;
   Entry: TTokenEntry;
 begin
   ps := p;
@@ -433,7 +432,7 @@ end;
 
 function TLexer.GetNext(out Token: TTokenInfo): Boolean;
 var
-  p, ps: PChar;
+  p: PChar;
   Kind: TTokenKind;
 begin
   Result := False;
@@ -446,7 +445,7 @@ begin
       if (p >= pEnd) then
         Exit;
     end;
-    ps := p;
+    //ps := p;
     Kind := TokenKindTab[p^];
     case Kind of
       tkLCuBr:
