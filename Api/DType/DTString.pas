@@ -207,9 +207,11 @@ end;
 function TDynString.GetItemA(i: Integer): TDynDatum;
 var
   ch: WideChar;
+  r: dyn;
 begin
   ch := WideChar(Chars[i]);
-  Result := CreateCharAtom(ch);
+  r := MakeChar(ch);
+  Result := r;
 end;
 
 procedure TDynString.SetItemA(i: Integer; const First: TDynDatum);
@@ -306,9 +308,11 @@ end;
 function TDynStringA.GetItemA(i: Integer): TDynDatum;
 var
   ch: WideChar;
+  r: dyn;
 begin
   ch := WideChar(Chars[i]);
-  Result := CreateCharAtom(ch);
+  r := MakeChar(ch);
+  Result := r;
 end;
 
 procedure TDynStringA.SetItemA(i: Integer; const First: TDynDatum);

@@ -345,14 +345,14 @@ begin
                       '0'..'9', 'A'..'F', 'a'..'f':
                         begin
                           p := ScanIntX(p, Res.Ref);
-                          Res.Ref.Assign(CreateCharAtom(
+                          Res.Ref.Assign(MakeChar(
                             WideChar(FixNumValue(Res.Ref.Value))));
                         end;
                       else
-                        Res.Ref.Assign(CreateCharAtom(WideChar(ch)));
+                        Res.Ref.Assign(MakeChar(WideChar(ch)));
                     end;
                   else
-                    Res.Ref.Assign(CreateCharAtom(WideChar(ch)));
+                    Res.Ref.Assign(MakeChar(WideChar(ch)));
                 end;
               {
                 \c  char

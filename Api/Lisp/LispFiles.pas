@@ -152,7 +152,7 @@ begin
       raise Exception.Create('Invalid Scope');
   end;
   Res := LoadDynLib(Path, DelphiScope, Declar);
-  Result.Assign(BoolDatum(Res));
+  Result.Assign(MakeBool(Res));
 end;
 
 end. ///////////////////////////////////////////////////////////////////////////

@@ -256,7 +256,7 @@ var
 begin
   ps := p;
   Inc(p);
-  Val := CreateCharAtom(p^);
+  Val := MakeChar(p^);
   Inc(p);
   Inc(p);
   Result := BuildToken(ps, p, Token, tkChar, Val);

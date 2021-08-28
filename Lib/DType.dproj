@@ -127,8 +127,6 @@
         <DCCReference Include="..\Api\Lisp\LispEval.pas"/>
         <None Include="..\Api\Inc\Destroyed.inc"/>
         <None Include="..\Api\Inc\DTypes_General.inc"/>
-        <None Include="..\Api\Inc\DTypes_IDynInt.inc"/>
-        <None Include="..\Api\Inc\DTypes_IDynFloat.inc"/>
         <None Include="..\Api\Inc\DTypes_IDynPair.inc"/>
         <None Include="..\Api\Inc\DTypes_IDynArray.inc"/>
         <None Include="..\Api\Inc\DTypes_IDynMemory.inc"/>
@@ -220,6 +218,12 @@
                 <Platform value="Win64">False</Platform>
             </Platforms>
             <Deployment>
+                <DeployFile LocalName="..\0ut\Lisp\DType.dll" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>DType.dll</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\osx32\libcgunwind.1.0.dylib" Class="DependencyModule">
                     <Platform Name="OSX32">
                         <Overwrite>true</Overwrite>
@@ -229,12 +233,6 @@
                     </Platform>
                 </DeployFile>
                 <DeployFile LocalName="0ut\Lisp\DType.dll" Configuration="Debug" Class="ProjectOutput">
-                    <Platform Name="Win32">
-                        <RemoteName>DType.dll</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="..\0ut\Lisp\DType.dll" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>DType.dll</RemoteName>
                         <Overwrite>true</Overwrite>

@@ -1,30 +1,20 @@
 
-var
-  DynFalse: IDyn;
-  DynTrue: IDyn;
-
-function FirstMakeBool(Value: Boolean): IDyn;
+procedure InitBools(var _f, _t: dyn);
 var
   Obj: TCustomBool;
 begin
   Obj := TFalseObj.Create;
-  DynFalse := IDynDatum(Obj);
+  _f := IDynDatum(Obj);
   Obj := TTrueObj.Create;
-  DynTrue := IDynDatum(Obj);
-  if Value then
-    Result := DynTrue
-  else
-    Result := DynFalse;
+  _t := IDynDatum(Obj);
 end;
 
 function MakeBool(Value: Boolean): IDyn;
 begin
   if Value then
-    Result := DynTrue
+    Result := _t
   else
-    Result := DynFalse;
-  if not Assigned(Result) then
-    Result := FirstMakeBool(Value);
+    Result := _f;
 end;
 
 function MakeChar(Value: Char): IDyn;
@@ -91,7 +81,7 @@ begin
 end;
 
 exports
-  MakeBool     name 'MakeBool',
+  InitBools    name 'InitBools',
   MakeChar     name 'MakeChar',
   MakeInt64    name 'MakeInt64',
   MakeDouble   name 'MakeDouble',

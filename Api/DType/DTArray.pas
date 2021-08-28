@@ -374,8 +374,11 @@ begin
 end;
 
 function TAbstractDynMemory.GetItemA(i: Integer): TDynDatum;
+var
+  b: dyn;
 begin
-  Result := CreateFixNum(Bytes[i]);
+  b := MakeInt64(Bytes[i]);
+  Result := b;
 end;
 
 procedure TAbstractDynMemory.SetItemA(i: Integer;

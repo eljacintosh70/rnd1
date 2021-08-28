@@ -338,10 +338,6 @@ const
   Unbound = TDynDatum(smInline + $80);
 
 {$REGION 'IDynInt'}
-function CreateFixNum(Value: FixNum): TDynDatum; {$ifdef INLINE} inline deprecated 'use MakeInt64'; {$endif}
-function CreateInt32NR(Val: Integer): TDynDatum; stdcall deprecated 'use MakeInt64';
-function CreateInt64NR(Val: Int64): TDynDatum; stdcall deprecated 'use MakeInt64';
-
 function FixNumValue(Value: TDynDatum): FixNum; {$ifdef INLINE} inline; {$endif}
 function Int64Value(Value: TDynDatum): Int64;
 
@@ -351,19 +347,14 @@ procedure NeedInt64(Datum: TDynDatum; var Value: Int64);
 {$ENDREGION}
 
 {$REGION 'IDynFloat'}
-function CreateFloNumNR(Val: Extended): TDynDatum; stdcall deprecated 'use MakeDouble';
 function FloNumValue(Self: TDynDatum): Double;
 {$ENDREGION}
 
-{$REGION 'Char'}
-function CreateCharAtom(Value: WideChar): TDynDatum; {$ifdef INLINE} inline deprecated 'use MakeChar'; {$endif}
-{$ENDREGION}
-
 {$REGION 'Bool'}
-const
-  _f = TDynDatum(akBool);
-  _t = TDynDatum(akBool + $100);
-function BoolDatum(V: Boolean): TDynDatum; deprecated 'use MakeBool';
+var
+  _f: dyn;
+  _t: dyn;
+function MakeBool(Value: Boolean): IDyn;
 {$ENDREGION}
 
 {$REGION 'null'}
@@ -443,8 +434,6 @@ function make_string(pData: PWideChar; cbData: Integer): IDynString; stdcall; ov
 function make_string(const s: String): IDynString; overload;
 function make_string(const s: AnsiString): IDynString; overload;
 
-function CreateStringANR(p: PAnsiChar; cb: Integer): TDynDatum; stdcall deprecated 'use MakeString';
-function CreateStringWNR(p: PWideChar; cb: Integer): TDynDatum; stdcall deprecated 'use MakeString';
 {--$ifdef HAS_UNICODE_STRING}
 procedure NeedString(Datum: TDynDatum; var Value: UnicodeString); overload;
 {--$endif}
@@ -537,15 +526,6 @@ begin
 end;
 
 {$REGION 'IDynInt'}
-
-{$ifdef DTYPES}
-  {$include 'Inc\DTypes_IDynInt.inc'}
-{$else}
-function CreateInt32NR(Val: Integer): TDynDatum; stdcall;
-  external dll name 'int32->';
-function CreateInt64NR(Val: Int64): TDynDatum; stdcall;
-  external dll name 'int64->';
-{$endif}
 
 function CreateFixNum(Value: FixNum): TDynDatum;
 begin
@@ -709,12 +689,6 @@ end;
 {$ENDREGION}
 
 {$REGION 'IDynFloat'}
-{$ifdef DTYPES}
-  {$include 'Inc\DTypes_IDynFloat.inc'}
-{$else}
-function CreateFloNumNR(Val: Extended): TDynDatum; stdcall;
-  external dll name 'float->';
-{$endif}
 
 function FloNumValue(Self: TDynDatum): Double;
 begin
@@ -749,16 +723,6 @@ end;
 function CreateCharAtom(Value: WideChar): TDynDatum;
 begin
   Result := Pointer(Word(Value) shl 8 + akChar);
-end;
-{$ENDREGION}
-
-{$REGION 'Bool'}
-function BoolDatum(V: Boolean): TDynDatum;
-begin
-  if V Then
-    Result := _t
-  else
-    Result := _f
 end;
 {$ENDREGION}
 
@@ -1252,11 +1216,11 @@ begin
     vtString:
       Result := make_string(PAnsiChar(@Val.VString^[1]), Length(Val.VString^));
     vtAnsiString:
-      Result := make_string(Val.VAnsiString, Length(AnsiString(Val.VAnsiString)));
+      Result := make_string(PAnsiChar(Val.VAnsiString), Length(AnsiString(Val.VAnsiString)));
     vtWideString:
-      Result := make_string(Val.VWideString, Length(WideString(Val.VWideString)));
+      Result := make_string(PWideChar(Val.VWideString), Length(WideString(Val.VWideString)));
     vtUnicodeString:
-      Result := make_string(Val.VUnicodeString, Length(UnicodeString(Val.VUnicodeString)));
+      Result := make_string(PWideChar(Val.VUnicodeString), Length(UnicodeString(Val.VUnicodeString)));
 
     {
       vtPChar:      (VPChar: PChar);
@@ -1687,6 +1651,7 @@ const
   INil: IDynDatum = nil;
 {$endif}
 initialization /////////////////////////////////////////////////////////////////
+  InitBools(_f, _t);
 {$ifdef LINK_DEB}
   Deb(TDynDatum(nil));
   Deb(INil);

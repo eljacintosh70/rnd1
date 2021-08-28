@@ -161,12 +161,7 @@ end;
 
 procedure AssignInt64(out Result: TDatumRef; val: Int64);
 begin
-  case val of
-    Low(FixNum)..High(FixNum):
-      Result.Assign(CreateFixNum(val));
-    else
-      Result.Assign(CreateInt64NR(val));
-  end;
+  Result.Assign(MakeInt64(val));
 end;
 
 { TBasicFunctions }
@@ -279,7 +274,7 @@ var
   A: TDynDatum;
 begin
   NeedParams(Datum, [@A]);
-  Result.Assign(BoolDatum(IsNull(A)));
+  Result.Assign(MakeBool(IsNull(A)));
 end;
 
 procedure TBasicFunctions._boolean_P(out Result: TDatumRef; Datum: TDynDatum);
@@ -287,7 +282,7 @@ var
   A: TDynDatum;
 begin
   NeedParams(Datum, [@A]);
-  Result.Assign(BoolDatum(IsBoolean(A)));
+  Result.Assign(MakeBool(IsBoolean(A)));
 end;
 
 procedure TBasicFunctions._char_P(out Result: TDatumRef; Datum: TDynDatum);
@@ -295,7 +290,7 @@ var
   A: TDynDatum;
 begin
   NeedParams(Datum, [@A]);
-  Result.Assign(BoolDatum(IsChar(A)));
+  Result.Assign(MakeBool(IsChar(A)));
 end;
 
 procedure TBasicFunctions._num_P(out Result: TDatumRef; Datum: TDynDatum);
@@ -303,7 +298,7 @@ var
   A: TDynDatum;
 begin
   NeedParams(Datum, [@A]);
-  Result.Assign(BoolDatum(IsNum(A)));
+  Result.Assign(MakeBool(IsNum(A)));
 end;
 
 procedure TBasicFunctions._symbol_P(out Result: TDatumRef; Datum: TDynDatum);
@@ -311,7 +306,7 @@ var
   A: TDynDatum;
 begin
   NeedParams(Datum, [@A]);
-  Result.Assign(BoolDatum(IsSymbol(A)));
+  Result.Assign(MakeBool(IsSymbol(A)));
 end;
 
 procedure TBasicFunctions._string_append(out Result: TDatumRef; Datum: TDynDatum);
@@ -336,7 +331,7 @@ var
   A: TDynDatum;
 begin
   NeedParams(Datum, [@A]);
-  Result.Assign(BoolDatum(IsString(A)));
+  Result.Assign(MakeBool(IsString(A)));
 end;
 
 procedure TBasicFunctions._pair_P(out Result: TDatumRef; Datum: TDynDatum);
@@ -344,7 +339,7 @@ var
   A: TDynDatum;
 begin
   NeedParams(Datum, [@A]);
-  Result.Assign(BoolDatum(IsPair(A)));
+  Result.Assign(MakeBool(IsPair(A)));
 end;
 
 procedure TBasicFunctions._vector_P(out Result: TDatumRef; Datum: TDynDatum);
@@ -352,7 +347,7 @@ var
   A: TDynDatum;
 begin
   NeedParams(Datum, [@A]);
-  Result.Assign(BoolDatum(IsVector(A)));
+  Result.Assign(MakeBool(IsVector(A)));
 end;
 
 procedure TBasicFunctions._byte_vector_P(out Result: TDatumRef; Datum: TDynDatum);
@@ -360,7 +355,7 @@ var
   A: TDynDatum;
 begin
   NeedParams(Datum, [@A]);
-  Result.Assign(BoolDatum(IsByteVector(A)));
+  Result.Assign(MakeBool(IsByteVector(A)));
 end;
 
 procedure TBasicFunctions._record_P(out Result: TDatumRef; Datum: TDynDatum);
@@ -368,7 +363,7 @@ var
   A: TDynDatum;
 begin
   NeedParams(Datum, [@A]);
-  Result.Assign(BoolDatum(IsRecord(A)));
+  Result.Assign(MakeBool(IsRecord(A)));
 end;
 
 procedure TBasicFunctions._procedure_P(out Result: TDatumRef; Datum: TDynDatum);
@@ -376,7 +371,7 @@ var
   A: TDynDatum;
 begin
   NeedParams(Datum, [@A]);
-  Result.Assign(BoolDatum(IsProcedure(A)));
+  Result.Assign(MakeBool(IsProcedure(A)));
 end;
 
 procedure TBasicFunctions._eq_P(out Result: TDatumRef; Datum: TDynDatum);
@@ -390,7 +385,7 @@ begin
   Res := ((Pointer(A) = Pointer(B)));{ or
     (IsSymbol(A) and IsSymbol(B)
       and (TSymbolAtom(A).Name = TSymbolAtom(B).Name)));}
-  Result.Assign(BoolDatum(Res));
+  Result.Assign(MakeBool(Res));
 end;
 
 procedure TBasicFunctions._eqv_P(out Result: TDatumRef; Datum: TDynDatum);
@@ -402,7 +397,7 @@ begin
   // si ambos apuntan al mismo objeto,
   // o son símbolos, caracteres o números iguales
   Res := eqv(A,B);
-  Result.Assign(BoolDatum(Res));
+  Result.Assign(MakeBool(Res));
 end;
 
 procedure TBasicFunctions._equal_P(out Result: TDatumRef; Datum: TDynDatum);
@@ -415,7 +410,7 @@ begin
   // o son iguales los valores
   Res := Equal(A, B);
   { TODO : agregar comparaciones para strings, listas y vectores }
-  Result.Assign(BoolDatum(Res));
+  Result.Assign(MakeBool(Res));
 end;
 
 procedure TBasicFunctions._make_vector(out Result: TDatumRef; Datum: TDynDatum);
@@ -672,7 +667,7 @@ begin
       DynError('Number expected but %s found', [Deb(a)]);
     Datum := cdr(Datum);
   end;
-  Result.Assign(CreateFloNumNR(Res));
+  Result.Assign(MakeDouble(Res));
 end;
 
 procedure TMathOpers.Mult(out Result: TDatumRef; Datum: TDynDatum);
@@ -721,7 +716,7 @@ begin
     //else ERROR
     Datum := cdr(Datum);
   end;
-  Result.Assign(CreateFloNumNR(Res));
+  Result.Assign(MakeDouble(Res));
 end;
 
 procedure TMathOpers.Divide(out Result: TDatumRef; Datum: TDynDatum);
@@ -775,7 +770,7 @@ begin
     //else ERROR
     Datum := cdr(Datum);
   end;
-  Result.Assign(CreateFloNumNR(Res));
+  Result.Assign(MakeDouble(Res));
 end;
 
 procedure TMathOpers.Subst(out Result: TDatumRef; Datum: TDynDatum);
@@ -812,7 +807,7 @@ begin
         Res := ResI - Real(dyn(a));
         if IsPair(cdr(Datum)) then
           DynError('Too many parameters in -', []);
-        Result.Assign(CreateFloNumNR(Res));  // (- x y) -> x - y
+        Result.Assign(MakeDouble(Res));  // (- x y) -> x - y
       end;
     end
     else if IsNum(a) then
@@ -822,7 +817,7 @@ begin
       Datum := cdr(Datum);
       if not IsPair(Datum) then
       begin
-        Result.Assign(CreateFloNumNR(-Res));  // (- x) -> -x
+        Result.Assign(MakeDouble(-Res));  // (- x) -> -x
         Exit;
       end;
 
@@ -832,7 +827,7 @@ begin
         Res := Res - Real(dyn(a));
         if IsPair(cdr(Datum)) then
           DynError('Too many parameters in -', []);
-        Result.Assign(CreateFloNumNR(Res));  // (- x y) -> x - y
+        Result.Assign(MakeDouble(Res));  // (- x y) -> x - y
       end
       else
         DynError('Number expected but %s found', [Deb(a)]);
