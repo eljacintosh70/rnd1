@@ -29,8 +29,6 @@ type
     procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;
   end;
 
-  TFloNumHelper = TDynFloat deprecated 'use: TDynFloat';
-
 implementation /////////////////////////////////////////////////////////////////
 
 uses

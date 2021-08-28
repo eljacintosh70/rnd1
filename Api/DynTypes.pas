@@ -71,9 +71,6 @@ type
     IDynArray = interface;
       IDynMemory = interface;
       IDynString = interface;
-    IDynAssoc = interface;
-      IRtd = interface;
-      IDynRecord = interface;
     IDynFunc = interface;
     IDynMethod = interface;
     IDynSyntax = interface;
@@ -90,8 +87,7 @@ type
   TDatumType = (atInvalid, atPair, atStream, atSymbol, atString,
     atReal, atInteger, atChar, atBool, atNil, atUnbound, atUndefined,
     atVector, atByteVector,
-    atSeq, atOpaque, atRecord, atRTD,
-    atAssoc,                                          // IDynAssoc
+    atSeq, atOpaque,
     atScope,                                          // IDynScope
     atSyntax,                                         // IDynSyntax
     atExtFunc, atAutoFunc, atLambda,                  // IDynFunc
@@ -250,34 +246,6 @@ type
   IDynSyntax = interface(IDynDatum)
     ['{6B10D520-8F3E-4FFF-A501-01A47F64F594}']
     procedure Eval(out Result: TDatumRef; Params: TDynDatum; Scope: IDynScope);
-  end;
-
-  IDynAssoc = interface(IDynDatum)
-    function GetAssoc(Key: TDynDatum): TDynDatum;
-    procedure SetAssoc(Key: TDynDatum; Value: TDynDatum);
-    property Assoc[Key: TDynDatum]: TDynDatum read GetAssoc write SetAssoc;
-  end;
-
-  IRtd = interface(IDynAssoc)
-    function Name: String;
-    function Parent: IRtd;
-    function FieldCount: Integer;
-    function GetFieldName(i: Integer): String;
-    property FieldName[i: Integer]: String read GetFieldName;
-  end;
-
-  IDynRecord = interface(IDynAssoc)
-    function rtd: IRtd;
-    function GetItem(i: Integer): TDynDatum;
-    procedure SetItem(i: Integer; const Value: TDynDatum);
-    property Item[i: Integer]: TDynDatum read GetItem write SetItem; default;
-  end;
-
-  // (node tag ((key1 val1)(key2 val2)...(keyN valN)) . SubNodes)
-  IConfigNode = interface(IDynAssoc)
-    ['{A5612A59-9824-4627-8648-806E0C9642DE}']
-    function Tag: TDynDatum;
-    function SubNodes: IDynPair;
   end;
 
   // equivalente a Modular.TObserver
@@ -529,15 +497,6 @@ function Supports(Datum: TDynDatum; IID: TGuid): Boolean; overload;
 procedure NeedInterface(Datum: TDynDatum; IID: TGuid; out Res);
 {$ENDREGION}
 
-type
-  IDynList = IDynPair;
-  ISchPair = IDynPair; // deprecated 'use IDynPair';
-  IBigInt = IDynInt;
-  ISchFloNum = IDynFloat deprecated;
-  ISchVector = IDynArray;
-  ISchString = IDynString;
-  IScope = IDynScope;
-
 {$ifndef DTYPES}
 const
   dll = 'DType.dll';
@@ -599,9 +558,9 @@ end;
 
 function IBigIntToInt64(Value: Pointer): Int64;
 begin
-  case IBigInt(Value).ByteCount of
-    4: Result := PInteger(IBigInt(Value).BytePtr)^;
-    8: Result := PInt64(IBigInt(Value).BytePtr)^;
+  case IDynInt(Value).ByteCount of
+    4: Result := PInteger(IDynInt(Value).BytePtr)^;
+    8: Result := PInt64(IDynInt(Value).BytePtr)^;
   else raise EWrongType.Create(Value, 'int');
   end
 end;
@@ -635,14 +594,14 @@ begin
     smInterface:
       if IDynDatum(Pointer(Val)).DatumType = atInteger then
       begin
-        cb := IBigInt(Pointer(Val)).ByteCount;
+        cb := IDynInt(Pointer(Val)).ByteCount;
         case cb of
           4: begin
-               Value := PInteger(IBigInt(Pointer(Val)).BytePtr)^;
+               Value := PInteger(IDynInt(Pointer(Val)).BytePtr)^;
                Exit;
              end;
           8: begin
-               Val64 := PInt64(IBigInt(Pointer(Val)).BytePtr)^;
+               Val64 := PInt64(IDynInt(Pointer(Val)).BytePtr)^;
                if (Val64 >= Low(Integer)) and (Val64 <= High(Integer)) then
                begin
                  Value := Val64;
@@ -683,14 +642,14 @@ begin
         case DatumType of
           atInteger:
             begin
-              cb := IBigInt(Pointer(Val)).ByteCount;
+              cb := IDynInt(Pointer(Val)).ByteCount;
               case cb of
                 4: begin
-                     Value := PInteger(IBigInt(Pointer(Val)).BytePtr)^;
+                     Value := PInteger(IDynInt(Pointer(Val)).BytePtr)^;
                      Exit;
                    end;
                 8: begin
-                     Val64 := PInt64(IBigInt(Pointer(Val)).BytePtr)^;
+                     Val64 := PInt64(IDynInt(Pointer(Val)).BytePtr)^;
                      if (Val64 >= Low(Integer)) and (Val64 <= High(Integer)) then
                      begin
                        Value := Val64;
@@ -725,14 +684,14 @@ begin
     smInterface:
       if IDynDatum(Pointer(Val)).DatumType = atInteger then
       begin
-        cb := IBigInt(Pointer(Val)).ByteCount;
+        cb := IDynInt(Pointer(Val)).ByteCount;
         case cb of
           4: begin
-               Value := PInteger(IBigInt(Pointer(Val)).BytePtr)^;
+               Value := PInteger(IDynInt(Pointer(Val)).BytePtr)^;
                Exit;
              end;
           8: begin
-               Value := PInt64(IBigInt(Pointer(Val)).BytePtr)^;
+               Value := PInt64(IDynInt(Pointer(Val)).BytePtr)^;
                Exit;
              end;
         end

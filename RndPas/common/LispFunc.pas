@@ -228,12 +228,12 @@ procedure TBasicFunctions.map(out Result: TDatumRef; Datum: TDynDatum);
 var
   A, D: TDynDatum;
   Fn: IDynFunc;
-  Res: ISchPair;
+  Res: IDynPair;
 begin
   // (map proc clist1 clist2 ...) -> list
   NeedParams(Datum, [@A, @D]);
   NeedInterface(A, IDynFunc,Fn);
-  Res := Map2(Fn, ISchPair(Pointer(D)));
+  Res := Map2(Fn, IDynPair(Pointer(D)));
   Result.Assign(Res);
 end;
 

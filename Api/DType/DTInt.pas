@@ -48,10 +48,6 @@ type
     procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;
   end;
 
-  TBigIntHelper = TAbstractDynInt deprecated 'use: TAbstractDynInt';
-  TBigIntHelper32 = TDynInt32 deprecated 'use: TDynInt32';
-  TBigIntHelper64 = TDynInt64 deprecated 'use: TDynInt64';
-
 implementation
 
 uses
@@ -59,7 +55,7 @@ uses
 
 { TAbstractDynInt }
 
-function TAbstractDynInt.GetAsIBigInt: IBigInt;
+function TAbstractDynInt.GetAsIBigInt: IDynInt;
 begin
   {$if Declared(InlineVMT)} Result := IDynInt(Pointer(Self));
   {$else}                   Result := Self;

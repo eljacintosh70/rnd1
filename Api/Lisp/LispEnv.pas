@@ -174,7 +174,7 @@ begin
   Eval(Result, Ref.Value, Scope);
 end;
 
-procedure RegisterFunctionG(Scope: IScope; const NameStr: Utf8String;
+procedure RegisterFunctionG(Scope: IDynScope; const NameStr: Utf8String;
   const Method: TDynFuncG);
 var
   Datum: IDynFunc;

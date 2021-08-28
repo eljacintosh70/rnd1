@@ -107,13 +107,6 @@ type
     procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;
   end;
 
-  TArrayHelper = TAbstractDynArray deprecated 'use: TAbstractDynArray';
-  TCustomVectorHelper = TCustomDynArray deprecated 'use: TCustomDynArray';
-  TCustomByteVectorHelper = TAbstractDynMemory deprecated 'use: TAbstractDynMemory';
-  TVectorHelper = TDynArray deprecated 'use: TDynArray';
-  TByteVectorHelper = TDynMemory deprecated 'use: TDynMemory';
-  TRefByteVectorHelper = TRefDynMemory deprecated 'use: TRefDynMemory';
-
 implementation
 
 { TODO : Revisar todos los accesos a FItems[i],

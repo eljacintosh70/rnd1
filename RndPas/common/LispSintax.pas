@@ -8,43 +8,43 @@ type
   {$TYPEINFO ON}
   TSintax1 = class(TObject)
   private
-    function AdToEnd(a, d: TDynDatum): ISchPair;
-    function CopyUnquoting(p: TDynDatum; const Scope: IScope): ISchPair;
+    function AdToEnd(a, d: TDynDatum): IDynPair;
+    function CopyUnquoting(p: TDynDatum; const Scope: IDynScope): IDynPair;
   published
     // (define Name Rest)
-    procedure define(out Result: TDatumRef; Datum: TDynDatum; Scope: IScope);
+    procedure define(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
     // (. obj member params...)
-    procedure dot(out Result: TDatumRef; Datum: TDynDatum; Scope: IScope);
+    procedure dot(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
     // (.set! obj member value)
-    procedure DotSet(out Result: TDatumRef; Datum: TDynDatum; Scope: IScope);
+    procedure DotSet(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
     // (set! Name Value)
-    procedure SetVal(out Result: TDatumRef; Datum: TDynDatum; Scope: IScope);
+    procedure SetVal(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
     // (if Cond IfVal ElseVal)
-    procedure _if(out Result: TDatumRef; Datum: TDynDatum; Scope: IScope);
+    procedure _if(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
     // (quote Value)
-    procedure quote(out Result: TDatumRef; Datum: TDynDatum; Scope: IScope);
+    procedure quote(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
     // (quasiquote Value)
-    procedure quasiquote(out Result: TDatumRef; Datum: TDynDatum; Scope: IScope);
+    procedure quasiquote(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
     // (lambda params . value)
-    procedure lambda(out Result: TDatumRef; Datum: TDynDatum; Scope: IScope);
+    procedure lambda(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
     // (let ((x v) ...) e1 e2 ...)
     // (let f ((x v) ...) e1 e2 ...)
-    procedure let(out Result: TDatumRef; Datum: TDynDatum; Scope: IScope);
+    procedure let(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
     // (let* ((x v) ...) e1 e2 ...)
-    procedure let_2A(out Result: TDatumRef; Datum: TDynDatum; Scope: IScope);
+    procedure let_2A(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
     // (letrec ((x v) ...) e1 e2 ...)
-    procedure letrec(out Result: TDatumRef; Datum: TDynDatum; Scope: IScope);
+    procedure letrec(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
     {
     // (import (libname) procname...)
-    procedure import(out Result: TDatumRef; Datum: TDynDatum; Scope: IScope);
+    procedure import(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
     // (import-on-call (libname) procname...)
-    procedure _import_on_call(out Result: TDatumRef; Datum: TDynDatum; Scope: IScope);
+    procedure _import_on_call(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
     }
   end;
   // quasiquote unquote unquote-splicing
 
 
-procedure SeparCarCdrList(List: TDynDatum; out CarL, CdrL: ISchPair);
+procedure SeparCarCdrList(List: TDynDatum; out CarL, CdrL: IDynPair);
 
 implementation /////////////////////////////////////////////////////////////////
 
@@ -59,13 +59,13 @@ const
 var
   DebStr: String;
 
-procedure SeparCarCdrList(List: TDynDatum; out CarL, CdrL: ISchPair);
+procedure SeparCarCdrList(List: TDynDatum; out CarL, CdrL: IDynPair);
 var
-  Seq: ISchPair;
+  Seq: IDynPair;
   Item: TDynDatum;
-  CarL1, CdrL1: ISchPair;
+  CarL1, CdrL1: IDynPair;
 begin
-  Seq := ISchPair(Pointer(List));
+  Seq := IDynPair(Pointer(List));
   while GetNext(Seq, Item) do
   begin
     CarL1 := DynTypes.cons(car(Item), CarL1);
@@ -75,13 +75,13 @@ begin
   CdrL := Reverse(CdrL1);
 end;
 
-procedure SeparCarCadrList(List: TDynDatum; out CarL, CadrL: ISchPair);
+procedure SeparCarCadrList(List: TDynDatum; out CarL, CadrL: IDynPair);
 var
-  Seq: ISchPair;
+  Seq: IDynPair;
   Item: TDynDatum;
-  CarL1, CadrL1: ISchPair;
+  CarL1, CadrL1: IDynPair;
 begin
-  Seq := ISchPair(Pointer(List));
+  Seq := IDynPair(Pointer(List));
   while GetNext(Seq, Item) do
   begin
     CarL1 := DynTypes.cons(car(Item), CarL1);
@@ -94,7 +94,7 @@ end;
 
 { TSintax1 }
 
-procedure TSintax1._if(out Result: TDatumRef; Datum: TDynDatum; Scope: IScope);
+procedure TSintax1._if(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
 begin                   // (Cond IfVal ElseVal)
   Eval(Result, car(Datum), Scope);
   Datum := cdr(Datum);    // (IfVal ElseVal)
@@ -108,7 +108,7 @@ end;
 
 {
 procedure TSintax1.import(out Result: TDatumRef; Datum: TDynDatum;
-  Scope: IScope);
+  Scope: IDynScope);
 var
   LibName, ProcNames: TDynDatum;
   Lib: IInterface;
@@ -120,7 +120,7 @@ begin
 end;
 
 procedure TSintax1._import_on_call(out Result: TDatumRef; Datum: TDynDatum;
-  Scope: IScope);
+  Scope: IDynScope);
 var
   LibName, ProcNames: TDynDatum;
   Lib: IInterface;
@@ -132,7 +132,7 @@ begin
 end;
 }
 
-procedure TSintax1.define(out Result: TDatumRef; Datum: TDynDatum; Scope: IScope);
+procedure TSintax1.define(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
 var
   VarDatum, Rest: TDynDatum;
   Formal: TDynDatum;
@@ -171,7 +171,7 @@ begin
   Scope.Value[VarDatum] := Result.Value;
 end;
 
-procedure TSintax1.dot(out Result: TDatumRef; Datum: TDynDatum; Scope: IScope);
+procedure TSintax1.dot(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
 {
 https://clojure.org/reference/java_interop
 
@@ -185,8 +185,7 @@ Classname/staticField ==> (. Classname staticField)
 var
   Instance, MemberId, Params, Member: TDynDatum;
   InstanceR, ParamsR: TDatumRef;
-  SubScope: IScope;
-  Assoc: IDynAssoc;
+  SubScope: IDynScope;
   Fn: IDynFunc;
   Method: IDynMethod;
 begin
@@ -204,15 +203,10 @@ begin
   case InstanceR.Value.Kind of
     atScope:
       begin
-        CallMember(Result, IScope(Pointer(InstanceR.Value)), MemberId, Params);
+        CallMember(Result, IDynScope(Pointer(InstanceR.Value)), MemberId, Params);
         Exit;
-        //SubScope := IScope(Pointer(InstanceR.Value));
+        //SubScope := IDynScope(Pointer(InstanceR.Value));
         //Member := SubScope.Value[MemberId];
-      end;
-    atAssoc:
-      begin
-        Assoc := IDynAssoc(Pointer(InstanceR.Value));
-        Member := Assoc.Assoc[MemberId];
       end;
     else
       begin
@@ -237,12 +231,11 @@ begin
 end;
 
 procedure TSintax1.DotSet(out Result: TDatumRef; Datum: TDynDatum;
-  Scope: IScope);
+  Scope: IDynScope);
 var
   Obj, Member, Value: TDynDatum;
   ObjR,       ValueR: TDatumRef;
-  SubScope: IScope;
-  Assoc: IDynAssoc;
+  SubScope: IDynScope;
 begin
   // (.set! obj member value)
   ManageRefs([@ObjR, @ValueR]);
@@ -255,13 +248,8 @@ begin
   case ObjR.Value.Kind of
     atScope:
       begin
-        SubScope := IScope(Pointer(ObjR.Value));
+        SubScope := IDynScope(Pointer(ObjR.Value));
         SubScope.Value[Member] := ValueR.Value;
-      end;
-    atAssoc:
-      begin
-        Assoc := IDynAssoc(Pointer(ObjR.Value));
-        Assoc.Assoc[Member] := ValueR.Value;
       end;
     else
       begin
@@ -272,7 +260,7 @@ begin
 end;
 
 procedure TSintax1.quote(out Result: TDatumRef; Datum: TDynDatum;
-  Scope: IScope);
+  Scope: IDynScope);
 var
   Value: TDynDatum;
 begin
@@ -282,7 +270,7 @@ begin
 end;
 
 procedure TSintax1.quasiquote(out Result: TDatumRef; Datum: TDynDatum;
-  Scope: IScope);
+  Scope: IDynScope);
 var
   Value: TDynDatum;
 begin
@@ -297,7 +285,7 @@ begin
 end;
 
 procedure TSintax1.lambda(out Result: TDatumRef; Datum: TDynDatum;
-  Scope: IScope);
+  Scope: IDynScope);
 var
   Params: TDynDatum;
   FnDef: TDynDatum;
@@ -311,10 +299,10 @@ end;
 var
   tmp: String;
 
-procedure TSintax1.let(out Result: TDatumRef; Datum: TDynDatum; Scope: IScope);
+procedure TSintax1.let(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
 var
   Bindings, Body: TDynDatum;
-  x, v: ISchPair;
+  x, v: IDynPair;
   FnRef: IDynFunc;
   Par: TDatumRef;
 begin
@@ -366,7 +354,7 @@ begin
     raise Exception.Create(Format('invalid syntax: (let . %s)', [Deb(Datum)]));
 end;
 
-procedure TSintax1.letrec(out Result: TDatumRef; Datum: TDynDatum; Scope: IScope);
+procedure TSintax1.letrec(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
 begin
   {
     (letrec
@@ -381,7 +369,7 @@ begin
     raise Exception.Create(Format('invalid syntax: (letrec . %s)', [Deb(Datum)]));
 end;
 
-procedure TSintax1.let_2A(out Result: TDatumRef; Datum: TDynDatum; Scope: IScope);
+procedure TSintax1.let_2A(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
 begin
   {
     (let*
@@ -397,7 +385,7 @@ begin
 end;
 
 procedure TSintax1.SetVal(out Result: TDatumRef; Datum: TDynDatum;
-  Scope: IScope);
+  Scope: IDynScope);
 var
   NameDatum: TDynDatum;
 begin
@@ -410,11 +398,11 @@ begin
   Scope.Value[NameDatum] := Result.Value;
 end;
 
-function TSintax1.CopyUnquoting(p: TDynDatum; const Scope: IScope): ISchPair;
+function TSintax1.CopyUnquoting(p: TDynDatum; const Scope: IDynScope): IDynPair;
 var
   a, d, b: TDynDatum;
   f: TDynDatum;
-  dRef: ISchPair;
+  dRef: IDynPair;
   Res: TDatumRef;
 begin
   a := car(p);                 // p = (a . d)
@@ -449,12 +437,12 @@ begin
   Result := cons(a, d);
 end;
 
-function TSintax1.AdToEnd(a, d: TDynDatum): ISchPair;
+function TSintax1.AdToEnd(a, d: TDynDatum): IDynPair;
 begin
   if IsPair(a) then
     Result := cons(car(a), AdToEnd(cdr(a), d))
   else
-    Result := ISchPair(Pointer(d))
+    Result := IDynPair(Pointer(d))
 end;
 
 end. ///////////////////////////////////////////////////////////////////////////

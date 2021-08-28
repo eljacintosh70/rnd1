@@ -228,13 +228,13 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="..\0ut\Lisp\DType.dll" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="0ut\Lisp\DType.dll" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>DType.dll</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="0ut\Lisp\DType.dll" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="..\0ut\Lisp\DType.dll" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>DType.dll</RemoteName>
                         <Overwrite>true</Overwrite>

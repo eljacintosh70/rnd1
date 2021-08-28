@@ -80,7 +80,7 @@ type
     function DisplayStr(NeededChars: Integer): String; override;
     procedure Call(out Result: TDatumRef; Par: TDynDatum); override;
   public
-    constructor Create(AArg, ABody: TDynDatum; AScope: IScope);
+    constructor Create(AArg, ABody: TDynDatum; AScope: IDynScope);
   end;
 
   TCustomDynSyntax = class(TDyn, IDynSyntax)
@@ -106,16 +106,6 @@ type
     constructor Create(const AName: String; AMethod: TSintaxMethod);
   end;
 
-  TCustomSyntaxHelper = TCustomDynSyntax deprecated 'use: TCustomDynSyntax';
-  TDynFuncHelper = TDynFunc deprecated 'use: TDynFunc';
-  TDynMethodHelper = TDynMethod deprecated 'use: TDynMethod';
-  TDynMethodHelperG = TDynMethodObjG deprecated 'use: TDynMethodObjG';
-  TDynMethodHelperO = TDynMethodObjO deprecated 'use: TDynMethodObjO';
-  TSyntaxHelper = TDynSyntax deprecated 'use: TDynSyntax';
-  TNamedFuncHelper = TNamedDynFunc deprecated 'use: TNamedDynFunc';
-  TNamedFuncHelperG = TNamedDynFuncG deprecated 'use: TNamedDynFuncG';
-  TLambdaHelper = TDynLambda deprecated 'use: TDynLambda';
-
 function AsSintax(Self: TDynDatum): TDynSyntax; overload;  {$ifdef INLINE} inline; {$endif}
 function SyntaxDatum(const AName: String; AMethod: TSintaxMethod): TDynDatum; {$ifdef INLINE} inline; {$endif}
 
@@ -134,7 +124,7 @@ begin
   Result := Pointer(TDynSyntax.Create(AName, AMethod));
 end;
 
-procedure EvalSeq(out Result: TDatumRef; Datum: TDynDatum; Scope: IScope);
+procedure EvalSeq(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
 begin
   while IsPair(Datum) do
   begin
@@ -253,7 +243,7 @@ end;
 procedure TDynLambda.Call(out Result: TDatumRef; Par: TDynDatum);
 var
   Arg: TDynDatum;
-  Scope: IScope;
+  Scope: IDynScope;
 begin
   Arg := Self.Arg.Value;
   Scope := TBigScope.Create(Self.Scope);
@@ -271,7 +261,7 @@ begin
   EvalSeq(Result, Self.Body.Value, Scope);
 end;
 
-constructor TDynLambda.Create(AArg, ABody: TDynDatum; AScope: IScope);
+constructor TDynLambda.Create(AArg, ABody: TDynDatum; AScope: IDynScope);
 begin
   inherited Create;
   Arg.Assign(AArg);

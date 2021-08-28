@@ -170,7 +170,7 @@ end;
 
 function IsRecord(Datum: TDynDatum): Boolean;
 begin
-  Result := Datum.Kind = atRecord;
+  Result := Datum.Kind = atScope;
 end;
 
 function IsProcedure(Datum: TDynDatum): Boolean;

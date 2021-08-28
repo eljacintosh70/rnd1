@@ -346,7 +346,7 @@ end;
 
 function TCompareHelper.EqualVector(B: TDynDatum): Boolean;
 begin
-  Result := (B.Kind = atVector) and vector_equal(ISchVector(Pointer(Self)), ISchVector(Pointer(B)));
+  Result := (B.Kind = atVector) and vector_equal(IDynArray(Pointer(Self)), IDynArray(Pointer(B)));
 end;
 
 function TCompareHelper.EqualPtr(B: TDynDatum): Boolean;

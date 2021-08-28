@@ -58,9 +58,6 @@ type
     constructor Create(AObj: dyn);
   end;
 
-  TDynSeqHelper = TCustomDynSeq deprecated 'use: TCustomDynSeq';
-  TPairHelper = TDynPair deprecated 'use: TDynPair';
-
 function Assq(const Key: dyn; List: IDynPair): TDynDatum;
 // (append list ... obj)
 function list_append(Lists: array of IDynPair; Obj: IDynDatum): IDynPair;

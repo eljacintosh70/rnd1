@@ -28,8 +28,6 @@ type
     procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;
   end;
 
-  TSymbolHelper = TDynSymbol deprecated 'use: TDynSymbol';
-
 type
   ISymbolSource = interface
     function CreateSymbol(pName: PAnsiChar; cbName: Integer): TDynDatum;

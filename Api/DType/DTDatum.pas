@@ -82,9 +82,6 @@ type
     property AsIDatum: IDynDatum read GetAsIDatum {$if Declared(InlineVMT)} implements IDynDatum {$ifend};
   end;
 
-  TInterfaceHelper = TCustomInterface deprecated 'use: TCustomInterface';
-  TDynHelper = TCustomDyn deprecated 'use: TCustomDyn';
-  TDatumHelper = TDyn deprecated 'use: TDyn';
   TDatumHelper2 = class(TDyn)
   public
   end;

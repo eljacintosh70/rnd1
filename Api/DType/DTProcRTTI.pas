@@ -24,9 +24,6 @@ type
     constructor Create(ATypInfo: Pointer; AMethod: TMethod);
   end;
 
-  TExtFuncHelper = TDynFuncRTTI deprecated 'use: TDynFuncRTTI';
-  TAutoFuncHelper = TDynFuncAuto deprecated 'use: TDynFuncAuto';
-
 function ExtFuncDatum(ATypInfo: Pointer; AMethod: TMethod): TDynDatum; {$ifdef INLINE} inline; {$endif}
 function AutoFuncDatum(ATypInfo: Pointer; AMethod: TMethod): TDynDatum; {$ifdef INLINE} inline; {$endif}
 procedure CallAutoFunc(out Result: TDatumRef; ExtFunc: TDynFuncRTTI; Par:

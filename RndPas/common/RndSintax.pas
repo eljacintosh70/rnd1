@@ -10,7 +10,7 @@ type
   TRndSintax = class(TObject)
   published
     // (call FnName Params)
-    procedure call(out Result: TDatumRef; Datum: TDynDatum; Scope: IScope);
+    procedure call(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
   end;
 
 implementation
@@ -21,7 +21,7 @@ uses
 { TRndSintax }
 
 procedure TRndSintax.call(out Result: TDatumRef; Datum: TDynDatum;
-  Scope: IScope);
+  Scope: IDynScope);
 var
   FnName, Params: TDynDatum;
 begin

@@ -80,9 +80,6 @@ type
     procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;
   end;
 
-  TStringHelperW = TDynString deprecated 'use: TDynString';
-  TStringHelper  = TDynStringA deprecated 'use: TDynStringA';
-
 implementation
 
 { TODO : Revisar todos los accesos a FItems[i],
