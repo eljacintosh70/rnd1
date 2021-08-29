@@ -51,6 +51,7 @@ type
     // deben seguir el mismo orden que en ISchVector
     procedure Lock(var Block: TArrayBlock; Ofs: TArrayPos = 0; Size: TLockSize =
         UpToEnd; Writeable: Boolean = False); override;
+    procedure DoMsgEval(var Msg: TEvalMessage); message MsgEval;
   end;
 
   TAbstractDynMemory = class(TAbstractDynArray, IDynMemory)
@@ -227,6 +228,18 @@ begin
     FItems[i] := nil;
   //Destroy;
   Dispose(Pointer(Self));
+end;
+
+procedure TDynArray.DoMsgEval(var Msg: TEvalMessage);
+var
+  i, n: Integer;
+  v: IDynArray;
+begin
+  n := Length;
+  v := make_vector(n);
+  Msg.Res := v;
+  for i := 0 to n - 1 do
+    v[i] := Eval(ItemA[i], Msg.Scope)
 end;
 
 class function TDynArray.Create(n: Integer): TDynArray;

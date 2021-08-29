@@ -2,7 +2,7 @@ unit DTProc;
 interface //////////////////////////////////////////////////////////////////////
 
 uses
-  DynTypes, DTDatum;
+  DynTypes, DUtils, DTDatum;
 
 type
   ISchForm = IDynSyntax;
@@ -22,6 +22,7 @@ type
     property AsIDynFunc: IDynFunc read GetAsIDynFunc {$if Declared(InlineVMT)} implements IDynFunc {$ifend};
   public
     function DisplayStr(NeededChars: Integer): String; override;
+    procedure DoMsgEvalCall(var Msg: TEvalCallMessage); message MsgEvalCall;
   end;
 
   TDynMethod = class(TDyn, IDynMethod)
@@ -93,6 +94,7 @@ type
     property AsIDynSyntax: IDynSyntax read GetAsIDynSyntax {$if Declared(InlineVMT)} implements IDynSyntax {$ifend};
   public
     function DisplayStr(NeededChars: Integer): String; override;
+    procedure DoMsgEvalCall(var Msg: TEvalCallMessage); message MsgEvalCall;
   end;
 
   TDynSyntax = class(TCustomDynSyntax)
@@ -112,7 +114,7 @@ function SyntaxDatum(const AName: String; AMethod: TSintaxMethod): TDynDatum; {$
 implementation /////////////////////////////////////////////////////////////////
 
 uses
-  SysUtils, DTScope, LispEval;
+  SysUtils, DTScope;
 
 function AsSintax(Self: TDynDatum): TDynSyntax;
 begin
@@ -128,12 +130,22 @@ procedure EvalSeq(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
 begin
   while IsPair(Datum) do
   begin
-    Eval(Result, car(Datum), Scope);
+    Result := Eval(car(Datum), Scope);
     Datum := cdr(Datum);
   end;
 end;
 
 { TDynFunc }
+
+procedure TDynFunc.DoMsgEvalCall(var Msg: TEvalCallMessage);
+var
+  Msg2: TEvalMessage;
+begin
+  Msg2.Msg := MsgEvalItems;
+  Msg2.Scope := Msg.Scope;
+  Msg.Params.DispatchMsg(Msg2);
+  Call(Msg.Res, Msg2.Res);
+end;
 
 function TDynFunc.GetAsIDynFunc: IDynFunc;
 begin
@@ -280,6 +292,11 @@ begin
 end;
 
 { TCustomDynSyntax }
+
+procedure TCustomDynSyntax.DoMsgEvalCall(var Msg: TEvalCallMessage);
+begin
+  Eval(Msg.Res, msg.Params, Msg.Scope)
+end;
 
 function TCustomDynSyntax.GetAsIDynSyntax: IDynSyntax;
 begin

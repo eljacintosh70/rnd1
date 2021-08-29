@@ -2,7 +2,7 @@ unit LispEnv;
 interface //////////////////////////////////////////////////////////////////////
 
 uses
-  DynTypes, LispEval;
+  DynTypes;
 
 procedure ReadDatumFromFile(out Result: TDatumRef; Path: String);
 procedure EvalDatumFromFile(out Result: TDatumRef; Path: String; Scope: IDynScope);
@@ -171,7 +171,7 @@ begin
   // (load filename) -> evalua el contenido de
   ManageRefs([@Ref]);
   ReadDatumFromFile(Ref, Path);
-  Eval(Result, Ref.Value, Scope);
+  Result := Eval(Ref.Value, Scope);
 end;
 
 procedure RegisterFunctionG(Scope: IDynScope; const NameStr: Utf8String;

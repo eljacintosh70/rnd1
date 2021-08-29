@@ -479,6 +479,7 @@ function EnsureInterface(A: weak_IDyn): IDyn;
 {$include 'DynTypes_BaseFunc.inc'}
 
 procedure DynError(const MsgFormat: String; const Params: array of dyn);
+function Eval(Exp: dyn; Scope: IDynScope): dyn;
 
 implementation /////////////////////////////////////////////////////////////////
 
@@ -995,6 +996,16 @@ begin
   Value := AnsiString(s);
 end;
 {$ENDREGION}
+
+function Eval(Exp: dyn; Scope: IDynScope): dyn;
+var
+  Msg: TEvalMessage;
+begin
+  Msg.Msg := MsgEval;
+  Msg.Scope := Scope;
+  Exp.DispatchMsg(Msg);
+  Result := Msg.Res;
+end;
 
 {$REGION 'IDynSymbol'}
 

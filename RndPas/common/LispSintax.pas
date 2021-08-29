@@ -96,12 +96,12 @@ end;
 
 procedure TSintax1._if(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
 begin                   // (Cond IfVal ElseVal)
-  Eval(Result, car(Datum), Scope);
+  Result := Eval(car(Datum), Scope);
   Datum := cdr(Datum);    // (IfVal ElseVal)
   if Result.Value = _f then
     Datum := cdr(Datum);  // (ElseVal)
   if IsPair(Datum) then
-    Eval(Result, car(Datum), Scope)
+    Result := Eval(car(Datum), Scope)
   else
     Result := (Undefined);
 end;
@@ -150,7 +150,7 @@ begin
     NeedSymbol(VarDatum);
     if Rest <> _null then
       if IsPair(Rest) and (Cdr(Rest) = _Null) then
-        Eval(Result, Car(Rest), Scope)    // (define <variable> <expression>)
+        Result := Eval(Car(Rest), Scope)    // (define <variable> <expression>)
       else
       begin
         Name := IDynSymbol(Pointer(VarDatum)).Name;
@@ -194,7 +194,7 @@ begin
   NeedParams(Datum, [@Instance, @MemberId], @Params);
   DebStr := Deb(Datum);
 
-  Eval(InstanceR, Instance, Scope);
+  InstanceR := Eval(Instance, Scope);
   if Assigned(Params) then
   begin
     EvalParams(ParamsR, Params, Scope);
@@ -242,8 +242,8 @@ begin
   NeedParams(Datum, [@Obj, @Member, @Value]);
   DebStr := Deb(Datum);
 
-  Eval(ObjR, Obj, Scope);
-  Eval(ValueR, Value, Scope);
+  ObjR := Eval(Obj, Scope);
+  ValueR := Eval(Value, Scope);
 
   case ObjR.Value.Kind of
     atScope:
@@ -394,7 +394,7 @@ begin
   NeedSymbol(NameDatum);
   Datum := cdr(Datum);
   Result := (car(Datum));
-  Eval(Result, Result.Value, Scope);
+  Result := Eval(Result.Value, Scope);
   Scope.Value[NameDatum] := Result.Value;
 end;
 
@@ -420,7 +420,7 @@ begin
       begin
         b := car(cdr(a));
         ManageRefs([@Res]);
-        Eval(Res, b, Scope);
+        Res := Eval(b, Scope);
         Result := cons(Res.Value, d);      // -> ((eval b) . d)
         Exit;
       end
@@ -428,7 +428,7 @@ begin
       begin
         b := car(cdr(a));
         ManageRefs([@Res]);
-        Eval(Res, b, Scope);
+        Res := Eval(b, Scope);
         Result := AdToEnd(Res.Value, d);
         p.Free;
         Exit;

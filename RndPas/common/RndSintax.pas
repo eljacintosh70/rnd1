@@ -3,7 +3,7 @@ unit RndSintax;
 interface
 
 uses
-  DynTypes;
+  DUtils, DynTypes;
 
 type
   {$TYPEINFO ON}
@@ -15,18 +15,17 @@ type
 
 implementation
 
-uses
-  LispEval;
-
 { TRndSintax }
 
 procedure TRndSintax.call(out Result: TDatumRef; Datum: TDynDatum;
   Scope: IDynScope);
 var
   FnName, Params: TDynDatum;
+  f: dyn;
 begin
   NeedParams(Datum, [@FnName, @Params]);
-  EvalCall(Result, FnName, Params, Scope);
+  f := cons(FnName, Params);
+  Result := Eval(f, Scope);
 end;
 
 end.

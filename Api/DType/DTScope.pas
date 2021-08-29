@@ -243,8 +243,8 @@ begin
   Name := string(SymbolName(Symbol));
   if List.Find(Name, i) then
     Result := TDynDatum(List.Objects[i])
-  {else if Assigned(Parent) then
-    Result := Parent.Value[Symbol] }
+  else if Assigned(Parent) then
+    Result := Parent.Value[Symbol]
   else
     Result := Unbound
 end;

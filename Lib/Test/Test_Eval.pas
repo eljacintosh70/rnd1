@@ -30,7 +30,7 @@ implementation
 
 procedure TestEvalCore.SetUp;
 begin
-  InitCore;
+  //InitCore;
   FTextOut := TStrTextOutW.Create(200);
   FDynOutPort := TDynOutPortLisp.Create(FTextOut.WriteProc);
   Ref := FDynOutPort;
@@ -102,6 +102,7 @@ begin
 end;
 
 initialization
+  InitCore;
   RegisterTest(TestEvalCore.Suite);
 end.
 

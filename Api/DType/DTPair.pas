@@ -45,6 +45,8 @@ type
     destructor Destroy; override;
   protected
     procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;
+    procedure DoMsgEval(var Msg: TEvalMessage); message MsgEval;
+    procedure DoMsgEvalItems(var Msg: TEvalMessage); message MsgEvalItems;
   end;
 
   TPairEnumerator = class(TCustomEnumerator)
@@ -69,6 +71,9 @@ implementation /////////////////////////////////////////////////////////////////
 
 uses
   Windows;
+
+var
+  DebStr: string;
 
 function CdrRef(Pair: TDynDatum): PDatumRef;
 var
@@ -331,6 +336,34 @@ begin
     end;
   end;
   Msg.Res := Ord(r);
+end;
+
+procedure TDynPair.DoMsgEval(var Msg: TEvalMessage);
+var
+  f: dyn;
+  Msg2: TEvalCallMessage;
+begin
+  DebStr := Deb(car);
+  f := Eval(car, Msg.Scope);
+
+  Msg2.Msg := MsgEvalCall;
+  Msg2.Scope := Msg.Scope;
+  Msg2.Params := cdr;
+  f.DispatchMsg(Msg2);
+  Msg.Res := Msg2.Res;
+end;
+
+procedure TDynPair.DoMsgEvalItems(var Msg: TEvalMessage);
+var
+  e, v: dyn;
+  L1: IDynPair;
+begin
+  for e in Self do
+  begin
+    v := Eval(e, Msg.Scope);
+    L1 := cons(v, L1);
+  end;
+  Msg.Res := Reverse(L1);
 end;
 
 { TPairEnumerator }

@@ -24,7 +24,7 @@ procedure EvalCall(out Result: TDatumRef; Fn, Params: TDynDatum; Scope: IDynScop
 procedure EvalVector(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
 procedure EvalSymbol(out Result: TDatumRef; Symbol: TDynDatum; Scope: IDynScope);
 procedure EvalParams(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
-procedure Eval(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
+//procedure Eval(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
 
 implementation /////////////////////////////////////////////////////////////////
 
@@ -44,6 +44,20 @@ type
     Entry: TFunctionInfo;
   end;
 
+procedure Eval(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
+begin
+  Result := DynTypes.Eval(Datum, Scope)
+  {case Datum.Kind of
+    atPair:
+      EvalList(Result, Datum, Scope);
+    atVector:
+      EvalVector(Result, Datum, Scope);
+    atSymbol:
+      EvalSymbol(Result, Datum, Scope);
+    else
+      Result := (Datum);
+  end }
+end;
 
 procedure SimplifyName(var Name: Utf8String);
 var
@@ -173,20 +187,6 @@ begin
     else
       Result.cons(A.Value, nil);
   end;
-end;
-
-procedure Eval(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
-begin
-  case Datum.Kind of
-    atPair:
-      EvalList(Result, Datum, Scope);
-    atVector:
-      EvalVector(Result, Datum, Scope);
-    atSymbol:
-      EvalSymbol(Result, Datum, Scope);
-    else
-      Result := (Datum);
-  end
 end;
 
 { TLispEval }

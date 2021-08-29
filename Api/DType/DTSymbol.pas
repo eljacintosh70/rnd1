@@ -26,6 +26,7 @@ type
     function DisplayStr(NeededChars: Integer): String; override;
   protected
     procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;
+    procedure DoMsgEval(var Msg: TEvalMessage); message MsgEval;
   end;
 
 type
@@ -140,6 +141,11 @@ begin
   s := string(Name);
   r := Msg.Port.WriteStrW(Pointer(s), Length(s), skSymbol);
   Msg.Res := Ord(r);
+end;
+
+procedure TDynSymbol.DoMsgEval(var Msg: TEvalMessage);
+begin
+  Msg.Res := Msg.Scope.Item[IDynSymbol(Self)]
 end;
 
 { TSymbolHash }

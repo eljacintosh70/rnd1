@@ -34,17 +34,17 @@ procedure TInterpreter.Eval(out Result: TDatumRef; Datum: TDynDatum);
 type
   PDatumRef = ^TDatumRef;
 begin
-  LispEval.Eval(PDatumRef(@Result)^, Datum, Self);
+  Result := DynTypes.Eval(Datum, IInterpreter(Self));
 end;
 
 function TInterpreter.LoadDynLib(const Name: String): Boolean;
 begin
-  Result := LispEnv.LoadDynLib(Name, Self)
+  Result := LispEnv.LoadDynLib(Name, IInterpreter(Self))
 end;
 
 function TInterpreter.LoadSrcLib(const Name: String): Boolean;
 begin
-  Result := LispEnv.LoadSrcLib(Name, Self)
+  Result := LispEnv.LoadSrcLib(Name, IInterpreter(Self))
 end;
 
 procedure TInterpreter.Parse(out Result: TDatumRef;

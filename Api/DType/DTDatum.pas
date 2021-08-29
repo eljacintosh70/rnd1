@@ -67,6 +67,7 @@ type
   protected
     procedure DoMsgWrite(var Msg: TWriteMsg); message MsgWrite;
     procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;
+    procedure DoMsgEval(var Msg: TEvalMessage); message MsgEval;
   end;
 
   TDyn = class(TCustomDyn, IDynDatum)
@@ -263,6 +264,11 @@ var
 begin
   s := Format('(:%s %p)', [ClassName(), Pointer(Self)]);
   Msg.Res := Ord(WriteToPort(Msg.Port, s));
+end;
+
+procedure TCustomDyn.DoMsgEval(var Msg: TEvalMessage);
+begin
+  Msg.Res := IDyn(Self)
 end;
 
 { TDyn }

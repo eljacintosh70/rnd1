@@ -3,7 +3,7 @@ interface //////////////////////////////////////////////////////////////////////
 
 uses
   Classes, SysUtils,
-  DynTypes, LispEval, LispEnv;
+  DynTypes, LispEnv;
 
 type
   {$TYPEINFO ON}
@@ -122,7 +122,7 @@ begin
   ManageRefs([@Ref]);
   // (load filename) -> evalua el contenido de
   NeedParams(Datum, [@PathDatum]);
-  Eval(Ref, PathDatum, Scope);
+  Ref := Eval(PathDatum, Scope);
   NeedString(Ref.Value, Path);
 
   EvalDatumFromFile(Result, Path, Scope);
@@ -142,7 +142,7 @@ begin
   ManageRefs([@Ref]);
   // (load-dll filename)
   NeedParams(Datum, [@PathDatum], @Declar);
-  Eval(Ref, PathDatum, Scope);
+  Ref := Eval(PathDatum, Scope);
   NeedString(Ref.Value, Path);
 
   while not Supports(Scope, IDelphiScope, DelphiScope) do

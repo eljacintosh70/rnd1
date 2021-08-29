@@ -31,10 +31,29 @@ const
    MsgWrite        = $010;  // escribelos objetos en una forma en que debería poder leerse
    MsgDisplay      = $011;  // forma no reversible, por ejemplo, texto sin comillas
 
+   // reciben un TEvalMessage
+   MsgEval         = $020;  //  evalúa un objeto usando los valores indicados en Scope
+   MsgEvalItems    = $021;  //  evalúa cada item de una lista usando los valores indicados en Scope
+   // reciben un TEvalCallMessage
+   MsgEvalCall     = $022;
+
 type
    TVarMessage = record
      Msg, Res: Integer;
      VarPtr: Pointer;
+   end;
+
+   TEvalMessage = record
+     Msg: Integer;
+     Res: TDatumRef;
+     Scope: IDynScope;
+   end;
+
+   TEvalCallMessage = record
+     Msg: Integer;
+     Res: TDatumRef;
+     Scope: IDynScope;
+     Params: dyn;
    end;
 
 const
