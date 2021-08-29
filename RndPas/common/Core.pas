@@ -6,7 +6,7 @@ uses
   SysUtils,
   DTPort, DTPortW, DUtils, DynTypes,
   LispWrite, RndWrite,
-  LispSintax, LispFunc, RndSintax,
+  LispSintax, LispFiles, LispFunc, RndSintax,
   LispInterpreter;
 
 var
@@ -22,7 +22,7 @@ implementation
 procedure InitCore;
 begin
   Scope := TInterpreter.Create(nil);
-
+  Scope.RegisterFunctions(TFileFunctions.Create);
   Scope.RegisterSintax(TSintax1.Create);
   Scope.RegisterSintax(TRndSintax.Create);
   Scope.RegisterFunctions(TBasicFunctions.Create);

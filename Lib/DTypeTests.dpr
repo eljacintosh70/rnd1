@@ -48,7 +48,16 @@ uses
   RndWrite in '..\Api\Rnd\RndWrite.pas',
   RndLexer in '..\Api\Rnd\RndLexer.pas',
   RndParser in '..\Api\Rnd\RndParser.pas',
-  Test_DTPort in 'Test\Test_DTPort.pas';
+  rnrs_lists in '..\RndPas\common\rnrs_lists.pas',
+  SchFunc in '..\RndPas\common\SchFunc.pas',
+  LispFunc in '..\RndPas\common\LispFunc.pas',
+  LispSintax in '..\RndPas\common\LispSintax.pas',
+  RndSintax in '..\RndPas\common\RndSintax.pas',
+  Core in '..\RndPas\common\Core.pas',
+
+  TestFiles in 'Test\TestFiles.pas',
+  Test_DTPort in 'Test\Test_DTPort.pas',
+  Test_Eval in 'Test\Test_Eval.pas';
 
 {$R *.RES}
 
