@@ -15,7 +15,7 @@ uses
   TestFramework,
   DTPort, DTPortW, DUtils, DynTypes, DTDatum,
   LispParserA, LispParser, LispWrite,
-  RndParser, RndWrite;
+  RndParser, RndWrite, TestFiles;
 
 type
   // Test methods for class TDynOutPortD
@@ -68,43 +68,16 @@ implementation
 uses
   SysUtils;
 
-const
-  SrcText =
-'( 1' + #13#10 +
-'  2' + #13#10 +
-'  #\A' + #13#10 +
-'  #(2.1' + #13#10 +
-'    2.2' + #13#10 +
-'    ( 2.21' + #13#10 +
-'      "abc"' + #13#10 +
-'      symbol' + #13#10 +
-'      #t' + #13#10 +
-'      #f' + #13#10 +
-'      #m(41 42 43)' + #13#10 +
-'      2.22))' + #13#10 +
-'  3)';
-
-  DispText = '12A2.12.22.21abcsymbol#t#fABC2.223';
-
-  RndText =
-'( 1,' + #13#10 +
-'  2,' + #13#10 +
-'  ''A'',' + #13#10 +
-'  [ 2.1,' + #13#10 +
-'    2.2,' + #13#10 +
-'    ( 2.21,' + #13#10 +
-'      "abc",' + #13#10 +
-'      symbol,' + #13#10 +
-'      true,' + #13#10 +
-'      false,' + #13#10 +
-'      #m(41 42 43),' + #13#10 +
-'      2.22)],' + #13#10 +
-'  3)';
+var
+  SrcText, DispText, RndText: string;
 
 { TestTDynOutPortD }
 
 procedure TestTDynOutPortD.SetUp;
 begin
+  SrcText := LoadTestFile('TestLisp.txt');
+  DispText := LoadTestFile('TestDisp.txt');
+
   FTextOut := TStrTextOutW.Create(200);
   FDynOutPort := TDynOutPort.Create(FTextOut.WriteProc);
   Ref := FDynOutPort;
@@ -146,6 +119,9 @@ end;
 
 procedure TestTDynOutPortLisp.SetUp;
 begin
+  SrcText := LoadTestFile('TestLisp.txt');
+  RndText := LoadTestFile('TestRnd.txt');
+
   FTextOut := TStrTextOutW.Create(200);
   FDynOutPort := TDynOutPortLisp.Create(FTextOut.WriteProc);
   Ref := FDynOutPort;
@@ -239,6 +215,9 @@ end;
 
 procedure TestTDynOutPortRnd.SetUp;
 begin
+  SrcText := LoadTestFile('TestLisp.txt');
+  RndText := LoadTestFile('TestRnd.txt');
+
   FTextOut := TStrTextOutW.Create(200);
   FDynOutPort := TDynOutPortRnd.Create(FTextOut.WriteProc);
   Ref := FDynOutPort;
