@@ -3,7 +3,7 @@ unit RndSintax;
 interface
 
 uses
-  DUtils, DynTypes;
+  DynTypes;
 
 type
   {$TYPEINFO ON}

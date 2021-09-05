@@ -19,12 +19,7 @@ type
     function Symbols: IDynArray;
   end;
 
-procedure EvalList(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
-procedure EvalCall(out Result: TDatumRef; Fn, Params: TDynDatum; Scope: IDynScope);
-procedure EvalVector(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
-procedure EvalSymbol(out Result: TDatumRef; Symbol: TDynDatum; Scope: IDynScope);
 procedure EvalParams(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
-//procedure Eval(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
 
 implementation /////////////////////////////////////////////////////////////////
 
@@ -47,16 +42,6 @@ type
 procedure Eval(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
 begin
   Result := DynTypes.Eval(Datum, Scope)
-  {case Datum.Kind of
-    atPair:
-      EvalList(Result, Datum, Scope);
-    atVector:
-      EvalVector(Result, Datum, Scope);
-    atSymbol:
-      EvalSymbol(Result, Datum, Scope);
-    else
-      Result := (Datum);
-  end }
 end;
 
 procedure SimplifyName(var Name: Utf8String);
@@ -80,92 +65,6 @@ begin
   for i := 1 to Length(Name) do
     if Name[i] = '_' then
       Name[i] := '-';
-end;
-
-procedure EvalList(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
-var
-  Fn, Params: TDynDatum;
-begin
-  Fn := car(Datum);
-  Params := cdr(Datum);
-  EvalCall(Result, Fn, Params, Scope);
-end;
-
-procedure EvalCall(out Result: TDatumRef; Fn, Params: TDynDatum; Scope: IDynScope);
-var
-  Sintax: TDynSyntax;
-
-  FnRef: TDatumRef;
-  Par: TDatumRef;
-  Res: TDatumRef;
-begin
-  ManageRefs([@FnRef, @Par, @Res]);
-  Eval(FnRef, Fn, Scope);
-  Fn := FnRef.Value;
-  case Fn.Kind of
-    atSyntax:
-      begin
-        Sintax := AsSintax(Fn);
-        Sintax.Eval(Result, Params, Scope);
-      end;
-    atExtFunc:
-      begin
-        Par := (Params);
-        EvalParams(Res, Par.Value, Scope);
-        TDynFuncRTTI(Fn).Call(Result, Res.Value);
-      end;
-    atAutoFunc:
-      begin
-        Par := (Params);
-        EvalParams(Res, Par.Value, Scope);
-        TDynFuncAuto(Fn).Call(Result, Res.Value);
-      end;
-    atLambda:
-      begin
-        Par := (Params);
-        EvalParams(Res, Par.Value, Scope);
-        TDynLambda(Fn).Call(Result, Res.Value);
-      end;
-    else // debería ser un error
-      Result := (Fn);
-  end;
-end;
-
-procedure EvalVector(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
-var
-  A: TDatumRef;
-  Src, Des: TAbstractDynArray;
-  i, n: Integer;
-begin
-  ManageRefs([@A]);
-
-  Src := TAbstractDynArray(Datum);
-  n := Src.length;
-  Des := TDynArray.Create(n);
-  for i := 0 to n - 1 do
-  begin
-    Eval(A, Src[i], Scope);
-    Des[i] := A.Value;
-  end;
-  Result := (Des);
-end;
-
-
-procedure EvalSymbol(out Result: TDatumRef; Symbol: TDynDatum; Scope: IDynScope);
-var
-  Val: TDynDatum;
-begin
-  while Assigned(Scope) do
-  begin
-    Val := Scope.Value[Symbol];
-    if Val <> Unbound then
-    begin
-      Result := (Val);
-      Exit;
-    end;
-    Scope := Scope.Parent;
-  end;
-  Result := (Unbound);
 end;
 
 procedure EvalParams(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);

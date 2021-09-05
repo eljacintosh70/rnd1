@@ -40,7 +40,6 @@ var
   s: String;
   Parser: TLispParser;
   Term: dyn;
-  Strm: TStringStream;
   ResRef: TDatumRef;
 begin
   ManageRefs([@ResRef]);
@@ -59,7 +58,6 @@ var
   s: String;
   Parser: TLispParser;
   Term, Res: dyn;
-  Strm: TStringStream;
   ResRef: TDatumRef;
 begin
   ManageRefs([@ResRef]);
@@ -89,8 +87,6 @@ var
   s: String;
   Parser: RndParser.TParser;
   Term: dyn;
-  Strm: TStringStream;
-  ResRef: TDatumRef;
 begin
   s := Memo1.Lines.Text;
   Parser := RndParser.TParser.Create(s);
@@ -105,7 +101,6 @@ var
   s: String;
   Parser: RndParser.TParser;
   Term, Res: dyn;
-  Strm: TStringStream;
   ResRef: TDatumRef;
 begin
   ManageRefs([@ResRef]);

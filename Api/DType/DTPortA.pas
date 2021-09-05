@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils,
-  DynTypes, DTDatum, DUtils, DTPort;
+  DTDatum, DTPort;
 
 type
   TStrTextOutA = class(TObject)

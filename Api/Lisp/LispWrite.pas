@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Classes,
-  DynTypes, DTDatum, DUtils, DTPort, DTPortW, DTFile;
+  DTDatum, DUtils, DTPort, DTPortW, DTFile;
 
 type
   TDynOutPortLisp = class(TDynOutPortWr)
