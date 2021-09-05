@@ -59,7 +59,6 @@ end;
 
 procedure TFileFunctions.save(out Result: TDatumRef; Datum: TDynDatum);
 var
-  Ref: TDatumRef;
   PathDatum, DataDatum: TDynDatum;
   Path: string;
   Mem: IDynMemory;
@@ -70,7 +69,6 @@ var
   p: Pointer;
   cb: Integer;
 begin
-  ManageRefs([@Ref]);
   // (save filename data) -> evalua el contenido de
   NeedParams(Datum, [@PathDatum, @DataDatum]);
   NeedString(PathDatum, Path);
@@ -119,7 +117,6 @@ var
   PathDatum: TDynDatum;
   Path: string;
 begin
-  ManageRefs([@Ref]);
   // (load filename) -> evalua el contenido de
   NeedParams(Datum, [@PathDatum]);
   Ref := Eval(PathDatum, Scope);
@@ -139,7 +136,6 @@ var
   Path: string;
   Res: Boolean;
 begin
-  ManageRefs([@Ref]);
   // (load-dll filename)
   NeedParams(Datum, [@PathDatum], @Declar);
   Ref := Eval(PathDatum, Scope);

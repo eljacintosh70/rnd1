@@ -112,7 +112,6 @@ var
   Res: TDatumRef;
 begin
   Result := nil;
-  ManageRefs([@Res]);
   while Assigned(List) do
   begin
     Item := List.car;

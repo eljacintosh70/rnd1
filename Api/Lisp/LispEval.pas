@@ -71,8 +71,6 @@ procedure EvalParams(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
 var
   A, D: TDatumRef;
 begin
-  ManageRefs([@A, @D]);
-
   Result := (Datum);
   if IsPair(Datum) then
   begin
@@ -196,14 +194,11 @@ end;
 procedure TLispEval.Rename(const OldNames, NewNames: array of UTF8String);
 var
   i, n: Integer;
-  //Index: Integer;
   Datum: TDynDatum;
   OldNameRef: TDatumRef;
   NewNameRef: TDatumRef;
   Name: TDynDatum;
 begin
-  ManageRefs([@OldNameRef, @NewNameRef]);
-
   n := Length(Oldnames);
   if Length(NewNames) < n then
     n := Length(NewNames);

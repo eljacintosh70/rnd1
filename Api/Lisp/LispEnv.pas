@@ -169,7 +169,6 @@ var
   Ref: TDatumRef;
 begin
   // (load filename) -> evalua el contenido de
-  ManageRefs([@Ref]);
   ReadDatumFromFile(Ref, Path);
   Result := Eval(Ref.Value, Scope);
 end;
@@ -258,7 +257,6 @@ function LoadSrcLib(const Name: String; Scope: IDelphiScope): Boolean;
 var
   Ref: TDatumRef;
 begin
-  ManageRefs([@Ref]);
   {if not Assigned(Scope) then
     Scope := GlobalScope;}
   EvalDatumFromFile(Ref, Name, Scope);

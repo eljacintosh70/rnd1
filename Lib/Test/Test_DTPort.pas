@@ -98,8 +98,6 @@ var
   Parser: TLispParser;
 begin
   // TODO: Setup method call parameters
-  ManageRefs([@Res]);
-
   Parser := TLispParser.Create;
   Parser.Evaluate(Res, SrcText);
   Parser.Free;
@@ -142,8 +140,6 @@ var
   Parser: TLispParser;
 begin
   // TODO: Setup method call parameters
-  ManageRefs([@Res]);
-
   Parser := TLispParser.Create;
   Parser.Evaluate(Res, SrcText);
   Parser.Free;
@@ -168,8 +164,6 @@ var
   SrcTextA: Utf8String;
 begin
   // TODO: Setup method call parameters
-  ManageRefs([@Res]);
-
   Parser := LispParserA.TLispParser.Create;
   SrcTextA := Utf8String(SrcText);
   Parser.Evaluate(Res, SrcTextA);
@@ -195,8 +189,6 @@ var
   Parser: TParser;
 begin
   // TODO: Setup method call parameters
-  //ManageRefs([@Res]);
-
   Parser := TParser.Create(RndText);
   Parser.GetNextTerm(Obj);
   Parser.Free;
@@ -238,8 +230,6 @@ var
   Parser: TLispParser;
 begin
   // TODO: Setup method call parameters
-  ManageRefs([@Res]);
-
   Parser := TLispParser.Create;
   Parser.Evaluate(Res, SrcText);
   Parser.Free;
@@ -264,8 +254,6 @@ var
   SrcTextA: Utf8String;
 begin
   // TODO: Setup method call parameters
-  ManageRefs([@Res]);
-
   Parser := LispParserA.TLispParser.Create;
   SrcTextA := Utf8String(SrcText);
   Parser.Evaluate(Res, SrcTextA);

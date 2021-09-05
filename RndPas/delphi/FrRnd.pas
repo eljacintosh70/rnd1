@@ -42,8 +42,6 @@ var
   Term: dyn;
   ResRef: TDatumRef;
 begin
-  ManageRefs([@ResRef]);
-
   s := Memo1.Lines.Text;
   Parser := TLispParser.Create;
   Parser.Evaluate(ResRef, s);
@@ -60,8 +58,6 @@ var
   Term, Res: dyn;
   ResRef: TDatumRef;
 begin
-  ManageRefs([@ResRef]);
-
   s := Memo1.Lines.Text;
   Parser := TLispParser.Create;
   Parser.Evaluate(ResRef, s);
@@ -103,8 +99,6 @@ var
   Term, Res: dyn;
   ResRef: TDatumRef;
 begin
-  ManageRefs([@ResRef]);
-
   s := Memo1.Lines.Text;
   Parser := RndParser.TParser.Create(s);
   Parser.GetNextTerm(Term);

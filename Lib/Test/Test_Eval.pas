@@ -78,7 +78,7 @@ var
   ReturnValue: Boolean;
   Obj: dyn;
   ResText, s: string;
-  Res, Res2: TDatumRef;
+  Res2: TDatumRef;
   Parser: TParser;
 begin
   SrcText := LoadTestFile('TestRndEval.txt');

@@ -457,8 +457,6 @@ procedure NeedParams(Params: TDynDatum; const Required: array of PDynDatum;
 {$ENDREGION}
 
 {$REGION 'General'}
-function ManageRefs(const Refs: array of PDatumRef): TAutoDestroyRecord;
-
 function ConstToDatum(const Val: TVarRec): dyn; stdcall;
 function DatumType(Datum: TDynDatum): TDatumType;
 
@@ -1144,9 +1142,6 @@ end;
 {$ifdef DTYPES}
 {$include 'Inc\DTypes_General.inc'}
 {$else}
-
-function ManageRefs(const Refs: array of PDatumRef): TAutoDestroyRecord;
-  external dll name 'ManageRefs';
 
 {$ifdef FPC}
 

@@ -109,7 +109,6 @@ var
   Token: TTokenInfo;
   i: Integer;
 begin
-  ManageRefs([@Token.Ref]);
   Result := True;
 
   Ref := @Res;
@@ -131,13 +130,8 @@ end;
 
 function LazyNode(Parser: IParser; p: PTChar): TLazyNode;
 var
-  //Pair: TDynDatum;
-  //Ref: PDatumRef;
   Token: TTokenInfo;
-  //i: Integer;
 begin
-  ManageRefs([@Token.Ref]);
-
   p := Parser.GetNextTerm(p, Token);
   case Token.Kind of
     tkDatum:

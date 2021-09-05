@@ -190,7 +190,6 @@ var
   Method: IDynMethod;
 begin
   // (. instance member params)
-  ManageRefs([@InstanceR, @ParamsR]);
   NeedParams(Datum, [@Instance, @MemberId], @Params);
   DebStr := Deb(Datum);
 
@@ -238,7 +237,6 @@ var
   SubScope: IDynScope;
 begin
   // (.set! obj member value)
-  ManageRefs([@ObjR, @ValueR]);
   NeedParams(Datum, [@Obj, @Member, @Value]);
   DebStr := Deb(Datum);
 
@@ -306,7 +304,6 @@ var
   FnRef: IDynFunc;
   Par: TDatumRef;
 begin
-  ManageRefs([@Par]);
   // http://www.r6rs.org/final/html/r6rs/r6rs-Z-H-14.html#node_sec_11.4.6
   // (let <bindings> <body>)
   // ( [lambda (<bindings-vars>) <body>] . <bindings-values>)
@@ -419,7 +416,6 @@ begin
       if f = QuoteFn[tkUnQuote].Value then  // a = (unquote b) => p = ((unquote b) . d)
       begin
         b := car(cdr(a));
-        ManageRefs([@Res]);
         Res := Eval(b, Scope);
         Result := cons(Res.Value, d);      // -> ((eval b) . d)
         Exit;
@@ -427,7 +423,6 @@ begin
       else if f = QuoteFn[tkUnQuoteSplicing].Value then
       begin
         b := car(cdr(a));
-        ManageRefs([@Res]);
         Res := Eval(b, Scope);
         Result := AdToEnd(Res.Value, d);
         p.Free;

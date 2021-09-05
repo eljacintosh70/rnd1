@@ -89,8 +89,6 @@ var
   Token: TTokenInfo;
   List: IDynPair;
 begin
-  ManageRefs([@Token.Ref]);
-
   List := nil;
   repeat
     Result := GetNextTerm(Token);
@@ -109,8 +107,6 @@ function TCustomLispParser.Eval(out Res: TDatumRef): Boolean;
 var
   Token: TTokenInfo;
 begin
-  ManageRefs([@Token.Ref]);
-
   Result := GetNextTerm(Token);
   Res := (Token.Ref);
 end;

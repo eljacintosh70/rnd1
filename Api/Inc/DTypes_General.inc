@@ -68,12 +68,6 @@ begin
   Result := Deb(TDynDatum(Pointer(X)), Max);
 end;
 
-function ManageRefs(const Refs: array of PDatumRef): TAutoDestroyRecord;
-begin
-end;
-
 exports
-  ManageRefs    name 'ManageRefs',
-
   Deb(X: TDynDatum; Max: Integer = 256)      name 'DebDatum';
 
