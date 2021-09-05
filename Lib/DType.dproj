@@ -51,7 +51,7 @@
         <DCC_RemoteDebug>true</DCC_RemoteDebug>
         <GenDll>true</GenDll>
         <DCC_Define>LISP_LIB;DTYPES;$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>D:\Lisp\0ut\lib;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>..\0ut\lib;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_ImageBase>2E100000</DCC_ImageBase>
         <DCC_DebugInformation>1</DCC_DebugInformation>
         <DCC_F>false</DCC_F>
@@ -89,6 +89,10 @@
         <DCC_Optimize>false</DCC_Optimize>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+        <DCC_BplOutput>..\0ut\lib</DCC_BplOutput>
+        <DCC_ExeOutput>..\0ut\bin</DCC_ExeOutput>
+        <DCC_DcpOutput>..\0ut\lib</DCC_DcpOutput>
+        <DCC_DcuOutput>..\0ut\dcu</DCC_DcuOutput>
         <DCC_SymbolReferenceInfo>2</DCC_SymbolReferenceInfo>
         <DCC_DebugInformation>2</DCC_DebugInformation>
         <DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
@@ -217,17 +221,17 @@
                 <Platform value="Win64">False</Platform>
             </Platforms>
             <Deployment>
-                <DeployFile LocalName="..\0ut\Lisp\DType.dll" Configuration="Debug" Class="ProjectOutput">
-                    <Platform Name="Win32">
-                        <RemoteName>DType.dll</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\osx32\libcgunwind.1.0.dylib" Class="DependencyModule">
                     <Platform Name="OSX32">
                         <Overwrite>true</Overwrite>
                     </Platform>
                     <Platform Name="iOSSimulator">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="..\0ut\Lisp\DType.dll" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>DType.dll</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
