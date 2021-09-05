@@ -3,8 +3,21 @@
 Este proyecto busca crear una forma de compartir variables de tipos dinámicos entre varios programas.
 El proyecto debe poder representar tipos simples, listas, arreglos diccionarios y funciones.
 
-## Tipos
+## Contenido
+ * [Tipos](#Tipos)
+    * [Tipos estructurados](#Estruct)
+ * [Evaluación](#Eval)
+ * [Parsers](Parsers)
+    * [Lisp](Lisp)
+    * [Rnd](Rnd)
+ * [Displayers](Displayers)
+ * [Proyectos](Proyectos)
+    * [Dll](Dll)
+    * [Tester](Tester)
+    * [Evaluador](Evaluador)
 
+## Tipos
+<A name="Tipos"/>
 Los tipos se representan como interfaces en Object Pascal:
 
 <pre>
@@ -34,6 +47,7 @@ procedure Need<b><i>T</i></b>(const A: dyn; out Res: IDyn<b><i>T</i></b>);
 </pre>
 
 ### Tipos estructurados
+<A name="Estruct"/>
 
 El tipo <b><i>IDynPair</i></b> representa una lista y se construye con las siguientes funciones:
 <pre>
@@ -52,6 +66,7 @@ function ListToDynArray(List: dyn): IDynArray;
 </pre>
 
 ## Evaluación
+<A name="Eval"/>
 
 La función <b><i>Eval</i></b> evalúa un objeto en el contexto indicado por Scope:
 <pre>
@@ -67,4 +82,67 @@ En caso de ser un arreglo, evalúa todos los elementos y retorna un arreglo con 
 En caso de ser una lista, Eval evalúa el primer valor.
 Si ese valor es una sintaxis, le pasa el resto de los valores para que retorne un resultado. 
 En caso de ser una función, evalúa primero los demás elementos de la lista, y luego se los pasa a la función.
+
+## Parsers
+<A name="Parsers"/>
+
+### Lisp
+<A name="Lisp"/>
+
+Tipo TLispParser en LispParser.pas
+
+Ejemplo (ver Test_DTPort.pas):
+<pre>
+  Parser := TLispParser.Create;
+  Parser.Evaluate(Res, SrcText);
+  Parser.Free;
+</pre>
+
+### Rnd
+<A name="Rnd"/>
+
+Tipo TParser en RndParser.pas
+<pre>
+  Parser := TParser.Create(RndText);
+  Parser.GetNextTerm(Res);
+  Parser.Free;
+</pre>
+
+## Displayers
+<A name="Displayers"/>
+Un displayer se encarga de mostrar un objeto como texto.
+
+Debe estar asociado a un procedimiento <b><i>TWriteProc</i></b> que reciba ese texto y lo envía a su destino.
+
+<pre>
+  TextOut := TStrTextOutW.Create(200);
+  
+  DynOutPort := TDynOutPort.Create(TextOut.WriteProc);
+  DynOutPortLisp := TDynOutPortLisp.Create(TextOut.WriteProc);
+  DynOutPortRnd := TDynOutPortRnd.Create(TextOut.WriteProc);
+</pre>
+
+## Proyectos
+<A name="Proyectos"/>
+
+El grupo de proyectos RndPas\delphi\RndPas.groupproj incluye: 
+
+### Dll
+<A name="Dll"/>
+El dll DType.dll, que es un dll que implementa los tipos dinámicos, sin incluir las funciones del intérprete como tal.
+
+### Tester
+<A name="Tester"/>
+El programa de pruebas DTypeTests.exe, que usa DUnit.
+
+Ese programa prueba los Parsers y Displayers de Lisp y Rnd con archivos de prueba Lib\Test\*.txt.
+
+### Evaluador
+<A name="Evaluador"/>
+El proyecto RndPas\delphi\Rnd.dpr es el evaluador como tal.
+
+Puede evaluar expresiones con la sintaxis estilo Lisp y la estilo Rnd.
+Ambas afectan el mismo Namespace global, por lo que se pueden usar elementos definidos con una sintaxis desde la otra.
+
+
 
