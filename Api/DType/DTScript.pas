@@ -81,7 +81,7 @@ begin
   if Assigned(FParent) then
     if Supports(FParent, IScriptObjectEx, Ex) then
       Supports(Ex.LocalList(Id), IDynMethod, NL.Parent);
-  Result := Pointer(IDynMethod(NL));
+  Result := Pointer(NL.AsIDynMethod);
   Value[Id] := Result;
 end;
 

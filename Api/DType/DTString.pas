@@ -3,7 +3,8 @@ unit DTString;
 interface
 
 uses
-  Windows, SysUtils,
+  SysUtils,
+  {$IFNDEF LINUX} Windows, {$ENDIF}
   DynTypes, DUtils, DTDatum, DTArray;
 
 type
@@ -32,6 +33,10 @@ type
     function GetAsIDynString: IDynString;
   public
     property AsIDynString: IDynString read GetAsIDynString {$if Declared(InlineVMT)} implements IDynString {$ifend};
+  {$if not Declared(InlineVMT)}
+    function IDynString.GetItem = GetItemA;
+    procedure IDynString.SetItem = SetItemA;
+  {$ifend}
   end;
 
   TDynString = class(TAbstractDynString)
@@ -51,7 +56,7 @@ type
     class function CreateI(pData: PWideChar; cbData: Integer): IDynString;
     function GetItemA(i: Integer): TDynDatum; override;
     procedure SetItemA(i: Integer; const First: TDynDatum); override;
-    function _Release: Integer; override; stdcall;
+    function _Release: Integer; override; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF};
   protected
     procedure CastToString(var Msg: TVarMessage); message MsgCastToString;
     procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;
@@ -74,7 +79,7 @@ type
     class function CreateI(pData: PAnsiChar; cbData: Integer): IDynString;
     function GetItemA(i: Integer): TDynDatum; override;
     procedure SetItemA(i: Integer; const First: TDynDatum); override;
-    function _Release: Integer; override; stdcall;
+    function _Release: Integer; override; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF};
   protected
     procedure CastToString(var Msg: TVarMessage); message MsgCastToString;
     procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;

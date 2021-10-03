@@ -4,7 +4,8 @@ interface
 
 uses
   //Messages, ActiveX, Classes, ComObj,
-  Windows, SysUtils,
+  SysUtils,
+  {$IFNDEF LINUX} Windows, {$ENDIF}
   DynTypes, DUtils;
 
 {$define INLINE_VMT}
@@ -21,12 +22,12 @@ type
   // InlineVMT requiere los siguientes métodos idénticos a los de IInterface
   public
     {$ifdef FPC}
-    function QueryInterface(constref IID: TGUID; out Obj): HResult; virtual; stdcall;
+    function QueryInterface(constref IID: TGUID; out Obj): HResult; virtual; Cdecl;
     {$else}
     function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall;
     {$endif}
-    function _AddRef: Integer; virtual; stdcall;
-    function _Release: Integer; virtual; stdcall;
+    function _AddRef: Integer; virtual; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF};
+    function _Release: Integer; virtual; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF};
   private
     function GetAsIInterface: IInterface;
   public

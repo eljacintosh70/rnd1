@@ -94,7 +94,7 @@ end;
 function TDynOutPortRnd.WriteChar(ch: Char): Boolean;
 begin
   case ch of
-    #$20..#$7E, #$00A0..#$FFFF:
+    #$20..#$7E, #$00A0..#$FF:
           Result := WriteText('''' + ch + '''');
     else  Result := WriteText(Format('#%d', [Ord(ch)]));
   end;

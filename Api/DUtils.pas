@@ -117,9 +117,9 @@ begin
   case Cmd.Res of
     ResOK: Exit;
     ResNotImpl:
-      raise Err.EClass.Create('Error: Not Implemented. ' + Err.EMsg, Obj) at ReturnAddress;
+      raise Err.EClass.Create('Error: Not Implemented. ' + Err.EMsg, Obj) {$IFNDEF FPC} at ReturnAddress {$ENDIF};
     else
-      raise Err.EClass.Create(Format('Error: %d. ', [Cmd.Res]) + Err.EMsg, Obj) at ReturnAddress;
+      raise Err.EClass.Create(Format('Error: %d. ', [Cmd.Res]) + Err.EMsg, Obj) {$IFNDEF FPC} at ReturnAddress {$ENDIF};
   end;
 end;
 
@@ -137,11 +137,52 @@ end;
 
 constructor EDynError.Create(Msg: String; const Arg: array of dyn);
 var
-  Str: TStringBuilder;
+  Str: {$IFDEF FPC} String {$ELSE} TStringBuilder {$ENDIF};
   p, pe: PChar;
   cb, iParam: Integer;
   ch: Char;
 begin
+{$IFDEF FPC}
+  cb := Length(Msg);
+  p := Pointer(Msg);
+  pe := p + cb;
+  Str := '';
+  iParam := 0;
+  while p < pe do
+  begin
+    ch := p^;
+    Inc(p);
+    case ch of
+      '%':
+        begin
+          ch := p^;
+          Inc(p);
+          case ch of
+            't', 'T':
+              begin
+                Str := Str + DynTypeName(Arg[iParam]);
+                Inc(iParam);
+              end;
+            'd', 'D':
+              begin
+                Str := Str + FloatToStr(Double(Arg[iParam]));
+                Inc(iParam);
+              end;
+            's', 'S':
+              begin
+                Str := Str + String(Arg[iParam]);
+                Inc(iParam);
+              end;
+          else
+            Str := Str + ch;
+          end;
+        end;
+      else Str := Str + ch;
+    end;
+  end;
+  Msg := Str;
+  inherited Create(Msg);
+{$ELSE}
   cb := Length(Msg);
   p := Pointer(Msg);
   pe := p + cb;
@@ -181,6 +222,7 @@ begin
   end;
   Msg := Str.ToString;
   inherited Create(Msg);
+{$ENDIF}    
 end;
 
 end.

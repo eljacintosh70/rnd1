@@ -9,7 +9,7 @@ type
   TDynSymbol = class(TDyn, IDynSymbol)
   // InlineVMT requiere los siguientes métodos idénticos a los de IDynSymbol
   public
-    function FoldedCase: TDynSymbol; virtual;
+    function FoldedCase: TDynDatum; virtual;
     function Name: Utf8String; virtual;
   private
     function GetAsIDynSymbol: IDynSymbol;
@@ -18,8 +18,8 @@ type
   protected//private
     Next: TDynSymbol;
     Key: Utf8String;
-    FFoldedCase: TDynSymbol;
-    function CreateFoldedCase: TDynSymbol;
+    FFoldedCase: TDynDatum;
+    function CreateFoldedCase: TDynDatum;
   public
     constructor Create(pName: PAnsiChar; cbName: Integer);
     function DatumType: TDatumType; override;
@@ -85,12 +85,12 @@ end;
 
 { TDynSymbol }
 
-function TDynSymbol.FoldedCase: TDynSymbol;
+function TDynSymbol.FoldedCase: TDynDatum;
 begin
   if Assigned(FFoldedCase) then
-    Result := FFoldedCase
+    Result := Pointer(FFoldedCase)
   else
-    Result := CreateFoldedCase
+    Result := Pointer(CreateFoldedCase)
 end;
 
 function TDynSymbol.Name: Utf8String;
@@ -105,7 +105,7 @@ begin
   {$endif}
 end;
 
-function TDynSymbol.CreateFoldedCase: TDynSymbol;
+function TDynSymbol.CreateFoldedCase: TDynDatum;
 var
   s, sKey: String;
 begin

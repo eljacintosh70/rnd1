@@ -88,7 +88,7 @@ begin
     #$1B: Result := WriteText('#\escape');    // U+001B
     #$20: Result := WriteText('#\space');     // the preferred way to write a space
     #$7F: Result := WriteText('#\delete');    // U+007F
-    #$21..#$7E, #$00A0..#$FFFF:
+    #$21..#$7E, #$00A0..#$FF:
           Result := WriteText('#\' + ch);
     else  Result := WriteText(Format('#\x%.3x', [Ord(ch)]));
   end;

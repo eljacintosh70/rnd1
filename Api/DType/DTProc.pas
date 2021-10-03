@@ -256,9 +256,11 @@ procedure TDynLambda.Call(out Result: TDatumRef; Par: TDynDatum);
 var
   Arg: TDynDatum;
   Scope: IDynScope;
+  Obj: TBigScope;
 begin
   Arg := Self.Arg.Value;
-  Scope := TBigScope.Create(Self.Scope);
+  Obj := TBigScope.Create(Self.Scope);
+  Scope := Obj.AsIDynScope;
   while IsPair(Arg) do
   begin
     Scope.Value[car(Arg)] := car(Par);

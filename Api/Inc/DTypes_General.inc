@@ -68,6 +68,7 @@ begin
   Result := Deb(TDynDatum(Pointer(X)), Max);
 end;
 
+{$IFNDEF LINUX}
 exports
   Deb(X: TDynDatum; Max: Integer = 256)      name 'DebDatum';
-
+{$ENDIF}

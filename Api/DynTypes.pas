@@ -137,7 +137,7 @@ type
   end;
 
   TDynSymbol = class(TDynDatum)
-    function FoldedCase: TDynSymbol; virtual; abstract;
+    function FoldedCase: TDynDatum; virtual; abstract;
   end;
 
   {$ifndef LISP_LIB}
@@ -145,7 +145,7 @@ type
   {$endif}
 
   IDynSymbol = interface(IDynDatum)
-    function FoldedCase: TDynSymbol;
+    function FoldedCase: TDynDatum;
     function Name: Utf8String;
   end;
 
@@ -166,9 +166,9 @@ type
 
   IDynArray = interface(IDynDatum)
     function Length: TArraySize;
-    function GetItem(i: Integer): TDynDatum;
-    procedure SetItem(i: Integer; const Value: TDynDatum);
-    property Item[i: Integer]: TDynDatum read GetItem write SetItem; default;
+    function GetItemA(i: Integer): TDynDatum;
+    procedure SetItemA(i: Integer; const Value: TDynDatum);
+    property Item[i: Integer]: TDynDatum read GetItemA write SetItemA; default;
     procedure Lock(var Block: TArrayBlock; Ofs: TArrayPos = 0; Count: TLockSize =
          UpToEnd; Writeable: Boolean = False);
     function DataPtr: Pointer;
@@ -180,9 +180,9 @@ type
   end;
 
   IDynString = interface(IDynArray)
-    function GetItem(i: Integer): Char;
-    procedure SetItem(i: Integer; const Value: Char);
-    property Item[i: Integer]: Char read GetItem write SetItem;
+    function GetChars(i: Integer): Char;
+    procedure SetChars(i: Integer; const Value: Char);
+    property Item[i: Integer]: Char read GetChars write SetChars;
     function AsString: String;
   end;
 
@@ -414,7 +414,7 @@ function IsString(Datum: TDynDatum): Boolean;
 
 function make_string(pData: PAnsiChar; cbData: Integer): IDynString; stdcall; overload;
 function make_string(pData: PWideChar; cbData: Integer): IDynString; stdcall; overload;
-function make_string(const s: String): IDynString; overload;
+function make_string(const s: UnicodeString): IDynString; overload;
 function make_string(const s: AnsiString): IDynString; overload;
 
 {--$ifdef HAS_UNICODE_STRING}
@@ -483,8 +483,8 @@ implementation /////////////////////////////////////////////////////////////////
 
 uses
 {$ifdef DTYPES}
-  TypInfo, Windows,
-  MapFiles,
+  TypInfo,
+  {$IFNDEF LINUX} Windows, MapFiles, {$ENDIF}
   DTBool, DTInt, DTFloat, DTPair, DTArray, DTString, DTProc, DTProcRTTI,
   DTScript, DTSymbol,
 {$endif}
@@ -499,7 +499,7 @@ procedure DynError(const MsgFormat: String; const Params: array of dyn);
   end;}
 
 begin
-  raise EDynError.Create(MsgFormat, Params) at ReturnAddress;
+  raise EDynError.Create(MsgFormat, Params) {$IFNDEF FPC} at ReturnAddress {$ENDIF};
 end;
 
 function InvalidType: Exception;
@@ -511,7 +511,7 @@ end;
 
 function CreateFixNum(Value: FixNum): TDynDatum;
 begin
-  NativeInt(Result) := (Value * 4) or smInteger;
+  Result := Pointer((Value * 4) or smInteger);
 end;
 
 function FixNumValue(Value: TDynDatum): FixNum;
@@ -735,7 +735,7 @@ end;
 {$ifdef DTYPES}
   {$include 'Inc\DTypes_IDynPair.inc'}
 {$else}
-function cons(const Car, Cdr: dyn): IDynPair; stdcall; overload;
+function cons(const Car, Cdr: dyn): IDynPair; stdcall;
   external dll name 'cons';
 {
 function cons(const Car: TDynDatum; const Cdr: TDynDatum): IDynPair; stdcall; overload;
@@ -971,7 +971,7 @@ begin
   end;
 end;
 
-function make_string(const s: String): IDynString;
+function make_string(const s: UnicodeString): IDynString;
 begin
   Result := make_string(PChar(s), Length(s));
 end;
@@ -1288,33 +1288,10 @@ begin
 end;
 
 procedure TDynDatum.Free;
-{var
-  p: PRefDatum;
-  Itfc: Pointer;
-begin    }
-asm
-  test eax,1         // smInteger = 1; smInline = 3;
-  jz   @@NeedFree
-  ret
-  nop
-@@NeedFree:
-  test eax,3      // smInterface = 0; smRef = 2;
-  jnz  @@smRef
-@@smInterface:
-  or   eax,eax    // if not Assigned(Self) then Exit;
-  jz   @@end
-  mov  ecx,[eax]   // vmt IInterface(Self)._Release;
-  xchg eax,[esp]
-  push eax         // [ret] -> [Self, ret]
-  jmp  [ecx+8]     //  IInterface._Release
-
-@@smRef:
-{
-  and  eax,PointerMask         // p := Pointer(Integer(Self) and PointerMask);
-  dec  TRefDatum(eax).RefCount // Dec(p.RefCount);
-  jz   DisposePRefDatum        // if p.RefCount = 0 then
-}                               //   Dispose(p);
-@@end:
+begin                      
+  if Self <> nil then
+    if NativeInt(Self) and 3 = 0 then
+      _Release
 end;
 
 function TDynDatum.AsVariant: Variant;

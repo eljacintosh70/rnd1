@@ -20,7 +20,8 @@ function LoadedLibraries: IDynArray;
 implementation /////////////////////////////////////////////////////////////////
 
 uses
-  Windows, SysUtils, Classes, LispParserA, DTProc;
+  {$IFNDEF LINUX} Windows, {$ENDIF}
+  SysUtils, Classes, LispParserA, DTProc;
 
 type
   TLibraryInfo = class
@@ -84,7 +85,9 @@ begin
   begin
     LibI := TLibraryInfo(Lib.Objects[i]);
     hDll := LibI.hDll;
+    {$IFNDEF LINUX}
     FreeLibrary(hDll);
+    {$ENDIF}
     LibI.Free;
   end;
   Lib.Free;
@@ -208,7 +211,9 @@ begin
     end
     else
       ExpName := Deb(ArgName);
+    {$IFNDEF LINUX}
     @Method := GetProcAddress(hDll, PChar(ExpName));
+    {$ENDIF}
     if Assigned(@Method) then
     begin
       FnDatum := TNamedDynFuncG.Create(ArgName, Method).AsIDynFunc;
@@ -235,10 +240,13 @@ begin
   else
     FileName := FileName + Name;
   try
+    {$IFNDEF LINUX}
     hDll := LoadLibrary(PChar(FileName));
+    {$ENDIF}
   except
     Exit;
-  end;
+  end;                 
+  {$IFNDEF LINUX}
   if hDll = INVALID_HANDLE_VALUE then
     Exit;
   ExportSymbols := GetProcAddress(hDll, 'ExportSymbols');
@@ -250,7 +258,8 @@ begin
     Result := True;
   end;
   if Result then
-    AddLoadedLibrary(FileName, hDll, Imp);
+    AddLoadedLibrary(FileName, hDll, Imp);   
+  {$ENDIF}
 end;
 
 function LoadSrcLib(const Name: String; Scope: IDelphiScope): Boolean;

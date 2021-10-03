@@ -31,7 +31,7 @@ type
   public
     property AsISchPair: IDynPair read GetAsISchPair {$if Declared(InlineVMT)} implements IDynPair {$ifend};
   public
-    function _Release: Integer; override; stdcall;
+    function _Release: Integer; override; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF};
     function GetEnumerator: IDynEnumerator; override; stdcall;
     function DatumType: TDatumType; override;
     function DisplayStr(NeededChars: Integer): String; override;
@@ -69,8 +69,10 @@ function ListStr2(Datum: TDynDatum; Indent: string): string;
 
 implementation /////////////////////////////////////////////////////////////////
 
+{$IFNDEF LINUX}
 uses
   Windows;
+{$ENDIF}
 
 var
   DebStr: string;
@@ -220,6 +222,10 @@ begin
 end;
 
 function TDynPair._Release: Integer;
+{$IFDEF LINUX}
+begin
+  Result := inherited _Release;
+{$ELSE}
 asm
   mov  eax,Self
   add  eax,4
@@ -245,11 +251,15 @@ asm
   pop  eax       // continuation
   xchg eax,[esp] // FCdr
   jmp  TDynDatum.Free
+{$ENDIF}
 end;
 
 function TDynPair.GetEnumerator: IDynEnumerator;
+var
+  Enum: TPairEnumerator;
 begin
-  Result := TPairEnumerator.Create(Self)
+  Enum := TPairEnumerator.Create(Self.AsISchPair);
+  Result := Enum.AsIDynEnumerator;
 end;
 
 function TDynPair.DatumType: TDatumType;

@@ -64,7 +64,8 @@ type
 implementation
 
 uses
-  SysUtils, ActiveX;
+  {$IFNDEF LINUX} ActiveX, {$ENDIF}
+  SysUtils;
 
 function ExtFuncDatum(ATypInfo: Pointer; AMethod: TMethod): TDynDatum;
 begin
@@ -91,6 +92,7 @@ var
   StrRes: String;
   LastParam: PAnsiChar;
 begin
+  {$IFNDEF LINUX}
   AutoEntry := ExtFunc.TypInfo;
   //AutoEntry.ParamInfo
 
@@ -175,6 +177,7 @@ begin
     @Ready:
   end;
   }
+  {$ENDIF}
 end;
 
 { TDynFuncRTTI }

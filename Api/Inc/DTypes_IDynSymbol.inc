@@ -18,5 +18,7 @@ begin
 end;
 
 exports
-  InitSymbols(const Names: array of Utf8String; const Ref: array of PISymbol) name 'Symbol.Create*',
-  InitSymbol(pName: PAnsiChar; cbName: Integer)    name 'Symbol.Create';
+{$IFNDEF LINUX}
+  InitSymbol  name 'Symbol.Create',
+{$ENDIF}
+  InitSymbols name 'Symbol.Create*';

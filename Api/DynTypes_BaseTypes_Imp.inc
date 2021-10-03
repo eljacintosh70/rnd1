@@ -91,7 +91,7 @@ begin
   Result.Ref := MakeDouble(A)
 end;
 
-class operator dyn.Implicit(const A: Char): dyn;
+class operator dyn.Implicit(const A: WideChar): dyn;
 begin
   Result.Ref := MakeChar(A)
 end;
@@ -121,7 +121,7 @@ begin
   HandleMessageWithPointer_Err(A, MsgCastToDouble, @Result, @ErrCastToDouble)
 end;
 
-class operator dyn.Implicit(const A: dyn): Char;
+class operator dyn.Implicit(const A: dyn): WideChar;
 begin
   HandleMessageWithPointer_Err(A, MsgCastToChar,  @Result, @ErrCastToChar)
 end;
