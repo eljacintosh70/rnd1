@@ -3,7 +3,11 @@ unit Test_Eval;
 interface
 
 uses
+  {$ifdef FPC}
+  fpcunit, testutils, testregistry,
+  {$else}
   TestFramework,
+  {$endif}
   DTPort, DTPortW, DUtils, DynTypes, DTDatum,
   LispParserA, LispParser, LispWrite,
   RndParser, RndWrite, Core, TestFiles;
@@ -103,6 +107,6 @@ end;
 
 initialization
   InitCore;
-  RegisterTest(TestEvalCore.Suite);
+  RegisterTest(TestEvalCore {$ifndef FPC}.Suite{$endif});
 end.
 

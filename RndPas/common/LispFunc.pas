@@ -93,7 +93,7 @@ type
 
     // (string-append str ...)
     procedure _string_append(out Result: TDatumRef; Datum: TDynDatum);
-  automated
+//  automated
   end;
 
 {
@@ -131,16 +131,16 @@ type
     procedure Divide(out Result: TDatumRef; Datum: TDynDatum);
     // (- x y)
     procedure Subst(out Result: TDatumRef; Datum: TDynDatum);
-  automated
-    function flabs(x: Real): Real;
+//  automated
+    function flabs(x: Double): Double;
     // (fllog x)
-    function fllog(x: Real): Real;
+    function fllog(x: Double): Double;
     // (flexp x)
-    function flexp(x: Real): Real;
+    function flexp(x: Double): Double;
     // (flsqrt x)
-    function flsqrt(x: Real): Real;
+    function flsqrt(x: Double): Double;
     // (^ x y)
-    function Pow(x, y: Real): Real;
+    function Pow(x, y: Double): Double;
     // (hex val nDig)
     function hex(val, nDig: Integer): String;
   end;
@@ -500,7 +500,7 @@ end;
 procedure TMathOpers.nEQ(out Result: TDatumRef; Datum: TDynDatum);
 var
   a: TDynDatum;
-  n1, n2: Real;
+  n1, n2: Double;
 begin
   Result := (_f);
   if not IsPair(Datum) then Exit;
@@ -526,7 +526,7 @@ end;
 procedure TMathOpers.nGE(out Result: TDatumRef; Datum: TDynDatum);
 var
   a: TDynDatum;
-  n1, n2: Real;
+  n1, n2: Double;
 begin
   Result := (_f);
   if not IsPair(Datum) then Exit;
@@ -551,7 +551,7 @@ end;
 procedure TMathOpers.nGT(out Result: TDatumRef; Datum: TDynDatum);
 var
   a: TDynDatum;
-  n1, n2: Real;
+  n1, n2: Double;
 begin
   Result := (_f);
   if not IsPair(Datum) then Exit;
@@ -576,7 +576,7 @@ end;
 procedure TMathOpers.nLE(out Result: TDatumRef; Datum: TDynDatum);
 var
   a: TDynDatum;
-  n1, n2: Real;
+  n1, n2: Double;
 begin
   Result := (_f);
   if not IsPair(Datum) then Exit;
@@ -601,7 +601,7 @@ end;
 procedure TMathOpers.nLT(out Result: TDatumRef; Datum: TDynDatum);
 var
   a: TDynDatum;
-  n1, n2: Real;
+  n1, n2: Double;
 begin
   Result := (_f);
   if not IsPair(Datum) then Exit;
@@ -626,7 +626,7 @@ end;
 procedure TMathOpers.Add(out Result: TDatumRef; Datum: TDynDatum);
 var
   ResI, Val: Int64;
-  Res: Real;
+  Res: Double;
   a: TDynDatum;
 begin
   Res := 0.0;
@@ -662,7 +662,7 @@ begin
   begin
     a := car(Datum);
     if IsNum(a) then
-      Res := Res + Real(dyn(a))
+      Res := Res + Double(dyn(a))
     else
       DynError('Number expected but %s found', [Deb(a)]);
     Datum := cdr(Datum);
@@ -673,7 +673,7 @@ end;
 procedure TMathOpers.Mult(out Result: TDatumRef; Datum: TDynDatum);
 var
   ResI, Val: Int64;
-  Res: Real;
+  Res: Double;
   a: TDynDatum;
 begin
   Res := 1.0;
@@ -712,7 +712,7 @@ begin
   begin
     a := car(Datum);
     if IsNum(a) then
-      Res := Res * Real(dyn(a));
+      Res := Res * Double(dyn(a));
     //else ERROR
     Datum := cdr(Datum);
   end;
@@ -722,7 +722,7 @@ end;
 procedure TMathOpers.Divide(out Result: TDatumRef; Datum: TDynDatum);
 var
   ResI, Val: Int64;
-  Res: Real;
+  Res: Double;
   a: TDynDatum;
 begin
   Res := 1.0;
@@ -766,7 +766,7 @@ begin
   begin
     a := car(Datum);
     if IsNum(a) then
-      Res := Res / Real(dyn(a));
+      Res := Res / Double(dyn(a));
     //else ERROR
     Datum := cdr(Datum);
   end;
@@ -776,7 +776,7 @@ end;
 procedure TMathOpers.Subst(out Result: TDatumRef; Datum: TDynDatum);
 var
   ResI, Val: Int64;
-  Res: Real;
+  Res: Double;
   a: TDynDatum;
 begin
   //ResI := 0;
@@ -804,7 +804,7 @@ begin
       end
       else if IsNum(a) then
       begin
-        Res := ResI - Real(dyn(a));
+        Res := ResI - Double(dyn(a));
         if IsPair(cdr(Datum)) then
           DynError('Too many parameters in -', []);
         Result := (MakeDouble(Res));  // (- x y) -> x - y
@@ -824,7 +824,7 @@ begin
       a := car(Datum);
       if IsNum(a) then
       begin
-        Res := Res - Real(dyn(a));
+        Res := Res - Double(dyn(a));
         if IsPair(cdr(Datum)) then
           DynError('Too many parameters in -', []);
         Result := (MakeDouble(Res));  // (- x y) -> x - y
@@ -842,27 +842,27 @@ begin
     DynError('Not enought parameters in (-)', []);
 end;
 
-function TMathOpers.flabs(x: Real): Real;
+function TMathOpers.flabs(x: Double): Double;
 begin
   Result := Abs(x)
 end;
 
-function TMathOpers.fllog(x: Real): Real;
+function TMathOpers.fllog(x: Double): Double;
 begin
   Result := Ln(x)
 end;
 
-function TMathOpers.flexp(x: Real): Real;
+function TMathOpers.flexp(x: Double): Double;
 begin
   Result := Exp(x)
 end;
 
-function TMathOpers.flsqrt(x: Real): Real;
+function TMathOpers.flsqrt(x: Double): Double;
 begin
   Result := sqrt(x)
 end;
 
-function TMathOpers.Pow(x, y: Real): Real;
+function TMathOpers.Pow(x, y: Double): Double;
 begin
   Result := Exp(Ln(x) * y);
 end;
