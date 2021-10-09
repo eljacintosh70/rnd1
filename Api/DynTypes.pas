@@ -446,7 +446,7 @@ function InitSymbol(const Name: Utf8String): TDynDatum; overload;
 function InitSymbolI(pName: PAnsiChar; {Utf8} cbName: Integer): IDynSymbol; overload;
 function InitSymbolI(const Name: Utf8String): IDynSymbol; overload;
 procedure InitSymbols(const Names: array of Utf8String; const Ref: array of
-  PISymbol); stdcall; overload;
+  PISymbol); stdcall;
 {$ENDREGION}
 
 {$REGION 'IDynScope'}

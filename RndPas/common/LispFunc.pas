@@ -93,7 +93,7 @@ type
 
     // (string-append str ...)
     procedure _string_append(out Result: TDatumRef; Datum: TDynDatum);
-  automated
+  {$IFNDEF LINUX} automated {$ENDIF}
   end;
 
 {
@@ -131,7 +131,7 @@ type
     procedure Divide(out Result: TDatumRef; Datum: TDynDatum);
     // (- x y)
     procedure Subst(out Result: TDatumRef; Datum: TDynDatum);
-  automated
+  {$IFNDEF LINUX} automated {$ENDIF}
     function flabs(x: Real): Real;
     // (fllog x)
     function fllog(x: Real): Real;

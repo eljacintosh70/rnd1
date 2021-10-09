@@ -4,10 +4,11 @@ interface
 
 uses
   //Messages, ActiveX, Classes, ComObj,
-  Windows, SysUtils,
+  SysUtils,
+  {$IFNDEF LINUX} Windows, {$ENDIF}
   DynTypes, DUtils;
 
-{--$define INLINE_VMT}
+{$IFNDEF LINUX} {$define INLINE_VMT} {$ENDIF}
 
 {$ifdef INLINE_VMT} // Esta constante activa un hack para reducir el tamaño de
 const               // los objetos que implementan interfaces, reusando la misma
@@ -21,12 +22,12 @@ type
   // InlineVMT requiere los siguientes métodos idénticos a los de IInterface
   public
     {$ifdef FPC}
-    function QueryInterface(constref IID: TGUID; out Obj): HResult; virtual; stdcall;
+    function QueryInterface(constref IID: TGUID; out Obj): HResult; virtual; Cdecl;
     {$else}
     function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall;
     {$endif}
-    function _AddRef: Integer; virtual; stdcall;
-    function _Release: Integer; virtual; stdcall;
+    function _AddRef: Integer; virtual; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF};
+    function _Release: Integer; virtual; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF};
   private
     function GetAsIInterface: IInterface;
   public
@@ -66,6 +67,7 @@ type
     procedure DefaultHandler(var Message); override;
   protected
     procedure DoMsgWrite(var Msg: TWriteMsg); message MsgWrite;
+    procedure DoMsgDebugWrite(var Msg: TWriteMsg); message MsgDebugWrite;
     procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;
     procedure DoMsgEval(var Msg: TEvalMessage); message MsgEval;
   end;
@@ -254,6 +256,13 @@ end;
 procedure TCustomDyn.DoMsgWrite(var Msg: TWriteMsg);
 begin
   Msg.Msg := MsgDisplay;  // si no se define Write, es igual a Display
+  Dispatch(Msg);
+  Msg.Msg := MsgWrite;
+end;
+
+procedure TCustomDyn.DoMsgDebugWrite(var Msg: TWriteMsg);
+begin
+  Msg.Msg := MsgDisplay;  // si no se define DebugWrite, es igual a Display
   Dispatch(Msg);
   Msg.Msg := MsgWrite;
 end;

@@ -2,7 +2,8 @@ unit DTArray;
 interface
 
 uses
-  Windows, SysUtils,
+  SysUtils,
+  {$IFNDEF LINUX} Windows, {$ENDIF}
   DynTypes, DTDatum, DUtils;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -45,7 +46,7 @@ type
     class function Create(n: Integer): TDynArray; overload;
     class function Create(const Arr: array of const): TDynArray; overload;
     class function Create(n: Integer; Fill: TDynDatum): TDynArray; overload;
-    function _Release: Integer; override; stdcall;
+    function _Release: Integer; override; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF};
     function GetItemA(i: Integer): TDynDatum; override;
     procedure SetItemA(i: Integer; const First: TDynDatum); override;
     // deben seguir el mismo orden que en ISchVector
@@ -81,7 +82,7 @@ type
     class function Create(n: Integer): TDynMemory; overload;
     class function Create(pData: Pointer;
       cbData: Integer): TDynMemory; overload;
-    function _Release: Integer; override; stdcall;
+    function _Release: Integer; override; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF};
     function GetBytes(i: Integer): Byte; override;
     procedure SetBytes(i: Integer; const Value: Byte); override;
     function FindNext(const Data: RawData; var Pos: TArrayPos; MaxPos: TArrayPos =

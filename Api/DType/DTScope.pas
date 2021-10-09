@@ -74,7 +74,11 @@ type
   protected
     List: TSSymbolList;
   public
+    {$ifdef FPC}
+    function QueryInterface(constref IID: TGUID; out Obj): HResult; override; Cdecl;
+    {$else}
     function QueryInterface(const IID: TGUID; out Obj): HResult; override; stdcall;
+    {$endif}
     function DisplayStr(NeededChars: Integer): String; override;
   public
     constructor Create(AParent: IDynScope = nil);
@@ -249,7 +253,7 @@ begin
     Result := Unbound
 end;
 
-function TBigScope.QueryInterface(const IID: TGUID; out Obj): HResult;
+function TBigScope.QueryInterface({$ifdef FPC} constref {$else} const {$endif} IID: TGUID; out Obj): HResult;
 begin
   Result := inherited QueryInterface(IID, Obj)
 end;

@@ -10,7 +10,7 @@ type
   TTokenInfo   = DTParser.TTokenInfo;
 
   IParser = interface(IInterface)
-    function GetNextTerm(p: PChar; out Res: TTokenInfo): PChar;
+    function GetNextTerm(p: PWideChar; out Res: TTokenInfo): PWideChar;
   end;
 
   TCustomLispParser = class(TInterfacedObject)
@@ -25,11 +25,11 @@ type
 
   TLispParser = class(TCustomLispParser, IParser)
   public
-    function GetNextTerm(p: PChar; out Res: TTokenInfo): PChar;
+    function GetNextTerm(p: PWideChar; out Res: TTokenInfo): PWideChar;
   public
     constructor Create;
-    function Evaluate(out AResult: TDatumRef; const s: String): PChar; overload;
-    function Evaluate(out AResult: TDatumRef; p: PChar; cc: Integer): PChar; overload;
+    function Evaluate(out AResult: TDatumRef; const s: String): PWideChar; overload;
+    function Evaluate(out AResult: TDatumRef; p: PWideChar; cc: Integer): PWideChar; overload;
   end;
 
 const
@@ -124,9 +124,9 @@ begin
   InitQuoteFn;
 end;
 
-function TLispParser.Evaluate(out AResult: TDatumRef; const s: String): PChar;
+function TLispParser.Evaluate(out AResult: TDatumRef; const s: String): PWideChar;
 var
-  p: PChar;
+  p: PWideChar;
   cc: Integer;
 begin
   p := Pointer(s);
@@ -136,15 +136,15 @@ begin
   Result := TLexer(Lexer).CurPos;
 end;
 
-function TLispParser.Evaluate(out AResult: TDatumRef; p: PChar;
-  cc: Integer): PChar;
+function TLispParser.Evaluate(out AResult: TDatumRef; p: PWideChar;
+  cc: Integer): PWideChar;
 begin
   TLexer(Lexer).Init(p, cc);
   Eval(AResult);
   Result := TLexer(Lexer).CurPos;
 end;
 
-function TLispParser.GetNextTerm(p: PChar; out Res: TTokenInfo): PChar;
+function TLispParser.GetNextTerm(p: PWideChar; out Res: TTokenInfo): PWideChar;
 begin
   TLexer(Lexer).CurPos := p;
   inherited GetNextTerm(Res);

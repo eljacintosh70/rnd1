@@ -36,14 +36,14 @@ type
 function WriteStr(v: dyn): string; stdcall;
 function DisplayStr(v: dyn): string; stdcall;
 
-exports
-  WriteStr name 'WriteStr',
-  DisplayStr name 'DisplayStr';
-
 implementation
 
 uses
   DTPortW;
+
+exports
+  WriteStr name 'WriteStr',
+  DisplayStr name 'DisplayStr';
 
 function WriteStr(v: dyn): string; stdcall;
 var

@@ -9,8 +9,8 @@ type
   TCustomBool = class(TDyn)
   public
     // objetos constantes, no destruir, no contar referencias
-    function _AddRef: Integer; override; stdcall;
-    function _Release: Integer; override; stdcall;
+    function _AddRef: Integer; override; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF};
+    function _Release: Integer; override; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF};
   public
     function DatumType: TDatumType; override;
   end;

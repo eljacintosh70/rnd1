@@ -51,7 +51,7 @@ type
     function WriteList(const val: array of dyn; Kind: TListKind = lkList): Boolean; override; stdcall;
     function BeginList(Kind: TListKind): IDynOutPort; override; stdcall;
   protected
-    function WriteChar(ch: Char): Boolean; virtual;
+    function WriteChar(ch: WideChar): Boolean; virtual;
     function EscapeStr(p: PWideChar; cc: Integer): Boolean; virtual;
   end;
 
@@ -316,9 +316,9 @@ end;
 function TDynOutPortWr.WriteMem(p: PAnsiChar; cb: Integer;
   Kind: TMemKind): Boolean;
 const
-  HexDigit: array[0..$F] of Char = '0123456789ABCDEF';
+  HexDigit: array[0..$F] of WideChar = '0123456789ABCDEF';
 var
-  HexStr: array[0..2] of Char;
+  HexStr: array[0..2] of WideChar;
   b: Byte;
   i: Integer;
 begin
@@ -383,7 +383,7 @@ begin
   Result := TDynOutPortIndent.Create(Self, '', ' ', '')
 end;
 
-function TDynOutPortWr.WriteChar(ch: Char): Boolean;
+function TDynOutPortWr.WriteChar(ch: WideChar): Boolean;
 begin
   Result := WriteText(@ch, 1)
 end;

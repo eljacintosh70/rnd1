@@ -71,6 +71,7 @@
   end;
 
   IDyn = interface(IInterface)
+    ['{99AD078F-FE40-4FB5-A8C2-F92092684531}']
     // debería soportar el operador Obj(arg), pero no funciona,
     // hay que llamar Obj.Invoke(arg)
     function Invoke(const Arg: array of dyn): dyn; stdcall;
@@ -90,8 +91,8 @@
   weak_IInterface = class(TObject)
   public
     function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall; abstract;
-    function _AddRef: Integer; virtual; stdcall; abstract;
-    function _Release: Integer; virtual; stdcall; abstract;
+    function _AddRef: Integer; virtual; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF}; abstract;
+    function _Release: Integer; virtual; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF}; abstract;
   end;
 
   weak_IDyn = class(weak_IInterface)

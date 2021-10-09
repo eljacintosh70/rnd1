@@ -9,7 +9,9 @@ begin
   Result := TDynString.CreateI(pData, cbData)
 end;
 
+{$IFNDEF LINUX}
 exports
   make_string(pData: PAnsiChar; cbData: Integer)  name 'make_stringA',
   make_string(pData: PWideChar; cbData: Integer)  name 'make_stringW';
+{$ENDIF}
 

@@ -292,7 +292,7 @@ begin
   // (lambda Params . FnDef)
   NeedParams(Datum, [@Params], @FnDef);
   NeedPair(Params);
-  Result := (TDynLambda.Create(Params, FnDef, Scope));
+  Result := (TDynLambda.Create(Params, FnDef, Scope)).AsIDynFunc;
 end;
 
 var
@@ -329,7 +329,7 @@ begin
     SeparCarCadrList(Bindings, x, v);
     tmp := Deb(x);
     tmp := Deb(v);
-    FnRef := TDynLambda.Create(Pointer(x), Body, Scope);
+    FnRef := TDynLambda.Create(Pointer(x), Body, Scope).AsIDynFunc;
     EvalParams(Par, Pointer(v), Scope);
     FnRef.Call(Result, Par.Value);
   end

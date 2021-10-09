@@ -1,18 +1,27 @@
 
 function CreateObject(AParent: IDynScope; const PropNames: array of TDynDatum;
       const PropValues: array of const): IDynScope;
+var
+  Obj: TScriptObject;
 begin
-  Result := TScriptObject.Create(AParent, PropNames, PropValues);
+  Obj := TScriptObject.Create(AParent, PropNames, PropValues);
+  Result := Obj.AsIDynScope;
 end;
 
 function CreateMethod(AMethod: TDynMethodG): IDynMethod;
+var
+  Obj: TDynMethodObjG;
 begin
-  Result := TDynMethodObjG.Create(AMethod);
+  Obj := TDynMethodObjG.Create(AMethod);
+  Result := Obj.AsIDynMethod;
 end;
 
 function CreateMethod(AMethod: TDynMethodO): IDynMethod;
+var
+  Obj: TDynMethodObjO;
 begin
-  Result := TDynMethodObjO.Create(AMethod);
+  Obj := TDynMethodObjO.Create(AMethod);
+  Result := Obj.AsIDynMethod;
 end;
 
 procedure CallMember(out Result: TDatumRef; Scope: IDynScope; MemberId: TDynDatum;
@@ -81,8 +90,10 @@ end;
 
 exports
   CreateObject name 'CreateObject',
+  {$IFNDEF LINUX}
   CreateMethod(AMethod: TDynMethodG) name 'CreateMethodG',
   CreateMethod(AMethod: TDynMethodO) name 'CreateMethodO',
+  {$ENDIF}
   CallMember name 'CallMember',
 
   RegisterFunctions name 'RegisterFunctions',

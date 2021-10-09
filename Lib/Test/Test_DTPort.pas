@@ -12,7 +12,11 @@ unit Test_DTPort;
 interface
 
 uses
+  {$ifdef FPC}
+  fpcunit, testutils, testregistry,
+  {$else}
   TestFramework,
+  {$endif}
   DTPort, DTPortW, DUtils, DynTypes, DTDatum,
   LispParserA, LispParser, LispWrite,
   RndParser, RndWrite, TestFiles;
@@ -272,9 +276,9 @@ end;
 initialization
   {$if Declared(FormatSettings)}FormatSettings.{$ifend} DecimalSeparator := '.';
   // Register any test cases with the test runner
-  RegisterTest(TestTDynOutPortD.Suite);
-  RegisterTest(TestTDynOutPortLisp.Suite);
-  RegisterTest(TestTDynOutPortRnd.Suite);
+  RegisterTest(TestTDynOutPortD {$ifndef FPC}.Suite{$endif});
+  RegisterTest(TestTDynOutPortLisp {$ifndef FPC}.Suite{$endif});
+  RegisterTest(TestTDynOutPortRnd {$ifndef FPC}.Suite{$endif});
 end.
 
 
