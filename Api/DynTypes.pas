@@ -98,6 +98,7 @@ type
   TDatumRef = dyn;
 
   IDynDatum = interface(IDyn)
+    ['{39D784FE-CB51-4503-8751-CD6CE98D5C81}']
     function CommandExec(Command: Integer; Res: Pointer; Data: Pointer = nil): Integer;
     function DatumType: TDatumType;
     function AsVariant: Variant;
@@ -425,8 +426,10 @@ procedure NeedString(Datum: TDynDatum; var Value: AnsiString); overload;
 
 {$REGION 'IDynSymbol'}
 // symbol? Nombre de una variable.
-function IsSymbol(Datum: TDynDatum): Boolean;
-procedure NeedSymbol(Datum: TDynDatum); overload;
+function IsSymbol(Datum: TDynDatum): Boolean; overload;
+function IsSymbol(Datum: TDynDatum; out Ref: IDynSymbol): Boolean; overload;
+procedure NeedSymbol(Datum: TDynDatum); overload;                             
+procedure NeedSymbol(Datum: TDynDatum; out Ref: IDynSymbol); overload;
 
 function InitSymbol(pName: PAnsiChar; {Utf8} cbName: Integer): TDynDatum;
   stdcall; overload;
@@ -460,8 +463,8 @@ procedure NeedParams(Params: TDynDatum; const Required: array of PDynDatum;
 function ConstToDatum(const Val: TVarRec): dyn; stdcall;
 function DatumType(Datum: TDynDatum): TDatumType;
 
-function Deb(X: TDynDatum; Max: Integer = 256): String; overload;
-function Deb(const X: IDynDatum; Max: Integer = 256): String; overload;
+function Deb(Obj: TDynDatum; Max: Integer = 256): String; overload;
+function Deb(const Obj: IDynDatum; Max: Integer = 256): String; overload;
 
 function Supports(Datum: TDynDatum; IID: TGuid; out Res): Boolean; overload;
 function Supports(Datum: TDynDatum; IID: TGuid): Boolean; overload;
@@ -486,7 +489,7 @@ uses
   TypInfo,
   {$IFNDEF LINUX} Windows, MapFiles, {$ENDIF}
   DTBool, DTInt, DTFloat, DTPair, DTArray, DTString, DTProc, DTProcRTTI,
-  DTScript, DTSymbol,
+  DTScript, DTSymbol, DTPortW,
 {$endif}
   DUtils;    // LispTypes, SchInterpreter, LispEnv,
 
@@ -505,6 +508,13 @@ end;
 function InvalidType: Exception;
 begin
   Result := Exception.Create('Invalid Type');
+end;
+
+function AddrToIDynDatum(Addr: NativeInt): IDynDatum;
+begin
+  {$if Declared(InlineVMT)} Result := IDynDatum(Pointer(Addr));
+  {$else}                   Result := TObject(Pointer(Addr)) as IDynDatum;
+  {$ifend}
 end;
 
 {$REGION 'IDynInt'}
@@ -555,7 +565,7 @@ begin
   Val := Integer(Pointer(Datum));
   case Val and StorageMask of
     smInterface:
-      if IDynDatum(Pointer(Val)).DatumType = atInteger then
+      if AddrToIDynDatum(Val).DatumType = atInteger then
       begin
         cb := IDynInt(Pointer(Val)).ByteCount;
         case cb of
@@ -601,7 +611,7 @@ begin
   case Val and StorageMask of
     smInterface:
       begin
-        DatumType := IDynDatum(Pointer(Val)).DatumType;
+        DatumType := AddrToIDynDatum(Val).DatumType;
         case DatumType of
           atInteger:
             begin
@@ -645,7 +655,7 @@ begin
   Val := Integer(Pointer(Datum));
   case Val and StorageMask of
     smInterface:
-      if IDynDatum(Pointer(Val)).DatumType = atInteger then
+      if AddrToIDynDatum(Val).DatumType = atInteger then
       begin
         cb := IDynInt(Pointer(Val)).ByteCount;
         case cb of
@@ -774,7 +784,7 @@ begin
     0, 3:  Exit;  // nil, _null
   end;
   if Integer(Pointer(Datum)) and 3 = 0 then
-    if IDynDatum(Pointer(Datum)).DatumType = atPair then
+    if (Datum as IDynDatum).DatumType = atPair then
       Exit;
   raise EWrongType.Create('invalid Pair'{Datum, 'Pair'});
 end;
@@ -788,7 +798,7 @@ begin
       raise EWrongType.Create('Pair is nil');
   end;
   if Integer(Pointer(Datum)) and 3 = 0 then
-    if IDynDatum(Pointer(Datum)).DatumType = atPair then
+    if (Datum as IDynDatum).DatumType = atPair then
       Exit;
   raise EWrongType.Create('invalid Pair'{Datum, 'Pair'});
 end;
@@ -863,7 +873,7 @@ end;
 procedure NeedVector(Datum: TDynDatum; var Value: IDynArray); overload;
 begin
   if Integer(Pointer(Datum)) and 3 = 0 then
-    if IDynDatum(Pointer(Datum)).DatumType = atVector then
+    if (Datum as IDynDatum).DatumType = atVector then
     begin
       Value := IDynArray(Pointer(Datum));
       Exit;
@@ -906,7 +916,7 @@ end;
 procedure NeedByteVector(Datum: TDynDatum; var Value: IDynMemory); overload;
 begin
   if Integer(Pointer(Datum)) and 3 = 0 then
-    if IDynDatum(Pointer(Datum)).DatumType = atByteVector then
+    if (Datum as IDynDatum).DatumType = atByteVector then
     begin
       Value := IDynMemory(Pointer(Datum));
       Exit;
@@ -1018,33 +1028,44 @@ procedure InitSymbols(const Names: array of Utf8String; const Ref: array of
 
 function IsSymbol(Datum: TDynDatum): Boolean;
 var
-  Val: Integer;
-  //p: PSymbolAtomRec;
+  Msg: TVarMessage;
 begin
-  Result := False;
-  Val := Integer(Pointer(Datum));
-  case Val and StorageMask of
-    smInterface:
-      begin
-        if not Assigned(Datum) then
-          Exit;
-        if IDynDatum(Val and PointerMask).DatumType <> atSymbol then
-          Exit;
-      end;
-    {smRef:
-      begin
-        p := PSymbolAtomRec(Val and PointerMask);
-        if p.DatumType <> atSymbol then Exit;
-      end;}
-    else
-      Exit;
+  if Datum = nil then
+  begin
+    Result := False;
+    Exit;
   end;
-  Result := True;
+  Msg.Msg := MsgIsSymbol;
+  Msg.Res := 0;
+  Datum.DispatchMsg(Msg);
+  Result := (Msg.Res <> 0);
+end;
+
+function IsSymbol(Datum: TDynDatum; out Ref: IDynSymbol): Boolean;     
+var
+  Msg: TVarMessage;
+begin
+  if Datum = nil then
+  begin
+    Result := False;
+    Exit;
+  end;
+  Msg.Msg := MsgIsSymbolR;
+  Msg.Res := 0;
+  Msg.VarPtr := @Ref;
+  Datum.DispatchMsg(Msg);
+  Result := (Msg.Res <> 0);
 end;
 
 procedure NeedSymbol(Datum: TDynDatum);
 begin
   if not IsSymbol(Datum) then
+    raise EWrongType.Create(Datum, 'Symbol');
+end;
+
+procedure NeedSymbol(Datum: TDynDatum; out Ref: IDynSymbol);
+begin
+  if not IsSymbol(Datum, Ref) then
     raise EWrongType.Create(Datum, 'Symbol');
 end;
 
@@ -1227,7 +1248,7 @@ begin
   case Integer(Pointer(Datum)) and 3 of
     smInterface:
       if Assigned(Datum) then
-        Result := IDynDatum(Pointer(Datum)).DatumType
+        Result := (Datum as IDynDatum).DatumType
       else
         Result := atNil;
     smInteger:
@@ -1378,10 +1399,11 @@ end;
 function TDynDatum.NewRef: TDynDatum;
 begin
   Result := Self;
-  case Integer(Pointer(Result)) and StorageMask of
+  case NativeInt(Pointer(Result)) and StorageMask of
     smInterface:
       if Assigned(Result) then
-        IInterface(Integer(Pointer(Result)) and PointerMask)._AddRef;
+        (Result as IInterface)._AddRef;
+        //IInterface(NativeInt(Pointer(Result)) and PointerMask)._AddRef;
     //smRef:
     //  Inc(PRefDatum(Integer(Pointer(Result)) and PointerMask).RefCount);
   end;
@@ -1397,7 +1419,7 @@ begin
     smInterface:
       begin
         if Val <> 0 then
-          Result := IDynDatum(Val and PointerMask).DatumType
+          Result := AddrToIDynDatum(Val and PointerMask).DatumType
         else
           Result := atNil;
       end;
@@ -1500,7 +1522,7 @@ exports
 function EnsureInterface(A: weak_IDyn): IDyn;
 begin
   if NativeInt(Pointer(A)) and StorageMask = smInterface then
-    Result := IDyn(Pointer(A))
+    Result := A as IDyn //IDyn(Pointer(A))
   else
     Result := ValToRefType(A)
 end;

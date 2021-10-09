@@ -6,6 +6,9 @@ uses
   DynTypes, DUtils, DTDatum;
 
 type
+
+  { TDynSymbol }
+
   TDynSymbol = class(TDyn, IDynSymbol)
   // InlineVMT requiere los siguientes métodos idénticos a los de IDynSymbol
   public
@@ -27,6 +30,9 @@ type
   protected
     procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;
     procedure DoMsgEval(var Msg: TEvalMessage); message MsgEval;
+
+    procedure DoMsgIsSymbol(var Msg: TVarMessage); message MsgIsSymbol;
+    procedure DoMsgIsSymbolR(var Msg: TVarMessage); message MsgIsSymbolR;
   end;
 
 type
@@ -61,8 +67,11 @@ function SymbolName(A: TDynDatum): Utf8String;
 implementation /////////////////////////////////////////////////////////////////
 
 function SymbolName(A: TDynDatum): Utf8String;
+var
+  Ref: IDynSymbol;
 begin
-  Result := TDynSymbol(Pointer(A)).Key
+  NeedSymbol(A, Ref);
+  Result := Ref.Name
 end;
 
 function SameSymbolsName(A: RawByteString; pB: PAnsiChar; cbB: Integer): Boolean; overload;
@@ -146,6 +155,19 @@ end;
 procedure TDynSymbol.DoMsgEval(var Msg: TEvalMessage);
 begin
   Msg.Res := Msg.Scope.Item[IDynSymbol(Self)]
+end;
+
+procedure TDynSymbol.DoMsgIsSymbol(var Msg: TVarMessage);
+begin
+  Msg.Res := 1; //True;
+end;
+
+procedure TDynSymbol.DoMsgIsSymbolR(var Msg: TVarMessage);
+type
+  PIDynSymbol = ^IDynSymbol;
+begin             
+  Msg.Res := 1; //True;
+  PIDynSymbol(Msg.VarPtr)^ := IDynSymbol(Self);
 end;
 
 { TSymbolHash }

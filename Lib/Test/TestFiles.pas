@@ -21,7 +21,7 @@ begin
   Path := ExtractFilePath(Path);
   Path := ExcludeTrailingPathDelimiter(Path);
   Path := ExtractFilePath(Path);
-  TestFilePath := Path + 'Lib\Test\';
+  TestFilePath := Path + 'Lib/Test/'; // 'Lib\Test\';
 end;
 
 function LoadTestFile(Name: string): string;

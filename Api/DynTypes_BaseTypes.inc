@@ -71,6 +71,7 @@
   end;
 
   IDyn = interface(IInterface)
+    ['{99AD078F-FE40-4FB5-A8C2-F92092684531}']
     // debería soportar el operador Obj(arg), pero no funciona,
     // hay que llamar Obj.Invoke(arg)
     function Invoke(const Arg: array of dyn): dyn; stdcall;

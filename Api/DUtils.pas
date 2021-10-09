@@ -27,9 +27,13 @@ const
    MsgCastToDouble = $004;   // Cmd.VarPtr^ := Double(Obj)
    MsgCastToString = $005;   // Cmd.VarPtr^ := String(Obj)
 
+   MsgIsSymbol     = $006;   // Cmd.Res     := Ord(Obj is IDynSymbol)
+   MsgIsSymbolR    = $007;   // Cmd.VarPtr^ := IDynSymbol(Obj)
+
    // reciben un TWriteMsg
    MsgWrite        = $010;  // escribelos objetos en una forma en que debería poder leerse
    MsgDisplay      = $011;  // forma no reversible, por ejemplo, texto sin comillas
+   MsgDebugWrite   = $012;  // MsgWrite con información extra, de ser necesario
 
    // reciben un TEvalMessage
    MsgEval         = $020;  //  evalúa un objeto usando los valores indicados en Scope

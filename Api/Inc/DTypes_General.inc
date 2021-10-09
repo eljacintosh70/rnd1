@@ -1,5 +1,5 @@
-function Deb(X: TDynDatum; Max: Integer = 256): String;
-var
+function Deb(Obj: TDynDatum; Max: Integer = 256): String;
+{var
   Syntax: TDynSyntax;
   Ext: TDynFuncRTTI;
   Info: TDynLambda;
@@ -61,11 +61,32 @@ begin
     else
       Result := 'ERROR';
   end
+}
+begin
+  Result := Deb(Obj as IDynDatum, max)
 end;
 
-function Deb(const X: IDynDatum; Max: Integer = 256): String; overload;
+function Deb(const Obj: IDynDatum; Max: Integer = 256): String; overload;
+var
+  Msg: TWriteMsg;
+  TextOut: TStrTextOutW;
+  Port: TDynOutPort;
+  Res: Boolean;
 begin
-  Result := Deb(TDynDatum(Pointer(X)), Max);
+  TextOut := TStrTextOutW.Create(200);
+  Port := TDynOutPort.Create(TextOut.WriteProc);
+
+  if Obj <> nil then
+  begin
+    Msg.Msg := MsgDebugWrite;
+    Msg.Res := 0;
+    Msg.Port := Port;
+    Obj.DispatchMsg(Msg);
+    Res := Msg.Res <> 0;
+  end
+  else
+    Res := Port.WriteSpecial(svNil);
+  Result := TextOut.GetText;
 end;
 
 {$IFNDEF LINUX}
