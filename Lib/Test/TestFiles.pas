@@ -21,7 +21,7 @@ begin
   Path := ExtractFilePath(Path);
   Path := ExcludeTrailingPathDelimiter(Path);
   Path := ExtractFilePath(Path);
-  TestFilePath := Path + 'Lib/Test/'; // 'Lib\Test\';
+  TestFilePath := Path + {$IFDEF LINUX} 'Lib/Test/' {$ELSE} 'Lib\Test\' {$ENDIF};
 end;
 
 function LoadTestFile(Name: string): string;

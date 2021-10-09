@@ -11,7 +11,7 @@ type
   public
     function BeginList(Kind: TListKind): IDynOutPort; override; stdcall;
   protected
-    function WriteChar(ch: Char): Boolean; override;
+    function WriteChar(ch: WideChar): Boolean; override;
     function EscapeStr(p: PWideChar; cc: Integer): Boolean; override;
   end;
 
@@ -76,7 +76,7 @@ begin
   Result := TDynOutPortLispIndent.Create(Self, AOpen, ASepar, AClose)
 end;
 
-function TDynOutPortLisp.WriteChar(ch: Char): Boolean;
+function TDynOutPortLisp.WriteChar(ch: WideChar): Boolean;
 begin
   case ch of
     #$00: Result := WriteText('#\null');      // the null character, U+0000
@@ -88,7 +88,7 @@ begin
     #$1B: Result := WriteText('#\escape');    // U+001B
     #$20: Result := WriteText('#\space');     // the preferred way to write a space
     #$7F: Result := WriteText('#\delete');    // U+007F
-    #$21..#$7E, #$00A0..#$FF:
+    #$21..#$7E, #$00A0..#$FFFF:
           Result := WriteText('#\' + ch);
     else  Result := WriteText(Format('#\x%.3x', [Ord(ch)]));
   end;

@@ -12,7 +12,7 @@ type
     function BeginList(Kind: TListKind): IDynOutPort; override; stdcall;
     function WriteSpecial(v: TSpecialValue): Boolean; override; stdcall;
   protected
-    function WriteChar(ch: Char): Boolean; override;
+    function WriteChar(ch: WideChar): Boolean; override;
     function EscapeStr(p: PWideChar; cc: Integer): Boolean; override;
   end;
 
@@ -91,10 +91,10 @@ begin
   Result := WriteText(s)
 end;
 
-function TDynOutPortRnd.WriteChar(ch: Char): Boolean;
+function TDynOutPortRnd.WriteChar(ch: WideChar): Boolean;
 begin
   case ch of
-    #$20..#$7E, #$00A0..#$FF:
+    #$20..#$7E, #$00A0..#$FFFF:
           Result := WriteText('''' + ch + '''');
     else  Result := WriteText(Format('#%d', [Ord(ch)]));
   end;

@@ -26,6 +26,8 @@ const
   smInline    = 3;
 
 type
+  Real = Double;
+
   IDyn = interface;
   IDynEnumerator = interface;
   weak_IInterface = class;
@@ -137,16 +139,12 @@ type
     function Value: Real;
   end;
 
-  TDynSymbol = class(TDynDatum)
-    function FoldedCase: TDynDatum; virtual; abstract;
-  end;
-
   {$ifndef LISP_LIB}
   TSymbolAtom = TDynDatum;
   {$endif}
 
   IDynSymbol = interface(IDynDatum)
-    function FoldedCase: TDynDatum;
+    function FoldedCase: IDynSymbol;
     function Name: Utf8String;
   end;
 
@@ -325,13 +323,22 @@ const
 function FixNumValue(Value: TDynDatum): FixNum; {$ifdef INLINE} inline; {$endif}
 function Int64Value(Value: TDynDatum): Int64;
 
-procedure NeedInteger(Datum: TDynDatum; var Value: Integer);
+function  IsInteger(Datum: TDynDatum): Boolean; overload;
+function  IsInteger(Datum: TDynDatum; var Value: Int64): Boolean; overload;
+function  IsInteger(Datum: TDynDatum; var Value: Integer): Boolean; overload;
+procedure NeedInteger(Datum: TDynDatum; var Value: Int64); overload;
+procedure NeedInteger(Datum: TDynDatum; var Value: Integer); overload;
 procedure NeedIntegerSt(Datum: TDynDatum; var Value: Integer);
+
 procedure NeedInt64(Datum: TDynDatum; var Value: Int64);
 {$ENDREGION}
 
 {$REGION 'IDynFloat'}
 function FloNumValue(Self: TDynDatum): Double;
+
+function  IsReal(Datum: TDynDatum): Boolean; overload;
+function  IsReal(Datum: TDynDatum; var Value: Real): Boolean; overload;
+procedure NeedReal(Datum: TDynDatum; var Value: Real);
 {$ENDREGION}
 
 {$REGION 'Bool'}
@@ -358,11 +365,13 @@ function GetNext(var Seq: IDynSeq; var Item: TDynDatum): Boolean; overload;
 
 {$REGION 'IDynPair'}
 // (pair? Datum) Elemento de una lista.
-function IsPair(Datum: TDynDatum): Boolean; {$ifdef INLINE} inline; {$endif}
+function IsPair(Datum: TDynDatum): Boolean; overload;
+function IsPair(Datum: TDynDatum; out Ref: IDynPair): Boolean; overload;
 
 procedure NeedPair(Datum: TDynDatum); overload;
-procedure NeedPairNonNil(Datum: TDynDatum); overload;
 procedure NeedPair(Datum: TDynDatum; var Value: IDynPair); overload;
+procedure NeedPairNonNil(Datum: TDynDatum); overload;
+procedure NeedPairNonNil(Datum: TDynDatum; var Value: IDynPair); overload;
 
 //  external dll name 'const->datum';
 function cons(const Car, Cdr: dyn): IDynPair; stdcall;
@@ -428,7 +437,7 @@ procedure NeedString(Datum: TDynDatum; var Value: AnsiString); overload;
 // symbol? Nombre de una variable.
 function IsSymbol(Datum: TDynDatum): Boolean; overload;
 function IsSymbol(Datum: TDynDatum; out Ref: IDynSymbol): Boolean; overload;
-procedure NeedSymbol(Datum: TDynDatum); overload;                             
+procedure NeedSymbol(Datum: TDynDatum); overload;
 procedure NeedSymbol(Datum: TDynDatum; out Ref: IDynSymbol); overload;
 
 function InitSymbol(pName: PAnsiChar; {Utf8} cbName: Integer): TDynDatum;
@@ -437,7 +446,7 @@ function InitSymbol(const Name: Utf8String): TDynDatum; overload;
 function InitSymbolI(pName: PAnsiChar; {Utf8} cbName: Integer): IDynSymbol; overload;
 function InitSymbolI(const Name: Utf8String): IDynSymbol; overload;
 procedure InitSymbols(const Names: array of Utf8String; const Ref: array of
-  PISymbol); stdcall; overload;
+  PISymbol); stdcall;
 {$ENDREGION}
 
 {$REGION 'IDynScope'}
@@ -510,19 +519,7 @@ begin
   Result := Exception.Create('Invalid Type');
 end;
 
-function AddrToIDynDatum(Addr: NativeInt): IDynDatum;
-begin
-  {$if Declared(InlineVMT)} Result := IDynDatum(Pointer(Addr));
-  {$else}                   Result := TObject(Pointer(Addr)) as IDynDatum;
-  {$ifend}
-end;
-
 {$REGION 'IDynInt'}
-
-function CreateFixNum(Value: FixNum): TDynDatum;
-begin
-  Result := Pointer((Value * 4) or smInteger);
-end;
 
 function FixNumValue(Value: TDynDatum): FixNum;
 begin
@@ -556,40 +553,37 @@ begin
   end;
 end;
 
+function  IsInteger(Datum: TDynDatum): Boolean;
+var
+  Tmp: Int64;
+begin
+  Result := HandleMessageWithPointer(Datum, MsgCastToInt64, @Tmp);
+end;
+
+function  IsInteger(Datum: TDynDatum; var Value: Int64): Boolean;
+begin
+  Result := HandleMessageWithPointer(Datum, MsgCastToInt64, @Value)
+end;
+
+function  IsInteger(Datum: TDynDatum; var Value: Integer): Boolean;
+var
+  Tmp: Int64;
+begin
+  Result := HandleMessageWithPointer(Datum, MsgCastToInt64, @Tmp);
+  Value := Tmp;
+end;
+
+procedure NeedInteger(Datum: TDynDatum; var Value: Int64);
+begin
+  HandleMessageWithPointer_Err(Datum, MsgCastToInt64, @Value, @ErrCastToInt)
+end;
+
 procedure NeedInteger(Datum: TDynDatum; var Value: Integer);
 var
-  cb: Integer;
-  Val: Integer;
-  Val64: Int64;
+  Tmp: Int64;
 begin
-  Val := Integer(Pointer(Datum));
-  case Val and StorageMask of
-    smInterface:
-      if AddrToIDynDatum(Val).DatumType = atInteger then
-      begin
-        cb := IDynInt(Pointer(Val)).ByteCount;
-        case cb of
-          4: begin
-               Value := PInteger(IDynInt(Pointer(Val)).BytePtr)^;
-               Exit;
-             end;
-          8: begin
-               Val64 := PInt64(IDynInt(Pointer(Val)).BytePtr)^;
-               if (Val64 >= Low(Integer)) and (Val64 <= High(Integer)) then
-               begin
-                 Value := Val64;
-                 Exit;
-               end;
-             end;
-        end
-      end;
-    smInteger:
-      begin
-        Value := FixNumValue(Datum);
-        Exit;
-      end;
-  end;
-  raise EWrongType.Create(Datum, 'Integer');
+  HandleMessageWithPointer_Err(Datum, MsgCastToInt64, @Tmp, @ErrCastToInt);
+  Value := Tmp;
 end;
 
 function IntegerFromStrDatum(Datum: TDynDatum): Integer;
@@ -611,7 +605,7 @@ begin
   case Val and StorageMask of
     smInterface:
       begin
-        DatumType := AddrToIDynDatum(Val).DatumType;
+        DatumType := IDynDatum(Pointer(Val)).DatumType;
         case DatumType of
           atInteger:
             begin
@@ -655,7 +649,7 @@ begin
   Val := Integer(Pointer(Datum));
   case Val and StorageMask of
     smInterface:
-      if AddrToIDynDatum(Val).DatumType = atInteger then
+      if IDynDatum(Pointer(Val)).DatumType = atInteger then
       begin
         cb := IDynInt(Pointer(Val)).ByteCount;
         case cb of
@@ -709,6 +703,24 @@ begin
       DynError('Format: %p', [Pointer(Self)]);
   end
 end;
+
+function  IsReal(Datum: TDynDatum): Boolean;
+var
+  Value: Real;
+begin
+  Result := HandleMessageWithPointer(Datum, MsgCastToDouble, @Value);
+end;
+
+function  IsReal(Datum: TDynDatum; var Value: Real): Boolean;
+begin
+  Result := HandleMessageWithPointer(Datum, MsgCastToDouble, @Value);
+end;
+
+procedure NeedReal(Datum: TDynDatum; var Value: Real);
+begin
+  HandleMessageWithPointer_Err(Datum, MsgCastToDouble, @Value, @ErrCastToDouble)
+end;
+
 {$ENDREGION}
 
 {$REGION 'Char'}
@@ -745,7 +757,7 @@ end;
 {$ifdef DTYPES}
   {$include 'Inc\DTypes_IDynPair.inc'}
 {$else}
-function cons(const Car, Cdr: dyn): IDynPair; stdcall;
+function cons(const Car, Cdr: dyn): IDynPair; stdcall; overload;
   external dll name 'cons';
 {
 function cons(const Car: TDynDatum; const Cdr: TDynDatum): IDynPair; stdcall; overload;
@@ -772,53 +784,85 @@ function Reverse(const List: IDynPair): IDynPair;
 {$endif}
 
 function IsPair(Datum: TDynDatum): Boolean;
+var
+  Msg: TVarMessage;
 begin
-  Result := (Datum.Kind = atPair);
+  if Datum = nil then
+  begin
+    Result := False;
+    Exit;
+  end;
+  Msg.Msg := MsgIsPair;
+  Msg.Res := 0;
+  Datum.DispatchMsg(Msg);
+  Result := (Msg.Res <> 0);
+end;
+
+function IsPair(Datum: TDynDatum; out Ref: IDynPair): Boolean;
+var
+  Msg: TVarMessage;
+begin
+  if Datum = nil then
+  begin
+    Result := False;
+    Exit;
+  end;
+  Msg.Msg := MsgIsPairR;
+  Msg.Res := 0;
+  Msg.VarPtr := @Ref;
+  Datum.DispatchMsg(Msg);
+  Result := (Msg.Res <> 0);
 end;
 
 procedure NeedPair(Datum: TDynDatum);
-type
-  EWrongType = Exception;
 begin
-  case Integer(Pointer(Datum)) of
-    0, 3:  Exit;  // nil, _null
-  end;
-  if Integer(Pointer(Datum)) and 3 = 0 then
-    if (Datum as IDynDatum).DatumType = atPair then
-      Exit;
-  raise EWrongType.Create('invalid Pair'{Datum, 'Pair'});
-end;
-
-procedure NeedPairNonNil(Datum: TDynDatum); overload;
-type
-  EWrongType = Exception;
-begin
-  case Integer(Pointer(Datum)) of
-    0, 3:  // nil, _null
-      raise EWrongType.Create('Pair is nil');
-  end;
-  if Integer(Pointer(Datum)) and 3 = 0 then
-    if (Datum as IDynDatum).DatumType = atPair then
-      Exit;
-  raise EWrongType.Create('invalid Pair'{Datum, 'Pair'});
+  if Datum = nil then
+    Exit;
+  if not IsPair(Datum) then
+    raise EWrongType.Create(Datum, 'Pair');
 end;
 
 procedure NeedPair(Datum: TDynDatum; var Value: IDynPair);
 begin
-  NeedPair(Datum);
-  Value := IDynPair(Pointer(Datum));
+  if Datum = nil then
+  begin
+    Value := nil;
+    Exit;
+  end;
+  if not IsPair(Datum, Value) then
+    raise EWrongType.Create(Datum, 'Pair');
+end;
+
+procedure NeedPairNonNil(Datum: TDynDatum);
+begin
+  if Datum = nil then
+    raise EWrongType.Create(Datum, 'Pair is nil');
+  if not IsPair(Datum) then
+    raise EWrongType.Create(Datum, 'Pair');
+end;
+
+procedure NeedPairNonNil(Datum: TDynDatum; var Value: IDynPair);
+begin
+  if Datum = nil then
+    raise EWrongType.Create(Datum, 'Pair is nil');
+  if not IsPair(Datum, Value) then
+    raise EWrongType.Create(Datum, 'Pair');
 end;
 
 function car(const Value: dyn): TDynDatum;
+var
+  Pair: IDynPair;
 begin
-  NeedPairNonNil(TDynDatum(Pointer(Value)));
-  Result := IDynPair(Pointer(Value.Ref)).car;
+  NeedPairNonNil(Value, Pair);
+  Result := Pair.car;
 end;
 
 function cdr(const Value: dyn): TDynDatum;
+var
+  Pair: IDynPair;
 begin
-  NeedPairNonNil(TDynDatum(Pointer(Value)));
-  Result := IDynPair(Pointer(Value.Ref)).cdr;
+  NeedPairNonNil(Value, Pair);
+  Result := Pair.cdr;
 end;
 
 function GetNext(var Seq: IDynPair; var Item: TDynDatum): Boolean;
@@ -873,7 +917,7 @@ end;
 procedure NeedVector(Datum: TDynDatum; var Value: IDynArray); overload;
 begin
   if Integer(Pointer(Datum)) and 3 = 0 then
-    if (Datum as IDynDatum).DatumType = atVector then
+    if IDynDatum(Pointer(Datum)).DatumType = atVector then
     begin
       Value := IDynArray(Pointer(Datum));
       Exit;
@@ -916,7 +960,7 @@ end;
 procedure NeedByteVector(Datum: TDynDatum; var Value: IDynMemory); overload;
 begin
   if Integer(Pointer(Datum)) and 3 = 0 then
-    if (Datum as IDynDatum).DatumType = atByteVector then
+    if IDynDatum(Pointer(Datum)).DatumType = atByteVector then
     begin
       Value := IDynMemory(Pointer(Datum));
       Exit;
@@ -983,7 +1027,7 @@ end;
 
 function make_string(const s: UnicodeString): IDynString;
 begin
-  Result := make_string(PChar(s), Length(s));
+  Result := make_string(PWideChar(s), Length(s));
 end;
 
 function make_string(const s: AnsiString): IDynString;
@@ -1041,7 +1085,7 @@ begin
   Result := (Msg.Res <> 0);
 end;
 
-function IsSymbol(Datum: TDynDatum; out Ref: IDynSymbol): Boolean;     
+function IsSymbol(Datum: TDynDatum; out Ref: IDynSymbol): Boolean;
 var
   Msg: TVarMessage;
 begin
@@ -1248,7 +1292,7 @@ begin
   case Integer(Pointer(Datum)) and 3 of
     smInterface:
       if Assigned(Datum) then
-        Result := (Datum as IDynDatum).DatumType
+        Result := IDynDatum(Pointer(Datum)).DatumType
       else
         Result := atNil;
     smInteger:
@@ -1309,10 +1353,33 @@ begin
 end;
 
 procedure TDynDatum.Free;
-begin                      
-  if Self <> nil then
-    if NativeInt(Self) and 3 = 0 then
-      _Release
+{var
+  p: PRefDatum;
+  Itfc: Pointer;
+begin    }
+asm
+  test eax,1         // smInteger = 1; smInline = 3;
+  jz   @@NeedFree
+  ret
+  nop
+@@NeedFree:
+  test eax,3      // smInterface = 0; smRef = 2;
+  jnz  @@smRef
+@@smInterface:
+  or   eax,eax    // if not Assigned(Self) then Exit;
+  jz   @@end
+  mov  ecx,[eax]   // vmt IInterface(Self)._Release;
+  xchg eax,[esp]
+  push eax         // [ret] -> [Self, ret]
+  jmp  [ecx+8]     //  IInterface._Release
+
+@@smRef:
+{
+  and  eax,PointerMask         // p := Pointer(Integer(Self) and PointerMask);
+  dec  TRefDatum(eax).RefCount // Dec(p.RefCount);
+  jz   DisposePRefDatum        // if p.RefCount = 0 then
+}                               //   Dispose(p);
+@@end:
 end;
 
 function TDynDatum.AsVariant: Variant;
@@ -1399,11 +1466,10 @@ end;
 function TDynDatum.NewRef: TDynDatum;
 begin
   Result := Self;
-  case NativeInt(Pointer(Result)) and StorageMask of
+  case Integer(Pointer(Result)) and StorageMask of
     smInterface:
       if Assigned(Result) then
-        (Result as IInterface)._AddRef;
-        //IInterface(NativeInt(Pointer(Result)) and PointerMask)._AddRef;
+        IInterface(Integer(Pointer(Result)) and PointerMask)._AddRef;
     //smRef:
     //  Inc(PRefDatum(Integer(Pointer(Result)) and PointerMask).RefCount);
   end;
@@ -1419,7 +1485,7 @@ begin
     smInterface:
       begin
         if Val <> 0 then
-          Result := AddrToIDynDatum(Val and PointerMask).DatumType
+          Result := IDynDatum(Val and PointerMask).DatumType
         else
           Result := atNil;
       end;
@@ -1522,7 +1588,7 @@ exports
 function EnsureInterface(A: weak_IDyn): IDyn;
 begin
   if NativeInt(Pointer(A)) and StorageMask = smInterface then
-    Result := A as IDyn //IDyn(Pointer(A))
+    Result := IDyn(Pointer(A))
   else
     Result := ValToRefType(A)
 end;

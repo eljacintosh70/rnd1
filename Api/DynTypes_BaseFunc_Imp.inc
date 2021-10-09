@@ -4,9 +4,9 @@ var
   Obj: TCustomBool;
 begin
   Obj := TFalseObj.Create;
-  _f := Obj.AsIDyn;
+  _f := IDynDatum(Obj);
   Obj := TTrueObj.Create;
-  _t := Obj.AsIDyn;
+  _t := IDynDatum(Obj);
 end;
 
 function MakeBool(Value: Boolean): IDyn;
@@ -17,12 +17,12 @@ begin
     Result := _f;
 end;
 
-function MakeChar(Value: Char): IDyn;
+function MakeChar(Value: WideChar): IDyn;
 var
   Obj: TDynChar;
 begin
   Obj := TDynChar.Create(Value);
-  Result := Obj.AsIDyn;
+  Result := IDynDatum(Obj);
 end;
 
 function MakeInt64(Value: Int64): IDyn;
@@ -30,7 +30,7 @@ var
   Obj: TDynInt64;
 begin
   Obj := TDynInt64.Create(Value);
-  Result := Obj.AsIBigInt;
+  Result := IDynInt(Obj);
 end;
 
 function MakeDouble(Value: Double): IDyn;
@@ -38,7 +38,7 @@ var
   Obj: TDynFloat;
 begin
   Obj := TDynFloat.Create(Value);
-  Result := Obj.AsIDynFloat;
+  Result := IDynFloat(Obj);
 end;
 
 function MakeString(Value: string): IDyn;

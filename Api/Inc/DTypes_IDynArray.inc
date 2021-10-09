@@ -32,6 +32,6 @@ end;
 exports
   {$IFNDEF LINUX}
   make_vector(n: Integer; Fill: TDynDatum)   name 'make_vectorN',
-  make_vector(const Arr: array of const)     name 'make_vector',    
+  make_vector(const Arr: array of const)     name 'make_vector',
   {$ENDIF}
   ListToDynArray                             name 'list->array';

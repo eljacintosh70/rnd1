@@ -29,6 +29,8 @@ const
 
    MsgIsSymbol     = $006;   // Cmd.Res     := Ord(Obj is IDynSymbol)
    MsgIsSymbolR    = $007;   // Cmd.VarPtr^ := IDynSymbol(Obj)
+   MsgIsPair       = $008;   // Cmd.Res     := Ord(Obj is IDynPair)
+   MsgIsPairR      = $009;   // Cmd.VarPtr^ := IDynPair(Obj)
 
    // reciben un TWriteMsg
    MsgWrite        = $010;  // escribelos objetos en una forma en que debería poder leerse
@@ -71,6 +73,7 @@ const
   ResOK = 0;
   ResNotImpl = -1;
 
+function  HandleMessageWithPointer(Obj: dyn; Msg: Integer; Ptr: Pointer): Boolean;
 procedure HandleMessageWithPointer_Err(Obj: dyn; Msg: Integer; Ptr: Pointer; Err: PDynErrorInfo);
 
 type
@@ -108,6 +111,17 @@ implementation
 function Str(Obj: dyn): String;
 begin
   Result := '';
+end;
+
+function  HandleMessageWithPointer(Obj: dyn; Msg: Integer; Ptr: Pointer): Boolean;
+var
+  Cmd: TVarMessage;
+begin
+  Cmd.Msg := Msg;
+  Cmd.Res := ResNotImpl;
+  Cmd.VarPtr := Ptr;
+  Obj.Ref.DispatchMsg(Cmd);
+  Result := (Cmd.Res = ResOK);
 end;
 
 procedure HandleMessageWithPointer_Err(Obj: dyn; Msg: Integer; Ptr: Pointer; Err: PDynErrorInfo);
@@ -226,7 +240,7 @@ begin
   end;
   Msg := Str.ToString;
   inherited Create(Msg);
-{$ENDIF}    
+{$ENDIF}
 end;
 
 end.

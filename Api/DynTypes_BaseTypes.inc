@@ -91,8 +91,8 @@
   weak_IInterface = class(TObject)
   public
     function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall; abstract;
-    function _AddRef: Integer; virtual; stdcall; abstract;
-    function _Release: Integer; virtual; stdcall; abstract;
+    function _AddRef: Integer; virtual; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF}; abstract;
+    function _Release: Integer; virtual; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF}; abstract;
   end;
 
   weak_IDyn = class(weak_IInterface)

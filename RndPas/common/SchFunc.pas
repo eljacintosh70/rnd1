@@ -22,8 +22,6 @@ function IsBoolean(Datum: TDynDatum): Boolean; {$ifdef INLINE} inline; {$endif}
 function IsChar(Datum: TDynDatum): Boolean; {$ifdef INLINE} inline; {$endif}
 // number? Cualquier valor numérico.
 function IsNum(Datum: TDynDatum): Boolean;
-  function IsInteger(Datum: TDynDatum): Boolean;
-  function IsReal(Datum: TDynDatum): Boolean;
 // record? Record
 function IsRecord(Datum: TDynDatum): Boolean;
 // procedure? Función que toma valores y retorna un resultado.
@@ -142,26 +140,6 @@ function IsNum(Datum: TDynDatum): Boolean;
 begin
   case Datum.Kind of
     atReal, atInteger:
-      Result := True;
-    else
-      Result := False;
-  end;
-end;
-
-function IsInteger(Datum: TDynDatum): Boolean;
-begin
-  case Datum.Kind of
-    atInteger:
-      Result := True;
-    else
-      Result := False;
-  end;
-end;
-
-function IsReal(Datum: TDynDatum): Boolean;
-begin
-  case Datum.Kind of
-    atInteger, atReal:
       Result := True;
     else
       Result := False;

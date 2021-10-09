@@ -30,10 +30,6 @@ type
     FLength: Integer;
     DataLabel: record end;
     procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;
-  {$if not Declared(InlineVMT)}
-    function IDynArray.GetItem = GetItemA;
-    procedure IDynArray.SetItem = SetItemA;
-  {$ifend}
   end;
 
   TCustomDynArray = class(TAbstractDynArray)
@@ -77,10 +73,6 @@ type
     function DisplayStr(NeededChars: Integer): String; override;
     function GetItemA(i: Integer): TDynDatum; override;
     procedure SetItemA(i: Integer; const First: TDynDatum); override;
-  {$if not Declared(InlineVMT)}
-    function IDynMemory.GetItem = GetItemA;
-    procedure IDynMemory.SetItem = SetItemA;
-  {$ifend}
   end;
 
   TDynMemory = class(TAbstractDynMemory)
@@ -150,7 +142,7 @@ begin
     Inc(p, Ofs);
     Block.Size := Size;
     Block.Ptr := p;
-    Block.Lock := IDynArray(Pointer(Self));
+    Block.Lock := AsIDynArray;
   end
   else
   begin

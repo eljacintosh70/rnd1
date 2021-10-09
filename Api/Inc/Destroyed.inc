@@ -10,8 +10,8 @@ type
   // TInterfaceHelper = class(TObject, IInterface)
   public
     function QueryInterface(const IID: TGUID; out Obj): HResult; override; stdcall;
-    function _AddRef: Integer; override; stdcall;
-    function _Release: Integer; override; stdcall;
+    function _AddRef: Integer; override; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF};
+    function _Release: Integer; override; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF};
   // TDatumHelper = class(TInterfaceHelper, IDatum)
   public
     function DatumType: TDatumType; override;

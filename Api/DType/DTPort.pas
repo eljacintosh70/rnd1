@@ -39,7 +39,7 @@ function DisplayStr(v: dyn): string; stdcall;
 implementation
 
 uses
-  DTPortW;    
+  DTPortW;
 
 exports
   WriteStr name 'WriteStr',

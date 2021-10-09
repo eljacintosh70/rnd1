@@ -33,10 +33,6 @@ type
     function GetAsIDynString: IDynString;
   public
     property AsIDynString: IDynString read GetAsIDynString {$if Declared(InlineVMT)} implements IDynString {$ifend};
-  {$if not Declared(InlineVMT)}
-    function IDynString.GetItem = GetItemA;
-    procedure IDynString.SetItem = SetItemA;
-  {$ifend}
   end;
 
   TDynString = class(TAbstractDynString)

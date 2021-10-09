@@ -245,7 +245,7 @@ begin
     {$ENDIF}
   except
     Exit;
-  end;                 
+  end;
   {$IFNDEF LINUX}
   if hDll = INVALID_HANDLE_VALUE then
     Exit;
@@ -258,7 +258,7 @@ begin
     Result := True;
   end;
   if Result then
-    AddLoadedLibrary(FileName, hDll, Imp);   
+    AddLoadedLibrary(FileName, hDll, Imp);
   {$ENDIF}
 end;
 

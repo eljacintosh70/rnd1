@@ -98,7 +98,7 @@ end;
 
 class operator dyn.Implicit(const A: AnsiChar): dyn;
 begin
-  Result.Ref := MakeChar(Char(A))
+  Result.Ref := MakeChar(WideChar(A))
 end;
 
 class operator dyn.Implicit(const A: String): dyn;
@@ -128,7 +128,7 @@ end;
 
 class operator dyn.Implicit(const A: dyn): AnsiChar;
 var
-  ch: Char;
+  ch: WideChar;
 begin
   HandleMessageWithPointer_Err(A, MsgCastToChar,  @ch, @ErrCastToChar);
   Result := AnsiChar(ch);

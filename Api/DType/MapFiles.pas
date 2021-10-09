@@ -129,7 +129,7 @@ type
   public
     constructor Create(const AName: String; AAlignMask: Integer; AWrite: Boolean = false; ASize:
             Int64 = 0; const MapName: String = ''; UssingUtf8: Boolean = False);
-    function _Release: Integer; override; stdcall;
+    function _Release: Integer; override; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF};
     function SubBlock(Pos: TArrayPos; Size: TArraySize): IDynMemory; overload; override;
     function FindNext(const Data: RawData; var Pos: TArrayPos; MaxPos: TArrayPos =
             FullBlock): Boolean; override;

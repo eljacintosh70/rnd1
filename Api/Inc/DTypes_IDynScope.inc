@@ -11,7 +11,7 @@ end;
 function CreateMethod(AMethod: TDynMethodG): IDynMethod;
 var
   Obj: TDynMethodObjG;
-begin                 
+begin
   Obj := TDynMethodObjG.Create(AMethod);
   Result := Obj.AsIDynMethod;
 end;
@@ -20,7 +20,7 @@ function CreateMethod(AMethod: TDynMethodO): IDynMethod;
 var
   Obj: TDynMethodObjO;
 begin
-  Obj := TDynMethodObjO.Create(AMethod);    
+  Obj := TDynMethodObjO.Create(AMethod);
   Result := Obj.AsIDynMethod;
 end;
 

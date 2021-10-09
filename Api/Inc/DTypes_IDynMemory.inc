@@ -33,7 +33,7 @@ var
 begin
   {$IFNDEF LINUX}
   Map := TFileMapEsp.Create(FileName, AlignMask, Write, Size, MapName, UssingUtf8); //not FileMapReadOnly);
-  Result := Map.AsIDynMemory; 
+  Result := Map.AsIDynMemory;
   {$ENDIF}
 end;
 
@@ -73,7 +73,7 @@ begin
   raise Exception.Create('Not implemented');
 end;
 
-exports          
+exports
   {$IFNDEF LINUX}
   CreateDynMem(cbData: Integer) name 'DynMem.Create@1', // (make-bytevector k)
                                                         // (make-bytevector k fill)

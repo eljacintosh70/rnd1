@@ -93,7 +93,7 @@ type
 
     // (string-append str ...)
     procedure _string_append(out Result: TDatumRef; Datum: TDynDatum);
-//  automated
+  {$IFNDEF LINUX} automated {$ENDIF}
   end;
 
 {
@@ -131,16 +131,16 @@ type
     procedure Divide(out Result: TDatumRef; Datum: TDynDatum);
     // (- x y)
     procedure Subst(out Result: TDatumRef; Datum: TDynDatum);
-//  automated
-    function flabs(x: Double): Double;
+  {$IFNDEF LINUX} automated {$ENDIF}
+    function flabs(x: Real): Real;
     // (fllog x)
-    function fllog(x: Double): Double;
+    function fllog(x: Real): Real;
     // (flexp x)
-    function flexp(x: Double): Double;
+    function flexp(x: Real): Real;
     // (flsqrt x)
-    function flsqrt(x: Double): Double;
+    function flsqrt(x: Real): Real;
     // (^ x y)
-    function Pow(x, y: Double): Double;
+    function Pow(x, y: Real): Real;
     // (hex val nDig)
     function hex(val, nDig: Integer): String;
   end;
@@ -500,7 +500,7 @@ end;
 procedure TMathOpers.nEQ(out Result: TDatumRef; Datum: TDynDatum);
 var
   a: TDynDatum;
-  n1, n2: Double;
+  n1, n2: Real;
 begin
   Result := (_f);
   if not IsPair(Datum) then Exit;
@@ -526,7 +526,7 @@ end;
 procedure TMathOpers.nGE(out Result: TDatumRef; Datum: TDynDatum);
 var
   a: TDynDatum;
-  n1, n2: Double;
+  n1, n2: Real;
 begin
   Result := (_f);
   if not IsPair(Datum) then Exit;
@@ -551,7 +551,7 @@ end;
 procedure TMathOpers.nGT(out Result: TDatumRef; Datum: TDynDatum);
 var
   a: TDynDatum;
-  n1, n2: Double;
+  n1, n2: Real;
 begin
   Result := (_f);
   if not IsPair(Datum) then Exit;
@@ -576,7 +576,7 @@ end;
 procedure TMathOpers.nLE(out Result: TDatumRef; Datum: TDynDatum);
 var
   a: TDynDatum;
-  n1, n2: Double;
+  n1, n2: Real;
 begin
   Result := (_f);
   if not IsPair(Datum) then Exit;
@@ -601,7 +601,7 @@ end;
 procedure TMathOpers.nLT(out Result: TDatumRef; Datum: TDynDatum);
 var
   a: TDynDatum;
-  n1, n2: Double;
+  n1, n2: Real;
 begin
   Result := (_f);
   if not IsPair(Datum) then Exit;
@@ -625,81 +625,82 @@ end;
 
 procedure TMathOpers.Add(out Result: TDatumRef; Datum: TDynDatum);
 var
-  ResI, Val: Int64;
-  Res: Double;
+  ResI, ValI: Int64;
+  Res, ValR: Real;
   a: TDynDatum;
+  p: IDynPair;
 begin
   Res := 0.0;
-  if IsPair(Datum) then
+  if IsPair(Datum, p) then
   begin
-    a := car(Datum);
-    if IsInteger(a) then
+    a := p.car;
+    if IsInteger(a, ValI) then
     begin
-      ResI := a.AsInteger;
+      ResI := ValI;
       // operación con enteros
       repeat
-        Datum := cdr(Datum);
-        if not IsPair(Datum) then
+        Datum := p.cdr;
+        if not IsPair(Datum, p) then
         begin
-          AssignInt64(Result, ResI);
+          Result := MakeInt64(ResI);
           Exit;
         end;
-        a := car(Datum);
-        if not IsInteger(a) then
-          Break;                  // continuar con punto flotante
-        Val := a.AsInteger;
-        ResI := ResI + Val;
+        a := p.car;
+        if not IsInteger(a, ValI) then
+          Break;
+        ResI := ResI + ValI;
       until False;
       Res := ResI;
     end
-    else if IsNum(a) then
+    else if IsReal(a, ValR) then
       Res := 0.0   // continuar con punto flotante Datum señala al primer item a sumar
     else
+    begin
       DynError('Number expected but %s found', [Deb(a)]);
+      Exit;
+    end;
   end;
 
-  while IsPair(Datum) do
+  while IsPair(Datum, p) do
   begin
-    a := car(Datum);
-    if IsNum(a) then
-      Res := Res + Double(dyn(a))
-    else
-      DynError('Number expected but %s found', [Deb(a)]);
-    Datum := cdr(Datum);
+    a := p.car;
+    NeedReal(a, ValR);
+    Res := Res + ValR;
+    Datum := p.cdr;
   end;
-  Result := (MakeDouble(Res));
+  Result := MakeDouble(Res);
 end;
 
 procedure TMathOpers.Mult(out Result: TDatumRef; Datum: TDynDatum);
 var
-  ResI, Val: Int64;
-  Res: Double;
+  ResI, ValI: Int64;
+  Res, ValR: Real;
   a: TDynDatum;
+  p: IDynPair;
 begin
   Res := 1.0;
-  if IsPair(Datum) then
+  if IsPair(Datum, p) then
   begin
-    a := car(Datum);
-    if IsInteger(a) then
+    a := p.car;
+    if IsInteger(a, ValI) then
     begin
-      ResI := a.AsInteger;
+      ResI := ValI;
       // operación con enteros
       repeat
-        Datum := cdr(Datum);
-        if not IsPair(Datum) then
+        Datum := p.cdr;
+        if not IsPair(Datum, p) then
         begin
-          AssignInt64(Result, ResI);
+          Result := MakeInt64(ResI);
           Exit;
         end;
-        a := car(Datum);
-        if not IsInteger(a) then
-          Break;                  // continuar con punto flotante
-        Val := a.AsInteger;
-        ResI := ResI * Val;
+        a := p.car;
+        if not IsInteger(a, ValI) then
+          Break;
+        ResI := ResI * ValI;
       until False;
       Res := ResI;
     end
-    else if IsNum(a) then
+    else if IsReal(a, ValR) then
       Res := 1.0   // continuar con punto flotante Datum señala al primer item a sumar
     else
     begin
@@ -708,21 +709,20 @@ begin
     end;
   end;
 
-  while IsPair(Datum) do
+  while IsPair(Datum, p) do
   begin
-    a := car(Datum);
-    if IsNum(a) then
-      Res := Res * Double(dyn(a));
-    //else ERROR
-    Datum := cdr(Datum);
+    a := p.car;
+    NeedReal(a, ValR);
+    Res := Res * ValR;
+    Datum := p.cdr;
   end;
-  Result := (MakeDouble(Res));
+  Result := MakeDouble(Res);
 end;
 
 procedure TMathOpers.Divide(out Result: TDatumRef; Datum: TDynDatum);
 var
   ResI, Val: Int64;
-  Res: Double;
+  Res: Real;
   a: TDynDatum;
 begin
   Res := 1.0;
@@ -766,7 +766,7 @@ begin
   begin
     a := car(Datum);
     if IsNum(a) then
-      Res := Res / Double(dyn(a));
+      Res := Res / Real(dyn(a));
     //else ERROR
     Datum := cdr(Datum);
   end;
@@ -776,7 +776,7 @@ end;
 procedure TMathOpers.Subst(out Result: TDatumRef; Datum: TDynDatum);
 var
   ResI, Val: Int64;
-  Res: Double;
+  Res: Real;
   a: TDynDatum;
 begin
   //ResI := 0;
@@ -804,7 +804,7 @@ begin
       end
       else if IsNum(a) then
       begin
-        Res := ResI - Double(dyn(a));
+        Res := ResI - Real(dyn(a));
         if IsPair(cdr(Datum)) then
           DynError('Too many parameters in -', []);
         Result := (MakeDouble(Res));  // (- x y) -> x - y
@@ -824,7 +824,7 @@ begin
       a := car(Datum);
       if IsNum(a) then
       begin
-        Res := Res - Double(dyn(a));
+        Res := Res - Real(dyn(a));
         if IsPair(cdr(Datum)) then
           DynError('Too many parameters in -', []);
         Result := (MakeDouble(Res));  // (- x y) -> x - y
@@ -842,27 +842,27 @@ begin
     DynError('Not enought parameters in (-)', []);
 end;
 
-function TMathOpers.flabs(x: Double): Double;
+function TMathOpers.flabs(x: Real): Real;
 begin
   Result := Abs(x)
 end;
 
-function TMathOpers.fllog(x: Double): Double;
+function TMathOpers.fllog(x: Real): Real;
 begin
   Result := Ln(x)
 end;
 
-function TMathOpers.flexp(x: Double): Double;
+function TMathOpers.flexp(x: Real): Real;
 begin
   Result := Exp(x)
 end;
 
-function TMathOpers.flsqrt(x: Double): Double;
+function TMathOpers.flsqrt(x: Real): Real;
 begin
   Result := sqrt(x)
 end;
 
-function TMathOpers.Pow(x, y: Double): Double;
+function TMathOpers.Pow(x, y: Real): Real;
 begin
   Result := Exp(Ln(x) * y);
 end;

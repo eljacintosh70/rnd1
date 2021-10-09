@@ -19,6 +19,6 @@ end;
 
 exports
 {$IFNDEF LINUX}
-  InitSymbol  name 'Symbol.Create',
+  InitSymbol(pName: PAnsiChar; {Utf8} cbName: Integer)  name 'Symbol.Create',
 {$ENDIF}
   InitSymbols name 'Symbol.Create*';
