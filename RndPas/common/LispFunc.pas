@@ -625,81 +625,82 @@ end;
 
 procedure TMathOpers.Add(out Result: TDatumRef; Datum: TDynDatum);
 var
-  ResI, Val: Int64;
-  Res: Real;
+  ResI, ValI: Int64;
+  Res, ValR: Real;
   a: TDynDatum;
+  p: IDynPair;
 begin
   Res := 0.0;
-  if IsPair(Datum) then
+  if IsPair(Datum, p) then
   begin
-    a := car(Datum);
-    if IsInteger(a) then
+    a := p.car;
+    if IsInteger(a, ValI) then
     begin
-      ResI := a.AsInteger;
+      ResI := ValI;
       // operación con enteros
       repeat
-        Datum := cdr(Datum);
-        if not IsPair(Datum) then
+        Datum := p.cdr;
+        if not IsPair(Datum, p) then
         begin
-          AssignInt64(Result, ResI);
+          Result := MakeInt64(ResI);
           Exit;
         end;
-        a := car(Datum);
-        if not IsInteger(a) then
-          Break;                  // continuar con punto flotante
-        Val := a.AsInteger;
-        ResI := ResI + Val;
+        a := p.car;
+        if not IsInteger(a, ValI) then
+          Break;
+        ResI := ResI + ValI;
       until False;
       Res := ResI;
     end
-    else if IsNum(a) then
+    else if IsReal(a, ValR) then
       Res := 0.0   // continuar con punto flotante Datum señala al primer item a sumar
     else
+    begin
       DynError('Number expected but %s found', [Deb(a)]);
+      Exit;
+    end;
   end;
 
-  while IsPair(Datum) do
+  while IsPair(Datum, p) do
   begin
-    a := car(Datum);
-    if IsNum(a) then
-      Res := Res + Real(dyn(a))
-    else
-      DynError('Number expected but %s found', [Deb(a)]);
-    Datum := cdr(Datum);
+    a := p.car;
+    NeedReal(a, ValR);
+    Res := Res + ValR;
+    Datum := p.cdr;
   end;
-  Result := (MakeDouble(Res));
+  Result := MakeDouble(Res);
 end;
 
 procedure TMathOpers.Mult(out Result: TDatumRef; Datum: TDynDatum);
 var
-  ResI, Val: Int64;
-  Res: Real;
+  ResI, ValI: Int64;
+  Res, ValR: Real;
   a: TDynDatum;
+  p: IDynPair;
 begin
   Res := 1.0;
-  if IsPair(Datum) then
+  if IsPair(Datum, p) then
   begin
-    a := car(Datum);
-    if IsInteger(a) then
+    a := p.car;
+    if IsInteger(a, ValI) then
     begin
-      ResI := a.AsInteger;
+      ResI := ValI;
       // operación con enteros
       repeat
-        Datum := cdr(Datum);
-        if not IsPair(Datum) then
+        Datum := p.cdr;
+        if not IsPair(Datum, p) then
         begin
-          AssignInt64(Result, ResI);
+          Result := MakeInt64(ResI);
           Exit;
         end;
-        a := car(Datum);
-        if not IsInteger(a) then
-          Break;                  // continuar con punto flotante
-        Val := a.AsInteger;
-        ResI := ResI * Val;
+        a := p.car;
+        if not IsInteger(a, ValI) then
+          Break;
+        ResI := ResI * ValI;
       until False;
       Res := ResI;
     end
-    else if IsNum(a) then
+    else if IsReal(a, ValR) then
       Res := 1.0   // continuar con punto flotante Datum señala al primer item a sumar
     else
     begin
@@ -708,15 +709,14 @@ begin
     end;
   end;
 
-  while IsPair(Datum) do
+  while IsPair(Datum, p) do
   begin
-    a := car(Datum);
-    if IsNum(a) then
-      Res := Res * Real(dyn(a));
-    //else ERROR
-    Datum := cdr(Datum);
+    a := p.car;
+    NeedReal(a, ValR);
+    Res := Res * ValR;
+    Datum := p.cdr;
   end;
-  Result := (MakeDouble(Res));
+  Result := MakeDouble(Res);
 end;
 
 procedure TMathOpers.Divide(out Result: TDatumRef; Datum: TDynDatum);

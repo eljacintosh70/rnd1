@@ -5,9 +5,6 @@ uses
   DynTypes, DTDatum, DUtils;
 
 type
-  Real = Double;
-
-type
   TDynFloat = class(TDyn, IDynFloat)
   // InlineVMT requiere los siguientes métodos idénticos a los de IDynFloat
   public

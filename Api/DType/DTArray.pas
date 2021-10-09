@@ -141,7 +141,7 @@ begin
     Inc(p, Ofs);
     Block.Size := Size;
     Block.Ptr := p;
-    Block.Lock := IDynArray(Pointer(Self));
+    Block.Lock := AsIDynArray;
   end
   else
   begin

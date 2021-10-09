@@ -9,7 +9,7 @@ type
   TDynSymbol = class(TDyn, IDynSymbol)
   // InlineVMT requiere los siguientes métodos idénticos a los de IDynSymbol
   public
-    function FoldedCase: TDynSymbol; virtual;
+    function FoldedCase: IDynSymbol; virtual;
     function Name: Utf8String; virtual;
   private
     function GetAsIDynSymbol: IDynSymbol;
@@ -18,8 +18,8 @@ type
   protected//private
     Next: TDynSymbol;
     Key: Utf8String;
-    FFoldedCase: TDynSymbol;
-    function CreateFoldedCase: TDynSymbol;
+    FFoldedCase: IDynSymbol;
+    function CreateFoldedCase: IDynSymbol;
   public
     constructor Create(pName: PAnsiChar; cbName: Integer);
     function DatumType: TDatumType; override;
@@ -27,6 +27,9 @@ type
   protected
     procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;
     procedure DoMsgEval(var Msg: TEvalMessage); message MsgEval;
+
+    procedure DoMsgIsSymbol(var Msg: TVarMessage); message MsgIsSymbol;
+    procedure DoMsgIsSymbolR(var Msg: TVarMessage); message MsgIsSymbolR;
   end;
 
 type
@@ -61,8 +64,11 @@ function SymbolName(A: TDynDatum): Utf8String;
 implementation /////////////////////////////////////////////////////////////////
 
 function SymbolName(A: TDynDatum): Utf8String;
+var
+  Ref: IDynSymbol;
 begin
-  Result := TDynSymbol(Pointer(A)).Key
+  NeedSymbol(A, Ref);
+  Result := Ref.Name
 end;
 
 function SameSymbolsName(A: RawByteString; pB: PAnsiChar; cbB: Integer): Boolean; overload;
@@ -85,7 +91,7 @@ end;
 
 { TDynSymbol }
 
-function TDynSymbol.FoldedCase: TDynSymbol;
+function TDynSymbol.FoldedCase: IDynSymbol;
 begin
   if Assigned(FFoldedCase) then
     Result := FFoldedCase
@@ -105,16 +111,16 @@ begin
   {$endif}
 end;
 
-function TDynSymbol.CreateFoldedCase: TDynSymbol;
+function TDynSymbol.CreateFoldedCase: IDynSymbol;
 var
   s, sKey: String;
 begin
   sKey := string(Key);
   s := LowerCase(sKey);
   if s = sKey then
-    Result := Pointer(Self)
+    Result := AsIDynSymbol
   else
-    Result := Pointer(TDynSymbol.Create(Pointer(s), Length(s)));
+    Result := TDynSymbol.Create(Pointer(s), Length(s)).AsIDynSymbol;
   FFoldedCase := Result;
 end;
 
@@ -146,6 +152,19 @@ end;
 procedure TDynSymbol.DoMsgEval(var Msg: TEvalMessage);
 begin
   Msg.Res := Msg.Scope.Item[IDynSymbol(Self)]
+end;
+
+procedure TDynSymbol.DoMsgIsSymbol(var Msg: TVarMessage);
+begin
+  Msg.Res := 1; //True;
+end;
+
+procedure TDynSymbol.DoMsgIsSymbolR(var Msg: TVarMessage);
+type
+  PIDynSymbol = ^IDynSymbol;
+begin
+  Msg.Res := 1; //True;
+  PIDynSymbol(Msg.VarPtr)^ := IDynSymbol(Self);
 end;
 
 { TSymbolHash }

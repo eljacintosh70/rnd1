@@ -17,7 +17,7 @@ begin
     Result := _f;
 end;
 
-function MakeChar(Value: Char): IDyn;
+function MakeChar(Value: WideChar): IDyn;
 var
   Obj: TDynChar;
 begin

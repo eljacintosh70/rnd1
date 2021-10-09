@@ -27,9 +27,15 @@ const
    MsgCastToDouble = $004;   // Cmd.VarPtr^ := Double(Obj)
    MsgCastToString = $005;   // Cmd.VarPtr^ := String(Obj)
 
+   MsgIsSymbol     = $006;   // Cmd.Res     := Ord(Obj is IDynSymbol)
+   MsgIsSymbolR    = $007;   // Cmd.VarPtr^ := IDynSymbol(Obj)
+   MsgIsPair       = $008;   // Cmd.Res     := Ord(Obj is IDynPair)
+   MsgIsPairR      = $009;   // Cmd.VarPtr^ := IDynPair(Obj)
+
    // reciben un TWriteMsg
    MsgWrite        = $010;  // escribelos objetos en una forma en que debería poder leerse
    MsgDisplay      = $011;  // forma no reversible, por ejemplo, texto sin comillas
+   MsgDebugWrite   = $012;  // MsgWrite con información extra, de ser necesario
 
    // reciben un TEvalMessage
    MsgEval         = $020;  //  evalúa un objeto usando los valores indicados en Scope
@@ -67,6 +73,7 @@ const
   ResOK = 0;
   ResNotImpl = -1;
 
+function  HandleMessageWithPointer(Obj: dyn; Msg: Integer; Ptr: Pointer): Boolean;
 procedure HandleMessageWithPointer_Err(Obj: dyn; Msg: Integer; Ptr: Pointer; Err: PDynErrorInfo);
 
 type
@@ -106,6 +113,17 @@ begin
   Result := '';
 end;
 
+function  HandleMessageWithPointer(Obj: dyn; Msg: Integer; Ptr: Pointer): Boolean;
+var
+  Cmd: TVarMessage;
+begin
+  Cmd.Msg := Msg;
+  Cmd.Res := ResNotImpl;
+  Cmd.VarPtr := Ptr;
+  Obj.Ref.DispatchMsg(Cmd);
+  Result := (Cmd.Res = ResOK);
+end;
+
 procedure HandleMessageWithPointer_Err(Obj: dyn; Msg: Integer; Ptr: Pointer; Err: PDynErrorInfo);
 var
   Cmd: TVarMessage;
@@ -117,9 +135,9 @@ begin
   case Cmd.Res of
     ResOK: Exit;
     ResNotImpl:
-      raise Err.EClass.Create('Error: Not Implemented. ' + Err.EMsg, Obj) at ReturnAddress;
+      raise Err.EClass.Create('Error: Not Implemented. ' + Err.EMsg, Obj) {$IFNDEF FPC} at ReturnAddress {$ENDIF};
     else
-      raise Err.EClass.Create(Format('Error: %d. ', [Cmd.Res]) + Err.EMsg, Obj) at ReturnAddress;
+      raise Err.EClass.Create(Format('Error: %d. ', [Cmd.Res]) + Err.EMsg, Obj) {$IFNDEF FPC} at ReturnAddress {$ENDIF};
   end;
 end;
 
@@ -137,11 +155,52 @@ end;
 
 constructor EDynError.Create(Msg: String; const Arg: array of dyn);
 var
-  Str: TStringBuilder;
+  Str: {$IFDEF FPC} String {$ELSE} TStringBuilder {$ENDIF};
   p, pe: PChar;
   cb, iParam: Integer;
   ch: Char;
 begin
+{$IFDEF FPC}
+  cb := Length(Msg);
+  p := Pointer(Msg);
+  pe := p + cb;
+  Str := '';
+  iParam := 0;
+  while p < pe do
+  begin
+    ch := p^;
+    Inc(p);
+    case ch of
+      '%':
+        begin
+          ch := p^;
+          Inc(p);
+          case ch of
+            't', 'T':
+              begin
+                Str := Str + DynTypeName(Arg[iParam]);
+                Inc(iParam);
+              end;
+            'd', 'D':
+              begin
+                Str := Str + FloatToStr(Double(Arg[iParam]));
+                Inc(iParam);
+              end;
+            's', 'S':
+              begin
+                Str := Str + String(Arg[iParam]);
+                Inc(iParam);
+              end;
+          else
+            Str := Str + ch;
+          end;
+        end;
+      else Str := Str + ch;
+    end;
+  end;
+  Msg := Str;
+  inherited Create(Msg);
+{$ELSE}
   cb := Length(Msg);
   p := Pointer(Msg);
   pe := p + cb;
@@ -181,6 +240,7 @@ begin
   end;
   Msg := Str.ToString;
   inherited Create(Msg);
+{$ENDIF}
 end;
 
 end.

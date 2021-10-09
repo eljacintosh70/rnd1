@@ -47,6 +47,9 @@ type
     procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;
     procedure DoMsgEval(var Msg: TEvalMessage); message MsgEval;
     procedure DoMsgEvalItems(var Msg: TEvalMessage); message MsgEvalItems;
+
+    procedure DoMsgIsPair(var Msg: TVarMessage); message MsgIsPair;
+    procedure DoMsgIsPairR(var Msg: TVarMessage); message MsgIsPairR;
   end;
 
   TPairEnumerator = class(TCustomEnumerator)
@@ -364,6 +367,19 @@ begin
     L1 := cons(v, L1);
   end;
   Msg.Res := Reverse(L1);
+end;
+
+procedure TDynPair.DoMsgIsPair(var Msg: TVarMessage);
+begin
+  Msg.Res := 1; //True;
+end;
+
+procedure TDynPair.DoMsgIsPairR(var Msg: TVarMessage);
+type
+  PIDynPair = ^IDynPair;
+begin
+  Msg.Res := 1; //True;
+  PIDynPair(Msg.VarPtr)^ := IDynPair(Self);
 end;
 
 { TPairEnumerator }

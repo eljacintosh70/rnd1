@@ -137,6 +137,8 @@ var
   VarDatum, Rest: TDynDatum;
   Formal: TDynDatum;
   Name: string;
+  s: IDynSymbol;
+  p: IDynPair;
 begin
   // http://www.r6rs.org/final/html/r6rs/r6rs-Z-H-14.html#node_sec_11.2.1
   // (define <variable> <expression>)
@@ -145,24 +147,23 @@ begin
   // (define (<variable> . <formal>) <body>)
 
   NeedParams(Datum, [@VarDatum], @Rest);
-  if IsSymbol(VarDatum) then
+  if IsSymbol(VarDatum, s) then
   begin
-    NeedSymbol(VarDatum);
     if Rest <> _null then
       if IsPair(Rest) and (Cdr(Rest) = _Null) then
         Result := Eval(Car(Rest), Scope)    // (define <variable> <expression>)
       else
       begin
-        Name := IDynSymbol(Pointer(VarDatum)).Name;
+        Name := s.Name;
         raise Exception.Create(Format('invalid define %s . %s', [Name, Deb(Rest)]))
       end
     else
       Result := (Unbound);             // (define <variable>)
   end
-  else if IsPair(VarDatum) then
+  else if IsPair(VarDatum, p) then
   begin
-    Formal := cdr(VarDatum);
-    VarDatum := car(VarDatum);
+    Formal := p.cdr;
+    VarDatum := p.car;
     NeedSymbol(VarDatum);  // (define (<variable> . <formal>) <body>)
     Result := (TDynLambda.Create(Formal, Rest, Scope));
   end

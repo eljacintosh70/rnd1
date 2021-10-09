@@ -7,7 +7,7 @@ uses
   Windows, SysUtils,
   DynTypes, DUtils;
 
-{$define INLINE_VMT}
+{--$define INLINE_VMT}
 
 {$ifdef INLINE_VMT} // Esta constante activa un hack para reducir el tamaño de
 const               // los objetos que implementan interfaces, reusando la misma
