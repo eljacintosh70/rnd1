@@ -4,6 +4,9 @@ interface //////////////////////////////////////////////////////////////////////
 uses
   DynTypes;
 
+procedure RegisterFunctions(Scope: IDynScope; Fn: array of TLispProcRec);
+procedure RegisterSyntax(Scope: IDynScope; Fn: array of TLispSyntaxRec);
+
 procedure ReadDatumFromFile(out Result: TDatumRef; Path: String);
 procedure EvalDatumFromFile(out Result: TDatumRef; Path: String; Scope: IDynScope);
 
@@ -270,6 +273,34 @@ begin
     Scope := GlobalScope;}
   EvalDatumFromFile(Ref, Name, Scope);
   Result := True;
+end;
+
+procedure RegisterFunctions(Scope: IDynScope; Fn: array of TLispProcRec);
+var
+  e: TLispProcRec;
+  Symbol: TDynDatum;
+  f: dyn;
+begin
+  for e in Fn do
+  begin
+    Symbol := InitSymbol(e.Name);
+    f := TDynFuncNat.Create(e) as IDynFunc;
+    Scope.Value[Symbol] := f;
+  end;
+end;
+
+procedure RegisterSyntax(Scope: IDynScope; Fn: array of TLispSyntaxRec);
+var
+  e: TLispSyntaxRec;
+  Symbol: TDynDatum;
+  f: dyn;
+begin
+  for e in Fn do
+  begin
+    Symbol := InitSymbol(e.Name);
+    f := TDynSyntaxNat.Create(e) as IDynSyntax;
+    Scope.Value[Symbol] := f;
+  end;
 end;
 
 { TLibraryInfo }

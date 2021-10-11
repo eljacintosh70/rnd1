@@ -19,20 +19,17 @@ function DisplayR(obj: dyn): string;
 
 implementation
 
+uses LispEnv;
+
 procedure InitCore;
 begin
   Scope := TInterpreter.Create(nil);
-  Scope.RegisterFunctions(TFileFunctions.Create);
-  Scope.RegisterSintax(TSintax1.Create);
-  Scope.RegisterSintax(TRndSintax.Create);
-  Scope.RegisterFunctions(TBasicFunctions.Create);
-  Scope.RegisterFunctions(TMathOpers.Create);
-  Scope.Rename(['_if', 'SetVal'],
-               ['if',  'set!'  ]);
-  Scope.Rename(['Add', 'Subst', 'Mult', 'Divide', 'Pow', 'dot', 'DotSet'],
-               ['+',   '-',     '*',    '/',      '^',   '.',   '.set!']);
-  Scope.Rename(['nLT', 'nLE', 'nEQ', 'nGE', 'nGT'],
-               ['<',   '<=',  '=',    '>=', '>'  ]);
+
+  LispEnv.RegisterFunctions(Scope, FileFunctions);
+  LispEnv.RegisterSyntax   (Scope, Sintax1);
+  LispEnv.RegisterSyntax   (Scope, TRndSintax);
+  LispEnv.RegisterFunctions(Scope, TBasicFunctions);
+  LispEnv.RegisterFunctions(Scope, TMathOpers);
 end;
 
 function DisplayL(obj: dyn): string;

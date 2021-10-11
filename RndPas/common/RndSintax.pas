@@ -5,19 +5,18 @@ interface
 uses
   DynTypes;
 
-type
-  {$TYPEINFO ON}
-  TRndSintax = class(TObject)
-  published
     // (call FnName Params)
     procedure call(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
-  end;
+
+const
+  TRndSintax: array[0..0] of TLispSyntaxRec = (
+    (Name: 'call';    Fn: call));
 
 implementation
 
 { TRndSintax }
 
-procedure TRndSintax.call(out Result: TDatumRef; Datum: TDynDatum;
+procedure call(out Result: TDatumRef; Datum: TDynDatum;
   Scope: IDynScope);
 var
   FnName, Params: TDynDatum;

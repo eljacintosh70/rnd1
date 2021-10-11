@@ -7,12 +7,6 @@ uses
   SysUtils,
   DUtils, DynTypes, SchFunc, rnrs_lists;
 
-type
-  {$TYPEINFO ON}
-  {--$METHODINFO ON}  // funciona en Delphi200x
-
-  TBasicFunctions = class(TObject)
-  published
     // (list a b c ...)
     procedure list(out Result: TDatumRef; Datum: TDynDatum);
     // (apply fn params)
@@ -93,24 +87,8 @@ type
 
     // (string-append str ...)
     procedure _string_append(out Result: TDatumRef; Datum: TDynDatum);
-  {$IFNDEF LINUX} automated {$ENDIF}
-  end;
 
-{
-	(define (load filename)
-	  (eval (read-all-as-a-begin-expr filename)
-      (interaction-environment)))
 
-(read)
-(read port)
-  Read converts external representations of Scheme objects
-  into the objects themselves.
-
-,open cargar librería
-}
-
-  TMathOpers = class(TObject)
-  published
     // (= x y ...)
     procedure nEQ(out Result: TDatumRef; Datum: TDynDatum);
     // (>= x y ...)
@@ -121,7 +99,7 @@ type
     procedure nLE(out Result: TDatumRef; Datum: TDynDatum);
     // (< x y ...)
     procedure nLT(out Result: TDatumRef; Datum: TDynDatum);
-  published
+
     //--- operadores que podrían generar enteros o punto flotante
     // (+ x y ...)
     procedure Add(out Result: TDatumRef; Datum: TDynDatum);
@@ -131,7 +109,7 @@ type
     procedure Divide(out Result: TDatumRef; Datum: TDynDatum);
     // (- x y)
     procedure Subst(out Result: TDatumRef; Datum: TDynDatum);
-  {$IFNDEF LINUX} automated {$ENDIF}
+
     function flabs(x: Real): Real;
     // (fllog x)
     function fllog(x: Real): Real;
@@ -143,7 +121,49 @@ type
     function Pow(x, y: Real): Real;
     // (hex val nDig)
     function hex(val, nDig: Integer): String;
-  end;
+
+const
+  TBasicFunctions: array[0..26] of TLispProcRec = (
+    (Name: 'list';          Fn: list  ),
+    (Name: 'apply';         Fn: apply ),
+    (Name: 'car';           Fn: _car  ),
+    (Name: 'cdr';           Fn: _cdr  ),
+    (Name: 'cons';          Fn: _cons ),
+    (Name: 'map';           Fn: map   ),
+    (Name: 'vector';        Fn: vector),
+    (Name: 'make-vector';   Fn: _make_vector),
+    (Name: 'vector-ref';    Fn: _vector_ref),
+    (Name: 'vector-set!';   Fn: _vector_set_X),
+    (Name: 'vector->list';  Fn: vector_list),
+    (Name: 'list->vector';  Fn: list_vector),
+
+    (Name: 'null?';         Fn: _null_P),
+    (Name: 'boolean?';      Fn: _boolean_P),
+    (Name: 'char?';         Fn: _char_P),
+    (Name: 'num?';          Fn: _num_P),
+    (Name: 'symbol?';       Fn: _symbol_P),
+    (Name: 'string?';       Fn: _string_P),
+    (Name: 'pair?';         Fn: _pair_P),
+    (Name: 'vector?';       Fn: _vector_P),
+    (Name: 'byte_vector?';  Fn: _byte_vector_P),
+    (Name: 'record?';       Fn: _record_P),
+    (Name: 'procedure?';    Fn: _procedure_P),
+
+    (Name: 'eq?';           Fn: _eq_P),
+    (Name: 'eqv?';          Fn: _eqv_P),
+    (Name: 'equal?';        Fn: _equal_P),
+    (Name: 'string-append'; Fn: _string_append));
+
+  TMathOpers: array[0..8] of TLispProcRec = (
+    (Name: '=';           Fn: nEQ  ),
+    (Name: '>=';          Fn: nGE  ),
+    (Name: '>';           Fn: nGT  ),
+    (Name: '<=';          Fn: nLE  ),
+    (Name: '<';           Fn: nLT  ),
+    (Name: '+';           Fn: Add  ),
+    (Name: '*';           Fn: Mult  ),
+    (Name: '/';           Fn: Divide ),
+    (Name: '-';           Fn: Subst  ));
 
 implementation /////////////////////////////////////////////////////////////////
 
@@ -166,7 +186,7 @@ end;
 
 { TBasicFunctions }
 
-procedure TBasicFunctions.apply(out Result: TDatumRef; Datum: TDynDatum);
+procedure apply(out Result: TDatumRef; Datum: TDynDatum);
 var
   Fn, Params: TDynDatum;
 // (apply fn params)
@@ -179,12 +199,12 @@ begin
   end;
 end;
 
-procedure TBasicFunctions.List(out Result: TDatumRef; Datum: TDynDatum);
+procedure List(out Result: TDatumRef; Datum: TDynDatum);
 begin
   Result := (Datum);
 end;
 
-procedure TBasicFunctions._car(out Result: TDatumRef; Datum: TDynDatum);
+procedure _car(out Result: TDatumRef; Datum: TDynDatum);
 var
   A: TDynDatum;
 begin
@@ -192,7 +212,7 @@ begin
   Result := (car(A));
 end;
 
-procedure TBasicFunctions._cdr(out Result: TDatumRef; Datum: TDynDatum);
+procedure _cdr(out Result: TDatumRef; Datum: TDynDatum);
 var
   A: TDynDatum;
 begin
@@ -200,7 +220,7 @@ begin
   Result := (cdr(A));
 end;
 
-procedure TBasicFunctions._cons(out Result: TDatumRef; Datum: TDynDatum);
+procedure _cons(out Result: TDatumRef; Datum: TDynDatum);
 var
   A, D: TDynDatum;
 begin
@@ -208,7 +228,7 @@ begin
   Result.cons(A, D);
 end;
 
-procedure TBasicFunctions.list_vector(out Result: TDatumRef; Datum: TDynDatum);
+procedure list_vector(out Result: TDatumRef; Datum: TDynDatum);
 var
   A: TDynDatum;
   Res: IDynArray;
@@ -219,7 +239,7 @@ begin
   Result := (Res);
 end;
 
-procedure TBasicFunctions.map(out Result: TDatumRef; Datum: TDynDatum);
+procedure map(out Result: TDatumRef; Datum: TDynDatum);
 var
   A, D: TDynDatum;
   Fn: IDynFunc;
@@ -232,12 +252,12 @@ begin
   Result := (Res);
 end;
 
-procedure TBasicFunctions.vector(out Result: TDatumRef; Datum: TDynDatum);
+procedure vector(out Result: TDatumRef; Datum: TDynDatum);
 begin
   Result := (ListToDynArray(Datum));
 end;
 
-procedure TBasicFunctions.vector_list(out Result: TDatumRef; Datum: TDynDatum);
+procedure vector_list(out Result: TDatumRef; Datum: TDynDatum);
 var
   A, D: TDynDatum;
   ArgStart, ArgEnd: TDynDatum;
@@ -269,7 +289,7 @@ begin
   Result := (VectorToList(Vec, NStart, NEnd));
 end;
 
-procedure TBasicFunctions._null_P(out Result: TDatumRef; Datum: TDynDatum);
+procedure _null_P(out Result: TDatumRef; Datum: TDynDatum);
 var
   A: TDynDatum;
 begin
@@ -277,7 +297,7 @@ begin
   Result := (MakeBool(IsNull(A)));
 end;
 
-procedure TBasicFunctions._boolean_P(out Result: TDatumRef; Datum: TDynDatum);
+procedure _boolean_P(out Result: TDatumRef; Datum: TDynDatum);
 var
   A: TDynDatum;
 begin
@@ -285,7 +305,7 @@ begin
   Result := (MakeBool(IsBoolean(A)));
 end;
 
-procedure TBasicFunctions._char_P(out Result: TDatumRef; Datum: TDynDatum);
+procedure _char_P(out Result: TDatumRef; Datum: TDynDatum);
 var
   A: TDynDatum;
 begin
@@ -293,7 +313,7 @@ begin
   Result := (MakeBool(IsChar(A)));
 end;
 
-procedure TBasicFunctions._num_P(out Result: TDatumRef; Datum: TDynDatum);
+procedure _num_P(out Result: TDatumRef; Datum: TDynDatum);
 var
   A: TDynDatum;
 begin
@@ -301,7 +321,7 @@ begin
   Result := (MakeBool(IsNum(A)));
 end;
 
-procedure TBasicFunctions._symbol_P(out Result: TDatumRef; Datum: TDynDatum);
+procedure _symbol_P(out Result: TDatumRef; Datum: TDynDatum);
 var
   A: TDynDatum;
 begin
@@ -309,7 +329,7 @@ begin
   Result := (MakeBool(IsSymbol(A)));
 end;
 
-procedure TBasicFunctions._string_append(out Result: TDatumRef; Datum: TDynDatum);
+procedure _string_append(out Result: TDatumRef; Datum: TDynDatum);
 // (string-append str ...)
 var
   Args: TDynDatum;
@@ -326,7 +346,7 @@ begin
   Result := (make_string(sRes));
 end;
 
-procedure TBasicFunctions._string_P(out Result: TDatumRef; Datum: TDynDatum);
+procedure _string_P(out Result: TDatumRef; Datum: TDynDatum);
 var
   A: TDynDatum;
 begin
@@ -334,7 +354,7 @@ begin
   Result := (MakeBool(IsString(A)));
 end;
 
-procedure TBasicFunctions._pair_P(out Result: TDatumRef; Datum: TDynDatum);
+procedure _pair_P(out Result: TDatumRef; Datum: TDynDatum);
 var
   A: TDynDatum;
 begin
@@ -342,7 +362,7 @@ begin
   Result := (MakeBool(IsPair(A)));
 end;
 
-procedure TBasicFunctions._vector_P(out Result: TDatumRef; Datum: TDynDatum);
+procedure _vector_P(out Result: TDatumRef; Datum: TDynDatum);
 var
   A: TDynDatum;
 begin
@@ -350,7 +370,7 @@ begin
   Result := (MakeBool(IsVector(A)));
 end;
 
-procedure TBasicFunctions._byte_vector_P(out Result: TDatumRef; Datum: TDynDatum);
+procedure _byte_vector_P(out Result: TDatumRef; Datum: TDynDatum);
 var
   A: TDynDatum;
 begin
@@ -358,7 +378,7 @@ begin
   Result := (MakeBool(IsByteVector(A)));
 end;
 
-procedure TBasicFunctions._record_P(out Result: TDatumRef; Datum: TDynDatum);
+procedure _record_P(out Result: TDatumRef; Datum: TDynDatum);
 var
   A: TDynDatum;
 begin
@@ -366,7 +386,7 @@ begin
   Result := (MakeBool(IsRecord(A)));
 end;
 
-procedure TBasicFunctions._procedure_P(out Result: TDatumRef; Datum: TDynDatum);
+procedure _procedure_P(out Result: TDatumRef; Datum: TDynDatum);
 var
   A: TDynDatum;
 begin
@@ -374,7 +394,7 @@ begin
   Result := (MakeBool(IsProcedure(A)));
 end;
 
-procedure TBasicFunctions._eq_P(out Result: TDatumRef; Datum: TDynDatum);
+procedure _eq_P(out Result: TDatumRef; Datum: TDynDatum);
 var
   A, B: TDynDatum;
   Res: Boolean;
@@ -388,7 +408,7 @@ begin
   Result := (MakeBool(Res));
 end;
 
-procedure TBasicFunctions._eqv_P(out Result: TDatumRef; Datum: TDynDatum);
+procedure _eqv_P(out Result: TDatumRef; Datum: TDynDatum);
 var
   A, B: TDynDatum;
   Res: Boolean;
@@ -400,7 +420,7 @@ begin
   Result := (MakeBool(Res));
 end;
 
-procedure TBasicFunctions._equal_P(out Result: TDatumRef; Datum: TDynDatum);
+procedure _equal_P(out Result: TDatumRef; Datum: TDynDatum);
 var
   A, B: TDynDatum;
   Res: Boolean;
@@ -413,7 +433,7 @@ begin
   Result := (MakeBool(Res));
 end;
 
-procedure TBasicFunctions._make_vector(out Result: TDatumRef; Datum: TDynDatum);
+procedure _make_vector(out Result: TDatumRef; Datum: TDynDatum);
 var
   size: TDynDatum;
   fill: TDynDatum;
@@ -431,7 +451,7 @@ begin
   Result := (Vec);
 end;
 (*
-procedure TBasicFunctions._make_record(out Result: TDatumRef; Datum: TDynDatum);
+procedure _make_record(out Result: TDatumRef; Datum: TDynDatum);
 var
   size: TDynDatum;
   Rec: TRecordDatum;
@@ -445,7 +465,7 @@ begin
   Result := (Rec);
 end;
 
-procedure TBasicFunctions._record_ref(out Result: TDatumRef; Datum: TDynDatum);
+procedure _record_ref(out Result: TDatumRef; Datum: TDynDatum);
 var
   Rec, Index: TDynDatum;
   i: Integer;
@@ -457,7 +477,7 @@ begin
   Result := (TRecordDatum(Rec)[i]);
 end;
 
-procedure TBasicFunctions._record_set_X(out Result: TDatumRef; Datum: TDynDatum);
+procedure _record_set_X(out Result: TDatumRef; Datum: TDynDatum);
 var
   Rec, Index, Val: TDynDatum;
   i: Integer;
@@ -470,7 +490,7 @@ begin
   Result := (Undefined);
 end;
 *)
-procedure TBasicFunctions._vector_ref(out Result: TDatumRef; Datum: TDynDatum);
+procedure _vector_ref(out Result: TDatumRef; Datum: TDynDatum);
 var
   Vec, Index: TDynDatum;
   i: Integer;
@@ -482,7 +502,7 @@ begin
   Result := (IDynArray(Pointer(Vec))[i]);
 end;
 
-procedure TBasicFunctions._vector_set_X(out Result: TDatumRef; Datum: TDynDatum);
+procedure _vector_set_X(out Result: TDatumRef; Datum: TDynDatum);
 var
   Vec, Index, Val: TDynDatum;
   i: Integer;
@@ -497,7 +517,7 @@ end;
 
 { TMathOpers }
 
-procedure TMathOpers.nEQ(out Result: TDatumRef; Datum: TDynDatum);
+procedure nEQ(out Result: TDatumRef; Datum: TDynDatum);
 var
   a: TDynDatum;
   n1, n2: Real;
@@ -523,7 +543,7 @@ begin
   Result := (_t);
 end;
 
-procedure TMathOpers.nGE(out Result: TDatumRef; Datum: TDynDatum);
+procedure nGE(out Result: TDatumRef; Datum: TDynDatum);
 var
   a: TDynDatum;
   n1, n2: Real;
@@ -548,7 +568,7 @@ begin
   Result := (_t);
 end;
 
-procedure TMathOpers.nGT(out Result: TDatumRef; Datum: TDynDatum);
+procedure nGT(out Result: TDatumRef; Datum: TDynDatum);
 var
   a: TDynDatum;
   n1, n2: Real;
@@ -573,7 +593,7 @@ begin
   Result := (_t);
 end;
 
-procedure TMathOpers.nLE(out Result: TDatumRef; Datum: TDynDatum);
+procedure nLE(out Result: TDatumRef; Datum: TDynDatum);
 var
   a: TDynDatum;
   n1, n2: Real;
@@ -598,7 +618,7 @@ begin
   Result := (_t);
 end;
 
-procedure TMathOpers.nLT(out Result: TDatumRef; Datum: TDynDatum);
+procedure nLT(out Result: TDatumRef; Datum: TDynDatum);
 var
   a: TDynDatum;
   n1, n2: Real;
@@ -623,7 +643,7 @@ begin
   Result := (_t);
 end;
 
-procedure TMathOpers.Add(out Result: TDatumRef; Datum: TDynDatum);
+procedure Add(out Result: TDatumRef; Datum: TDynDatum);
 var
   ResI, ValI: Int64;
   Res, ValR: Real;
@@ -671,7 +691,7 @@ begin
   Result := MakeDouble(Res);
 end;
 
-procedure TMathOpers.Mult(out Result: TDatumRef; Datum: TDynDatum);
+procedure Mult(out Result: TDatumRef; Datum: TDynDatum);
 var
   ResI, ValI: Int64;
   Res, ValR: Real;
@@ -719,7 +739,7 @@ begin
   Result := MakeDouble(Res);
 end;
 
-procedure TMathOpers.Divide(out Result: TDatumRef; Datum: TDynDatum);
+procedure Divide(out Result: TDatumRef; Datum: TDynDatum);
 var
   ResI, Val: Int64;
   Res: Real;
@@ -773,7 +793,7 @@ begin
   Result := (MakeDouble(Res));
 end;
 
-procedure TMathOpers.Subst(out Result: TDatumRef; Datum: TDynDatum);
+procedure Subst(out Result: TDatumRef; Datum: TDynDatum);
 var
   ResI, Val: Int64;
   Res: Real;
@@ -842,32 +862,32 @@ begin
     DynError('Not enought parameters in (-)', []);
 end;
 
-function TMathOpers.flabs(x: Real): Real;
+function flabs(x: Real): Real;
 begin
   Result := Abs(x)
 end;
 
-function TMathOpers.fllog(x: Real): Real;
+function fllog(x: Real): Real;
 begin
   Result := Ln(x)
 end;
 
-function TMathOpers.flexp(x: Real): Real;
+function flexp(x: Real): Real;
 begin
   Result := Exp(x)
 end;
 
-function TMathOpers.flsqrt(x: Real): Real;
+function flsqrt(x: Real): Real;
 begin
   Result := sqrt(x)
 end;
 
-function TMathOpers.Pow(x, y: Real): Real;
+function Pow(x, y: Real): Real;
 begin
   Result := Exp(Ln(x) * y);
 end;
 
-function TMathOpers.hex(val, nDig: Integer): String;
+function hex(val, nDig: Integer): String;
 begin
   Result := IntToHex(val, nDig);
 end;

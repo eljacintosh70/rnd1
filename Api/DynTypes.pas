@@ -210,6 +210,11 @@ type
     function Symbols: IDynPair;
   end;
 
+  TLispProc = procedure (out Result: TDatumRef; Datum: TDynDatum);
+  TLispSyntax = procedure (out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
+  TLispProcRec = record Name: Utf8String; Fn: TLispProc end;
+  TLispSyntaxRec = record Name: Utf8String; Fn: TLispSyntax end;
+
   IDynFunc = interface(IDynDatum)
     ['{F374F0B3-A60D-40C6-A228-8A26A6B841F8}']
     procedure Call(out Result: TDatumRef; Params: TDynDatum);

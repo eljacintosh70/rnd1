@@ -5,26 +5,26 @@ uses
   Classes, SysUtils,
   DynTypes, LispEnv;
 
-type
-  {$TYPEINFO ON}
-
-  TFileFunctions = class(TObject)
-  published
     // (read filename)
     procedure read(out Result: TDatumRef; Datum: TDynDatum);
     // (begin a b c ... res)
     procedure _begin(out Result: TDatumRef; Datum: TDynDatum);
     // (save filename data)
     procedure save(out Result: TDatumRef; Datum: TDynDatum);
-  end;
 
-  TFileSintax = class(TObject)
-  published
     // (load filename)
     procedure load(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
     // (load-dll filename)
     procedure _load_dll(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
-  end;
+
+const
+  FileFunctions: array[0..2] of TLispProcRec = (
+    (Name: 'read';  Fn: read),
+    (Name: 'begin'; Fn: _begin),
+    (Name: 'save';  Fn: save));
+  FileSintax: array[0..1] of TLispSyntaxRec = (
+    (Name: 'load';     Fn: load),
+    (Name: 'load-dll'; Fn: _load_dll));
 
 function ExportSymbols(const Scope: IDelphiScope): Boolean; stdcall;
 
@@ -32,21 +32,21 @@ implementation /////////////////////////////////////////////////////////////////
 
 
 function ExportSymbols(const Scope: IDelphiScope): Boolean; stdcall;
-var
+{var
   FileFunctions: TFileFunctions;
-  FileSintax: TFileSintax;
-begin
+  FileSintax: TFileSintax; }
+begin                       {
   FileFunctions := TFileFunctions.Create;
   Scope.RegisterFunctions(FileFunctions);
   FileSintax := TFileSintax.Create;
   Scope.RegisterSintax(FileSintax);
-  
+  }
   Result := True;
 end;
 
 { TFileFunctions }
 
-procedure TFileFunctions.read(out Result: TDatumRef; Datum: TDynDatum);
+procedure read(out Result: TDatumRef; Datum: TDynDatum);
 var
   PathDatum: TDynDatum;
   Path: string;
@@ -57,7 +57,7 @@ begin
   ReadDatumFromFile(Result, Path);
 end;
 
-procedure TFileFunctions.save(out Result: TDatumRef; Datum: TDynDatum);
+procedure save(out Result: TDatumRef; Datum: TDynDatum);
 var
   PathDatum, DataDatum: TDynDatum;
   Path: string;
@@ -92,7 +92,7 @@ begin
 end;
 
 
-procedure TFileFunctions._begin(out Result: TDatumRef; Datum: TDynDatum);
+procedure _begin(out Result: TDatumRef; Datum: TDynDatum);
 var
   D: TDynDatum;
 begin
@@ -111,7 +111,7 @@ end;
 
 { TFileSintax }
 
-procedure TFileSintax.load(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
+procedure load(out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
 var
   Ref: TDatumRef;
   PathDatum: TDynDatum;
@@ -126,7 +126,7 @@ begin
   //Deb(Result);
 end;
 
-procedure TFileSintax._load_dll(out Result: TDatumRef; Datum: TDynDatum; Scope:
+procedure _load_dll(out Result: TDatumRef; Datum: TDynDatum; Scope:
     IDynScope);
 var
   Ref: TDatumRef;
