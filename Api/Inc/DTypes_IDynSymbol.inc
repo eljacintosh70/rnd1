@@ -1,4 +1,4 @@
-function InitSymbol(pName: PAnsiChar; {Utf8} cbName: Integer): TDynDatum;
+function InitSymbol(pName: PAnsiChar; {Utf8} cbName: Integer): IDynSymbol;
 begin
   Result := SymbolSource.CreateSymbol(pName, cbName);
 end;
@@ -14,7 +14,7 @@ begin
   if n <> n2 then
     DynError('InitSymbols: diferent length is parameters %d %d', [n, n2]);
   for i := 0 to n - 1 do
-    Ref[i]^ := InitSymbolI(Names[i]);
+    Ref[i]^ := InitSymbol(Names[i]);
 end;
 
 exports

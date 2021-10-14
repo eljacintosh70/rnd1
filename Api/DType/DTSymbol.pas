@@ -6,6 +6,9 @@ uses
   DynTypes, DUtils, DTDatum;
 
 type
+
+  { TDynSymbol }
+
   TDynSymbol = class(TDyn, IDynSymbol)
   // InlineVMT requiere los siguientes métodos idénticos a los de IDynSymbol
   public
@@ -22,6 +25,7 @@ type
     function CreateFoldedCase: IDynSymbol;
   public
     constructor Create(pName: PAnsiChar; cbName: Integer);
+    destructor Destroy; override;
     function DatumType: TDatumType; override;
     function DisplayStr(NeededChars: Integer): String; override;
   protected
@@ -34,7 +38,7 @@ type
 
 type
   ISymbolSource = interface
-    function CreateSymbol(pName: PAnsiChar; cbName: Integer): TDynDatum;
+    function CreateSymbol(pName: PAnsiChar; cbName: Integer): IDynSymbol;
   end;
   PPHashItem = ^TDynSymbol;
 
@@ -42,15 +46,11 @@ type
   private
     Buckets: array of TDynSymbol;
     Mask: Integer;
-    function Add(pKey: PAnsiChar; cbKey: Integer): TDynSymbol;
+    function Add(pKey: PAnsiChar; cbKey: Integer): IDynSymbol;
     function HashOfP(pKey: PAnsiChar; cbKey: Integer): Cardinal; virtual;
     function FindP(pKey: PAnsiChar; cbKey: Integer): PPHashItem;
     procedure Clear;
-    function CreateSymbol(pName: PAnsiChar; cbName: Integer): TDynDatum;
-    //function HashOf(const Key: String): Cardinal;
-    //function Find(const Key: TSymbolAtom): PPHashItem;
-    //procedure Remove(const Key: TSymbolAtom);
-    //procedure RemoveItem(Item: TDynSymbol);
+    function CreateSymbol(pName: PAnsiChar; cbName: Integer): IDynSymbol;
   public
     constructor Create(Size: Integer = 256);
     destructor Destroy; override;
@@ -129,6 +129,11 @@ begin
   SetString(Key, pName, cbName);
 end;
 
+destructor TDynSymbol.Destroy;
+begin
+  inherited Destroy;
+end;
+
 function TDynSymbol.DatumType: TDatumType;
 begin
   Result := atSymbol
@@ -142,9 +147,9 @@ end;
 procedure TDynSymbol.DoMsgDisplay(var Msg: TWriteMsg);
 var
   r: Boolean;
-  s: string;
+  s: UnicodeString;
 begin
-  s := string(Name);
+  s := UnicodeString(Key);
   r := Msg.Port.WriteStrW(Pointer(s), Length(s), skSymbol);
   Msg.Res := Ord(r);
 end;
@@ -169,15 +174,17 @@ end;
 
 { TSymbolHash }
 
-function TSymbolHash.Add(pKey: PAnsiChar; cbKey: Integer): TDynSymbol;
+function TSymbolHash.Add(pKey: PAnsiChar; cbKey: Integer): IDynSymbol;
 var
   Hash: Integer;
+  Obj: TDynSymbol;
 begin
   Hash := HashOfP(pKey, cbKey) mod Cardinal(Length(Buckets));
-  Result := TDynSymbol.Create(pKey, cbKey);
-  Result._AddRef;
-  Result.Next := Buckets[Hash and Mask];
-  Buckets[Hash and Mask] := Result;
+  Obj := TDynSymbol.Create(pKey, cbKey);
+  Result := Obj.AsIDynSymbol;
+  Result._AddRef; // mantener una referencia interna
+  Obj.Next := Buckets[Hash and Mask];
+  Buckets[Hash and Mask] := Obj;
 end;
 
 function TSymbolHash.HashOfP(pKey: PAnsiChar; cbKey: Integer): Cardinal;
@@ -222,7 +229,7 @@ begin
   end;
 end;
 
-function TSymbolHash.CreateSymbol(pName: PAnsiChar; cbName: Integer): TDynDatum;
+function TSymbolHash.CreateSymbol(pName: PAnsiChar; cbName: Integer): IDynSymbol;
 var
   Item: PPHashItem;
 begin
@@ -230,10 +237,10 @@ begin
   if Assigned(Item) then
     if Assigned(Item^) then
     begin
-      Result := Pointer(Item^);
+      Result := Item^;
       Exit;
     end;
-  Result := Pointer(Add(pName, cbName));
+  Result := Add(pName, cbName);
 end;
 
 constructor TSymbolHash.Create(Size: Integer = 256);
@@ -251,7 +258,7 @@ end;
 
 initialization /////////////////////////////////////////////////////////////////
 {$ifdef DTYPES}
-  CreateSymbolSource($FFFF);
+  CreateSymbolSource($10000);
 {$endif}
 end. ///////////////////////////////////////////////////////////////////////////
 

@@ -28,7 +28,7 @@ type
     function GetNextTerm(p: PWideChar; out Res: TTokenInfo): PWideChar;
   public
     constructor Create;
-    function Evaluate(out AResult: TDatumRef; const s: String): PWideChar; overload;
+    function Evaluate(out AResult: TDatumRef; const s: UnicodeString): PWideChar; overload;
     function Evaluate(out AResult: TDatumRef; p: PWideChar; cc: Integer): PWideChar; overload;
   end;
 
@@ -45,13 +45,21 @@ implementation /////////////////////////////////////////////////////////////////
 uses
   LispLexer;
 
+var
+  DebugStr: string;
+
 procedure InitQuoteFn;
 var
   i: TQuoteTokens;
+  Obj: IDynSymbol;
 begin
-  if IsSymbol(QuoteFn[High(QuoteFn)].Value) then Exit;
+  if QuoteFn[High(QuoteFn)].Ptr <> nil then Exit;
+  //if IsSymbol(QuoteFn[High(QuoteFn)].Value) then Exit;
   for i := Low(QuoteFn) to High(QuoteFn) do
-    QuoteFn[i] := (InitSymbol(QuoteFnName[i]));
+  begin
+    Obj := InitSymbol(QuoteFnName[i]);
+    QuoteFn[i] := Obj;
+  end;
 end;
 
 { TCustomLispParser }
@@ -99,7 +107,8 @@ begin
         Break;
     end;
 
-    List := cons(Token.Ref.Value, List);
+    DebugStr := Deb(Token.Ref);
+    List := cons(Token.Ref, List);
   until (False);
 end;
 
@@ -124,7 +133,7 @@ begin
   InitQuoteFn;
 end;
 
-function TLispParser.Evaluate(out AResult: TDatumRef; const s: String): PWideChar;
+function TLispParser.Evaluate(out AResult: TDatumRef; const s: UnicodeString): PWideChar;
 var
   p: PWideChar;
   cc: Integer;

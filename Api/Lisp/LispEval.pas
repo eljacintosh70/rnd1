@@ -132,7 +132,7 @@ end;
 
 procedure TLispEval.Define(const Name: UTF8String; AValue: TDynDatum);
 var
-  Key: TDynDatum;
+  Key: dyn;
 begin
   Key := InitSymbol(Name);
   Value[Key] := AValue;
@@ -222,12 +222,15 @@ function TLispEval.Symbols: IDynArray;
 var
   i, n: Integer;
   Item: IDynPair;
+  e: TKVPair;
+  Arr: array of TKVPair;
 begin
-  n := List.Count;
+  Arr := List.ToArray;
+  n := Length(Arr);
   Result := TDynArray.Create(n).AsIDynArray;
   for i := 0 to n - 1 do
   begin
-    Item := make_list([List.Strings[i], List.Objects[i]]);
+    Item := DynTypes.list([Arr[i].Key, Arr[i].Value]);
     Result.Item[i] := Pointer(Item);
   end;
 end;

@@ -25,6 +25,14 @@ type
     procedure DoMsgEvalCall(var Msg: TEvalCallMessage); message MsgEvalCall;
   end;
 
+  TDynFuncNat = class(TDynFunc)
+  public
+    Name: String;
+    Fn: TLispProc;
+    procedure Call(out Result: TDatumRef; Params: TDynDatum); override;
+    constructor Create(const Def: TLispProcRec);
+  end;
+
   TDynMethod = class(TDyn, IDynMethod)
   // InlineVMT requiere los siguientes métodos idénticos a los de IDynMethod
   public
@@ -55,21 +63,21 @@ type
   TNamedDynFunc = class(TDynFunc)
   public
     Method: TDynFuncO;
-    Name: TDynDatum;
+    Name: IDynSymbol;
     function DatumType: TDatumType; override;
     function DisplayStr(NeededChars: Integer): String; override;
     procedure Call(out Result: TDatumRef; Par: TDynDatum); override;
-    constructor Create(AName: TDynDatum; AMethod: TDynFuncO);
+    constructor Create(AName: IDynSymbol; AMethod: TDynFuncO);
   end;
 
   TNamedDynFuncG = class(TDynFunc)
   public
     Method: TDynFuncG;
-    Name: TDynDatum;
+    Name: IDynSymbol;
     function DatumType: TDatumType; override;
     function DisplayStr(NeededChars: Integer): String; override;
     procedure Call(out Result: TDatumRef; Par: TDynDatum); override;
-    constructor Create(AName: TDynDatum; AMethod: TDynFuncG);
+    constructor Create(AName: IDynSymbol; AMethod: TDynFuncG);
   end;
 
   TDynLambda = class(TDynFunc)
@@ -106,6 +114,17 @@ type
     procedure Eval(out Result: TDatumRef; Params: TDynDatum; Scope: IDynScope);
         override;
     constructor Create(const AName: String; AMethod: TSintaxMethod);
+  end;
+
+  TDynSyntaxNat = class(TCustomDynSyntax)
+  public
+    Name: String;
+    Fn: TLispSyntax;
+    function DatumType: TDatumType; override;
+    function DisplayStr(NeededChars: Integer): String; override;
+    procedure Eval(out Result: TDatumRef; Params: TDynDatum; Scope: IDynScope);
+        override;
+    constructor Create(const Def: TLispSyntaxRec);
   end;
 
 function AsSintax(Self: TDynDatum): TDynSyntax; overload;  {$ifdef INLINE} inline; {$endif}
@@ -221,7 +240,7 @@ begin
   Method(Result, Par);
 end;
 
-constructor TNamedDynFunc.Create(AName: TDynDatum; AMethod: TDynFuncO);
+constructor TNamedDynFunc.Create(AName: IDynSymbol; AMethod: TDynFuncO);
 begin
   Name := AName;
   Method := AMethod;
@@ -244,7 +263,7 @@ begin
   Method(Result, Par);
 end;
 
-constructor TNamedDynFuncG.Create(AName: TDynDatum; AMethod: TDynFuncG);
+constructor TNamedDynFuncG.Create(AName: IDynSymbol; AMethod: TDynFuncG);
 begin
   Name := AName;
   Method := AMethod;
@@ -338,6 +357,43 @@ begin
   Pointer(Name) := nil;
   Name := AName;
   Method := AMethod;
+end;
+
+{ TDynFuncNat }
+
+procedure TDynFuncNat.Call(out Result: TDatumRef; Params: TDynDatum);
+begin
+  Fn(Result, Params);
+end;
+
+constructor TDynFuncNat.Create(const Def: TLispProcRec);
+begin
+  Name := Def.Name;
+  Fn   := Def.Fn;
+end;
+
+{ TDynSyntaxNat }
+
+constructor TDynSyntaxNat.Create(const Def: TLispSyntaxRec);
+begin
+  Name := Def.Name;
+  Fn   := Def.Fn;
+end;
+
+function TDynSyntaxNat.DatumType: TDatumType;
+begin
+  Result := atSyntax
+end;
+
+function TDynSyntaxNat.DisplayStr(NeededChars: Integer): String;
+begin
+  Result := Format('?:%p', [Pointer(Self)]);
+end;
+
+procedure TDynSyntaxNat.Eval(out Result: TDatumRef; Params: TDynDatum;
+  Scope: IDynScope);
+begin
+  Fn(Result, Params, Scope)
 end;
 
 end. ///////////////////////////////////////////////////////////////////////////

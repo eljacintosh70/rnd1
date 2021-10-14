@@ -18,7 +18,7 @@ type
 
   TDynOutPortRndIndent = class(TDynOutPortIndent)
   public
-    function IDynOutPort_BeginList(Kind: TListKind): IDynOutPort; override; stdcall;
+    function BeginList(Kind: TListKind): IDynOutPort; override; stdcall;
   end;
 
 function RndOutFn(AWriteProc: TWriteProc): IDynOutPort;
@@ -147,7 +147,7 @@ end;
 
 { TDynOutPortRndIndent }
 
-function TDynOutPortRndIndent.IDynOutPort_BeginList(Kind: TListKind): IDynOutPort;
+function TDynOutPortRndIndent.BeginList(Kind: TListKind): IDynOutPort;
 var
   AOpen, ASepar, AClose: string;
 begin

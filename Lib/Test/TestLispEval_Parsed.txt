@@ -1,0 +1,23 @@
+( begin
+  ( define
+    ( f
+      x
+      y)
+    ( +
+      ( *
+        100
+        x)
+      y))
+  ( define
+    a1
+    ( f
+      1
+      2))
+  ( define
+    a2
+    ( f
+      3
+      4))
+  ( list
+    a1
+    a2))

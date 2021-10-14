@@ -15,6 +15,8 @@ uses
 type
   // Test methods for class TDynOutPortD
 
+  { TestEvalCore }
+
   TestEvalCore = class(TTestCase)
   strict private
     FTextOut: TStrTextOutW;
@@ -24,6 +26,7 @@ type
     procedure SetUp; override;
     procedure TearDown; override;
   published
+    procedure TestSymbols;
     procedure TestFromLisp;
     procedure TestFromRnd;
   end;
@@ -46,9 +49,23 @@ begin
   FDynOutPort := nil;
 end;
 
+procedure TestEvalCore.TestSymbols;
+const
+  Names: array[0..9] of Utf8String = (
+   'if', 'begin', '+', '-', '*', '&', 'Abc', 'ABC', 'áei', '%%' );
+var
+  Values: array[0..9] of IDynSymbol;
+  i: Integer;
+begin
+  for i := 0 to High(Names) do
+    Values[i] := InitSymbol(Names[i]);
+  for i := 0 to High(Names) do     
+    CheckEquals(Names[i], Values[i].Name, 'Symbol Name')
+end;
+
 procedure TestEvalCore.TestFromLisp;
 var
-  SrcText, RefText: string;
+  SrcText, RefText, ParsedText: string;
   ReturnValue: Boolean;
   Obj: dyn;
   ResText, s: string;
@@ -57,6 +74,7 @@ var
 begin
   SrcText := LoadTestFile('TestLispEval.txt');
   RefText := LoadTestFile('TestLispEval_Res.txt');
+  ParsedText := LoadTestFile('TestLispEval_Parsed.txt');
 
   Parser := TLispParser.Create;
   Parser.Evaluate(Res, SrcText);
@@ -64,6 +82,8 @@ begin
 
   Obj := Res.Value;
   s := DisplayL(obj);
+  s := NormalizeLines(s);
+  CheckEquals(ParsedText, s, 'DisplayL');
 
   Core.Scope.Eval(Res2, Obj);
   Obj := Res2.Value;

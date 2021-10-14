@@ -3,6 +3,7 @@ interface //////////////////////////////////////////////////////////////////////
 
 uses
   SysUtils, Classes,
+  Generics.Collections,
   DynTypes, DTDatum, DTPair, DTSymbol;
 
 type
@@ -15,10 +16,8 @@ type
   // InlineVMT requiere los siguientes métodos idénticos a los de IDynDatum
   public
     function GetParent: IDynScope; virtual; abstract;
-    function GetValue(Symbol: TDynDatum): TDynDatum; virtual; abstract;
     function GetLocalValue(Symbol: TDynDatum): TDynDatum; virtual; abstract;
-    procedure SetValue(Symbol: TDynDatum; const Value: TDynDatum); virtual; abstract;
-    property Value[Symbol: TDynDatum]: TDynDatum read GetValue write SetValue;
+    property Value[const Key: dyn]: dyn read GetItem write SetItem;
     property Parent: IDynScope read GetParent;
   private
     function GetAsIDynScope: IDynScope;
@@ -27,17 +26,15 @@ type
   public
     function DatumType: TDatumType; override;
     function AsVariant: Variant; override;
-    function GetItem(const Key: dyn): dyn; override; stdcall;
-    procedure SetItem(const Key: dyn; const Value: dyn); override; stdcall;
     function Method(Id: dyn; Arg: array of dyn): dyn; override; stdcall;
   end;
 
   TListScope = class(TAbstractDynScope, IDebug)
   public
     function GetParent: IDynScope; override;
-    function GetValue(Symbol: TDynDatum): TDynDatum; override;
     function GetLocalValue(Symbol: TDynDatum): TDynDatum; override;
-    procedure SetValue(Symbol: TDynDatum; const Value: TDynDatum); override;
+    function GetItem(const Key: dyn): dyn; override; stdcall;
+    procedure SetItem(const Key: dyn; const Value: dyn); override; stdcall;
   public
     function Debug: String;
     function CommandExec(Command: Integer; Res: Pointer; Data: Pointer = nil): Integer; override;
@@ -49,22 +46,23 @@ type
   public
     constructor Create(AParent: IDynScope = nil);
     destructor Destroy; override;
-    property Value[Symbol: TDynDatum]: TDynDatum read GetValue write SetValue;
+    property Value[const Key: dyn]: dyn read GetItem write SetItem;
     property Parent: IDynScope read GetParent;
   end;
 
-  TSSymbolList = class(TStringList)
+  TKVPair = TPair<dyn, dyn>;
+  TSSymbolList = class(TDictionary<dyn, dyn>)
   public
     destructor Destroy; override;
-    function AddObject(const S: string; AObject: TObject): Integer; override;
+    //function AddObject(const S: string; AObject: TObject): Integer; override;
   end;
 
   TBigScope = class(TAbstractDynScope, IDebug)
   public
     function GetParent: IDynScope; override;
-    function GetValue(Symbol: TDynDatum): TDynDatum; override;
+    function GetItem(const Key: dyn): dyn; override; stdcall;
     function GetLocalValue(Symbol: TDynDatum): TDynDatum; override;
-    procedure SetValue(Symbol: TDynDatum; const Value: TDynDatum); override;
+    procedure SetItem(const Key: dyn; const Value: dyn); override; stdcall;
   protected
     FParent: IDynScope;
   public
@@ -83,7 +81,7 @@ type
   public
     constructor Create(AParent: IDynScope = nil);
     destructor Destroy; override;
-    property Value[Symbol: TDynDatum]: TDynDatum read GetValue write SetValue;
+    property Value[const Key: dyn]: dyn read GetItem write SetItem;
     property Parent: IDynScope read GetParent;
   end;
 
@@ -108,16 +106,6 @@ begin
   Result := DisplayStr(200);
 end;
 
-function TAbstractDynScope.GetItem(const Key: dyn): dyn;
-begin
-  Result := GetValue(Key)
-end;
-
-procedure TAbstractDynScope.SetItem(const Key, Value: dyn);
-begin
-  SetValue(Key, Value);
-end;
-
 function TAbstractDynScope.Method(Id: dyn; Arg: array of dyn): dyn;
 var
   Fn: dyn;
@@ -133,13 +121,15 @@ begin
   Result := FParent;
 end;
 
-function TListScope.GetValue(Symbol: TDynDatum): TDynDatum;
+function TListScope.GetItem(const Key: dyn): dyn;
+var
+  Res: TDynDatum;
 begin
-  Result := Assq(Symbol, List);
-  if Assigned(Result) then
-    Result := car(cdr(Result))
+  Res := Assq(Key, List);
+  if Assigned(Res) then
+    Result := car(cdr(Res))
   else if Assigned(Parent) then
-    Result := Parent.Value[Symbol]
+    Result := Parent.Value[Key]
   else
     Result := Unbound
 end;
@@ -153,11 +143,11 @@ begin
     Result := Unbound
 end;
 
-procedure TListScope.SetValue(Symbol: TDynDatum; const Value: TDynDatum);
+procedure TListScope.SetItem(const Key: dyn; const Value: dyn);
 var
   Pair: IDynPair;
 begin
-  Pair := make_list([Symbol, Value]);
+  Pair := make_list([Key.Value, Value.Value]);
   List := DynTypes.cons(Pair, List)
 end;
 
@@ -193,6 +183,7 @@ end;
 
 { TSSymbolList }
 
+{
 function TSSymbolList.AddObject(const S: string;
   AObject: TObject): Integer;
 var
@@ -209,13 +200,13 @@ begin
   else
     inherited AddObject(S, AObject);
 end;
-
+}
 destructor TSSymbolList.Destroy;
-var
-  i: Integer;
+//var
+//  i: Integer;
 begin
-  for i := 0 to Count - 1 do
-    TDynDatum(Objects[i]).Free;
+  //for i := 0 to Count - 1 do
+  //  TDynDatum(Objects[i]).Free;
   inherited Destroy;
 end;
 
@@ -224,12 +215,10 @@ end;
 
 function TBigScope.GetLocalValue(Symbol: TDynDatum): TDynDatum;
 var
-  Name: string;
-  i: Integer;
+  Res: dyn;
 begin
-  Name := string(SymbolName(Symbol));
-  if List.Find(Name, i) then
-    Result := TDynDatum(List.Objects[i])
+  if List.TryGetValue(Symbol, Res) then
+    Result := Res
   else
     Result := Unbound
 end;
@@ -239,16 +228,14 @@ begin
   Result := FParent;
 end;
 
-function TBigScope.GetValue(Symbol: TDynDatum): TDynDatum;
-var
-  Name: string;
-  i: Integer;
+function TBigScope.GetItem(const Key: dyn): dyn;
+var           
+  Res: dyn;
 begin
-  Name := string(SymbolName(Symbol));
-  if List.Find(Name, i) then
-    Result := TDynDatum(List.Objects[i])
+  if List.TryGetValue(Key, Res) then
+    Result := Res
   else if Assigned(Parent) then
-    Result := Parent.Value[Symbol]
+    Result := Parent.Value[Key]
   else
     Result := Unbound
 end;
@@ -258,23 +245,20 @@ begin
   Result := inherited QueryInterface(IID, Obj)
 end;
 
-procedure TBigScope.SetValue(Symbol: TDynDatum; const Value: TDynDatum);
-var
-  Name: string;
+procedure TBigScope.SetItem(const Key: dyn; const Value: dyn);
 begin
-  Name := string(SymbolName(Symbol));
-  List.AddObject(Name, Value)
+  List.Add(Key, Value)
 end;
 
 function TBigScope.Debug: String;
 var
   i: Integer;
+  e: TKVPair;
 begin
   Result := '(';
-  for i := 0 to List.Count - 1 do
+  for e in List do
   begin
-    Result := Result + List[i] + '= ' +
-      String(TDynDatum(List.Objects[i]).AsVariant) + ', ';
+    Result := Result + Deb(e.Key) + '= ' + Deb(e.Value) + ', ';
   end;
   Result := Result + ')';
 end;
@@ -298,8 +282,6 @@ constructor TBigScope.Create(AParent: IDynScope = nil);
 begin
   FParent := AParent;
   List := TSSymbolList.Create;
-  List.Sorted := True;
-  List.CaseSensitive := False; // True segun r6rs
 end;
 
 destructor TBigScope.Destroy;

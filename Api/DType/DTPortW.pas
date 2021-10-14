@@ -9,7 +9,7 @@ uses
 type
   TStrTextOutW = class(TObject)
   private
-    Buf: string;
+    Buf: UnicodeString;
     Ofs, Len: Integer;
     function GrowTo(NewLen: Integer): Boolean; virtual;
   public
@@ -18,13 +18,13 @@ type
     constructor Create(ALen: Integer);
     function WriteProc(p: Pointer; cb: Integer): Boolean;
     procedure Reset;
-    function GetText: string;
+    function GetText: UnicodeString;
   end;
 
   TCustomDynOutPortW = class(TCustomDynOutPort)
   public
     function WriteText(p: PWideChar; cc: Integer): Boolean; overload; inline;
-    function WriteText(const s: String): Boolean; overload; inline;
+    function WriteText(const s: UnicodeString): Boolean; overload; inline;
   end;
 
   TDynOutPort = class(TCustomDynOutPortW)
@@ -51,30 +51,25 @@ type
     function WriteList(const val: array of dyn; Kind: TListKind = lkList): Boolean; override; stdcall;
     function BeginList(Kind: TListKind): IDynOutPort; override; stdcall;
   protected
-    function WriteChar(ch: Char): Boolean; virtual;
+    function WriteChar(ch: WideChar): Boolean; virtual;
     function EscapeStr(p: PWideChar; cc: Integer): Boolean; virtual;
   end;
 
   TDynOutPortIndent = class(TInterfacedObject, IDynOutPort)
-    function IDynOutPort._AddRef = IDynOutPort__AddRef;
-    function IDynOutPort._Release = IDynOutPort__Release;
-    function IDynOutPort.Write = Write;
-    function IDynOutPort.WriteSepar = IDynOutPort_WriteSepar;
-    function IDynOutPort.BeginList = IDynOutPort_BeginList;
   protected
     FPort: TCustomDynOutPortW;
-    Open: string;
-    Separ: string;
-    Close: string;
+    Open: UnicodeString;
+    Separ: UnicodeString;
+    Close: UnicodeString;
   protected
     // sobreescribir los que no deban llamarse desde el objeto Port
-    function IDynOutPort__AddRef: Integer; stdcall;
-    function IDynOutPort__Release: Integer; stdcall;
+    function _AddRef : longint;{$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+    function _Release : longint;{$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
     function Write(Obj: dyn): Boolean; stdcall;
-    function IDynOutPort_WriteSepar: Boolean; stdcall;
-    function IDynOutPort_BeginList(Kind: TListKind): IDynOutPort; virtual; stdcall;
+    function WriteSepar: Boolean; stdcall;
+    function BeginList(Kind: TListKind): IDynOutPort; virtual; stdcall;
   public
-    constructor Create(APort: TCustomDynOutPortW; AOpen, ASepar, AClose: string);
+    constructor Create(APort: TCustomDynOutPortW; AOpen, ASepar, AClose: UnicodeString);
     property Port: TCustomDynOutPortW read FPort {$IFNDEF LINUX} implements IDynOutPort{$ENDIF};
   {$IFDEF LINUX}
   protected
@@ -89,8 +84,8 @@ type
     function CommandExec(Command: Integer; Res: Pointer; Data: Pointer = nil): Integer;
     function DatumType: TDatumType;
     function AsVariant: Variant;
-    function DisplayStr(NeededChars: Integer): String;
-    function WriteStr(NeededChars: Integer): String;
+    function DisplayStr(NeededChars: Integer): string;
+    function WriteStr(NeededChars: Integer): string;
     //IDynOutPort = interface(IDynDatum)
     //function Write(Obj: dyn): Boolean; stdcall;
     //function WriteSepar: Boolean; stdcall;
@@ -152,7 +147,7 @@ begin
   Ofs := 0;
 end;
 
-function TStrTextOutW.GetText: string;
+function TStrTextOutW.GetText: UnicodeString;
 begin
   Result := Copy(Buf, 1, Ofs);
 end;
@@ -165,7 +160,7 @@ begin
   Result := WriteProc(p, cc * SizeOf(WideChar))
 end;
 
-function TCustomDynOutPortW.WriteText(const s: String): Boolean;
+function TCustomDynOutPortW.WriteText(const s: UnicodeString): Boolean;
 begin
   Result := WriteProc(Pointer(s), Length(s) * SizeOf(WideChar))
 end;
@@ -200,7 +195,7 @@ end;
 
 function TDynOutPort.WriteSpecial(v: TSpecialValue): Boolean;
 var
-  s: String;
+  s: UnicodeString;
 begin
   case v of
     svFalse: s := '#f';
@@ -215,7 +210,7 @@ end;
 function TDynOutPort.WriteInt(p: Pointer; cb: Integer; Sign: TIntSign): Boolean;
 var
   v: Int64;
-  s: String;
+  s: UnicodeString;
 begin
   case Sign of
     isTwoComp:
@@ -243,7 +238,7 @@ end;
 
 function TDynOutPort.WriteFloat(v: Single): Boolean;
 var
-  s: String;
+  s: UnicodeString;
 begin
   s := FloatToStr(v);
   Result := WriteText(s)
@@ -251,7 +246,7 @@ end;
 
 function TDynOutPort.WriteFloat(v: Double): Boolean;
 var
-  s: String;
+  s: UnicodeString;
 begin
   s := FloatToStr(v);
   Result := WriteText(s)
@@ -412,7 +407,7 @@ begin
   Result := TDynOutPortIndent.Create(Self, '', ' ', '')
 end;
 
-function TDynOutPortWr.WriteChar(ch: Char): Boolean;
+function TDynOutPortWr.WriteChar(ch: WideChar): Boolean;
 begin
   Result := WriteText(@ch, 1)
 end;
@@ -424,12 +419,12 @@ end;
 
 { TDynOutPortIndent }
 
-function TDynOutPortIndent.IDynOutPort__AddRef: Integer;
+function TDynOutPortIndent._AddRef: longint;
 begin
   Result := inherited _AddRef
 end;
 
-function TDynOutPortIndent.IDynOutPort__Release: Integer;
+function TDynOutPortIndent._Release: longint;
 begin
   if RefCount = 1 then
     Port.WriteText(Close);
@@ -452,17 +447,17 @@ begin
     Result := Port.WriteSpecial(svNil);
 end;
 
-function TDynOutPortIndent.IDynOutPort_WriteSepar: Boolean;
+function TDynOutPortIndent.WriteSepar: Boolean;
 begin
   Result := Port.WriteText(Separ);
 end;
 
-function TDynOutPortIndent.IDynOutPort_BeginList(Kind: TListKind): IDynOutPort;
+function TDynOutPortIndent.BeginList(Kind: TListKind): IDynOutPort;
 begin
   Result := TDynOutPortIndent.Create(Port, Open, Separ, Close)
 end;
 
-constructor TDynOutPortIndent.Create(APort: TCustomDynOutPortW; AOpen, ASepar, AClose: string);
+constructor TDynOutPortIndent.Create(APort: TCustomDynOutPortW; AOpen, ASepar, AClose: UnicodeString);
 begin
   FPort := APort;
   Open := AOpen;
@@ -483,8 +478,8 @@ procedure TDynOutPortIndent.DispatchMsg(var Message); stdcall;                  
 function TDynOutPortIndent.CommandExec(Command: Integer; Res: Pointer; Data: Pointer = nil): Integer;                            begin Result := Port.CommandExec(Command, Res, Data); end;
 function TDynOutPortIndent.DatumType: TDatumType;                                                                                begin Result := Port.DatumType; end;
 function TDynOutPortIndent.AsVariant: Variant;                                                                                   begin Result := Port.AsVariant; end;
-function TDynOutPortIndent.DisplayStr(NeededChars: Integer): String;                                                             begin Result := Port.DisplayStr(NeededChars); end;
-function TDynOutPortIndent.WriteStr(NeededChars: Integer): String;                                                               begin Result := Port.WriteStr(NeededChars); end;
+function TDynOutPortIndent.DisplayStr(NeededChars: Integer): string;                                                             begin Result := Port.DisplayStr(NeededChars); end;
+function TDynOutPortIndent.WriteStr(NeededChars: Integer): string;                                                               begin Result := Port.WriteStr(NeededChars); end;
 //IDynOutPort = interface(IDynDatum)
 //function Write(Obj: dyn): Boolean; stdcall;
 //function WriteSepar: Boolean; stdcall;
