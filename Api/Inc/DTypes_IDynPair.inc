@@ -39,12 +39,14 @@ begin
 end;
 
 function list_length(list: dyn): Integer; stdcall;
+var
+  p: IDynPair;
 begin
   Result := 0;
-  while IsPair(list) do
+  while IsPair(list, p) do
   begin
     Inc(Result);
-    list := cdr(list)
+    list := p.cdr;
   end;
 end;
 

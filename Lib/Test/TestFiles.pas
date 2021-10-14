@@ -26,11 +26,28 @@ begin
   TestFilePath := Path + {$IFDEF LINUX} 'Lib/Test/' {$ELSE} 'Lib\Test\' {$ENDIF};
 end;
 
+// remover el salto de linea extra que agrega TStrings.Text
+// puede ser #13#10 (Windows) o #10 (Linux)
+function RemoveExtraLine(const s: string): string;
+var
+  n: Integer;
+begin
+  Result := s;
+  n := Length(Result);
+  if n >= 1 then
+    if Result[n] = #10 then
+    begin
+      if (n >= 2) and (Result[n - 1] = #13) then
+        SetLength(Result, n - 2)
+      else
+        SetLength(Result, n - 1)
+    end
+end;
+
 function LoadTestFile(Name: string): string;
 var
   Path: string;
   SL: TStringList;
-  n: Integer;
 begin
   if TestFilePath = '' then
     InitTestFilePath;
@@ -38,20 +55,14 @@ begin
   Path := TestFilePath + Name;
   SL := TStringList.Create;
   SL.LoadFromFile(Path);
-  Result := SL.Text;
+  Result := RemoveExtraLine(SL.Text);
   SL.Free;
-
-  n := Length(Result);
-  if n > 2 then
-    if Copy(Result, n - 1, 2) = #13#10 then
-      SetLength(Result, n - 2);
 end;
 
 procedure SaveTestFile(Name, Data: string);
 var
   Path: string;
   SL: TStringList;
-  n: Integer;
 begin
   if TestFilePath = '' then
     InitTestFilePath;
@@ -65,18 +76,12 @@ end;
 
 function NormalizeLines(s: string): string;
 var
-  SL: TStringList;   
-  n: Integer;
+  SL: TStringList;
 begin
   SL := TStringList.Create;
   SL.Text := s;
-  Result := SL.Text;
+  Result := RemoveExtraLine(SL.Text);
   SL.Free;
-
-  n := Length(Result);
-  if n > 2 then
-    if Copy(Result, n - 1, 2) = #13#10 then
-      SetLength(Result, n - 2);
 end;
 
 

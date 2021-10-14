@@ -54,7 +54,6 @@ var
   Obj: IDynSymbol;
 begin
   if QuoteFn[High(QuoteFn)].Ptr <> nil then Exit;
-  //if IsSymbol(QuoteFn[High(QuoteFn)].Value) then Exit;
   for i := Low(QuoteFn) to High(QuoteFn) do
   begin
     Obj := InitSymbol(QuoteFnName[i]);
