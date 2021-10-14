@@ -98,7 +98,7 @@ end;
 
 procedure TestEvalCore.TestFromRnd;
 var
-  SrcText, RefText: string;
+  SrcText, RefText, ParsedText: string;
   ReturnValue: Boolean;
   Obj: dyn;
   ResText, s: string;
@@ -106,13 +106,17 @@ var
   Parser: TParser;
 begin
   SrcText := LoadTestFile('TestRndEval.txt');
-  RefText := LoadTestFile('TestRndEval_Res.txt');
+  RefText := LoadTestFile('TestRndEval_Res.txt');   
+  ParsedText := LoadTestFile('TestRndEval_Parsed.txt');
 
   Parser := TParser.Create(SrcText);
   Parser.GetNextTerm(Obj);
   Parser.Free;
 
   s := DisplayL(obj);
+  s := NormalizeLines(s);
+  //SaveTestFile('TestRndEval_Parsed.txt', s);
+  CheckEquals(ParsedText, s, 'DisplayL');
 
   Core.Scope.Eval(Res2, Obj);
   Obj := Res2.Value;
