@@ -1,0 +1,115 @@
+object Form2: TForm2
+  Left = 881
+  Height = 307
+  Top = 187
+  Width = 514
+  Caption = 'RND Eval'
+  ClientHeight = 307
+  ClientWidth = 514
+  OnCreate = FormCreate
+  LCLVersion = '2.0.6.0'
+  object Splitter1: TSplitter
+    Cursor = crVSplit
+    Left = 0
+    Height = 3
+    Top = 89
+    Width = 514
+    Align = alTop
+    ResizeAnchor = akTop
+  end
+  object Memo1: TMemo
+    Left = 0
+    Height = 89
+    Top = 0
+    Width = 514
+    Align = alTop
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Courier New'
+    Lines.Strings = (
+      'Input'
+    )
+    ParentFont = False
+    ScrollBars = ssBoth
+    TabOrder = 0
+  end
+  object Panel1: TPanel
+    Left = 0
+    Height = 215
+    Top = 92
+    Width = 514
+    Align = alClient
+    ClientHeight = 215
+    ClientWidth = 514
+    TabOrder = 1
+    object Panel2: TPanel
+      Left = 1
+      Height = 35
+      Top = 1
+      Width = 512
+      Align = alTop
+      ClientHeight = 35
+      ClientWidth = 512
+      TabOrder = 0
+      object Bevel1: TBevel
+        Left = 169
+        Height = 50
+        Top = -8
+        Width = 9
+      end
+      object BEvalL: TButton
+        Left = 264
+        Height = 25
+        Top = 5
+        Width = 75
+        Caption = 'Eval &Lisp'
+        OnClick = BEvalLClick
+        TabOrder = 3
+      end
+      object BParseL: TButton
+        Left = 183
+        Height = 25
+        Top = 5
+        Width = 75
+        Caption = 'Parse L&isp'
+        OnClick = BParseLClick
+        TabOrder = 2
+      end
+      object BEvalRnd: TButton
+        Left = 88
+        Height = 25
+        Top = 5
+        Width = 75
+        Caption = 'Eval &Rnd'
+        OnClick = BEvalRndClick
+        TabOrder = 1
+      end
+      object BParseRnd: TButton
+        Left = 7
+        Height = 25
+        Top = 5
+        Width = 75
+        Caption = '&Parse Rnd'
+        OnClick = BParseRndClick
+        TabOrder = 0
+      end
+    end
+    object Memo2: TMemo
+      Left = 1
+      Height = 178
+      Top = 36
+      Width = 512
+      Align = alClient
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Courier New'
+      Lines.Strings = (
+        'Output'
+        ''
+      )
+      ParentFont = False
+      ScrollBars = ssBoth
+      TabOrder = 1
+    end
+  end
+end

@@ -741,17 +741,17 @@ end;
 
 procedure Divide(out Result: TDatumRef; Datum: TDynDatum);
 var
-  ResI, Val: Int64;
-  Res: Real;
+  ResI, ValI: Int64;
+  Res, ValR: Real;
   a: TDynDatum;
 begin
   Res := 1.0;
   if IsPair(Datum) then
   begin
     a := car(Datum);
-    if IsInteger(a) then
+    if IsInteger(a, ValI) then
     begin
-      ResI := a.AsInteger;
+      ResI := ValI;
       // operación con enteros
       repeat
         Datum := cdr(Datum);
@@ -761,18 +761,17 @@ begin
           Exit;
         end;
         a := car(Datum);
-        if not IsInteger(a) then
+        if not IsInteger(a, ValI) then
           Break;                  // continuar con punto flotante
-        Val := a.AsInteger;
-        if ResI mod Val <> 0 then
+        if ResI mod ValI <> 0 then
           Break;                  // continuar con punto flotante (no definí racional)
-        ResI := ResI div Val;
+        ResI := ResI div ValI;
       until False;
       Res := ResI;
     end
-    else if IsNum(a) then
+    else if IsReal(a, ValR) then
     begin
-      Res := dyn(a); // continuar con punto flotante
+      Res := ValR; // continuar con punto flotante
       Datum := cdr(Datum);   // datum señala al segundo elemento
     end
     else
@@ -785,8 +784,8 @@ begin
   while IsPair(Datum) do
   begin
     a := car(Datum);
-    if IsNum(a) then
-      Res := Res / Real(dyn(a));
+    if IsReal(a, ValR) then
+      Res := Res / ValR;
     //else ERROR
     Datum := cdr(Datum);
   end;
@@ -795,18 +794,17 @@ end;
 
 procedure Subst(out Result: TDatumRef; Datum: TDynDatum);
 var
-  ResI, Val: Int64;
-  Res: Real;
+  ResI, ValI: Int64;
+  Res, ValR: Real;
   a: TDynDatum;
 begin
   //ResI := 0;
   if IsPair(Datum) then
   begin
     a := car(Datum);
-    if IsInteger(a) then
+    if IsInteger(a, ResI) then
     begin
       // operación con enteros
-      ResI := a.AsInteger;
       Datum := cdr(Datum);
       if not IsPair(Datum) then
       begin
@@ -815,25 +813,24 @@ begin
       end;
 
       a := car(Datum);
-      if IsInteger(a) then
+      if IsInteger(a, ValI) then
       begin
-        Val := a.AsInteger;
         if IsPair(cdr(Datum)) then
           DynError('Too many parameters in -', []);
-        AssignInt64(Result, ResI - Val);    // (- x y) -> x - y
+        AssignInt64(Result, ResI - ValI);    // (- x y) -> x - y
       end
-      else if IsNum(a) then
+      else if IsReal(a, ValR) then
       begin
-        Res := ResI - Real(dyn(a));
+        Res := ResI - ValR;
         if IsPair(cdr(Datum)) then
           DynError('Too many parameters in -', []);
         Result := (MakeDouble(Res));  // (- x y) -> x - y
       end;
     end
-    else if IsNum(a) then
+    else if IsReal(a, ValR) then
     begin
       // operación con punto flotante
-      Res := dyn(a);
+      Res := ValR;
       Datum := cdr(Datum);
       if not IsPair(Datum) then
       begin
@@ -842,9 +839,9 @@ begin
       end;
 
       a := car(Datum);
-      if IsNum(a) then
+      if IsReal(a, ValR) then
       begin
-        Res := Res - Real(dyn(a));
+        Res := Res - ValR;
         if IsPair(cdr(Datum)) then
           DynError('Too many parameters in -', []);
         Result := (MakeDouble(Res));  // (- x y) -> x - y
