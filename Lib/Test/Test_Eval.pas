@@ -90,6 +90,7 @@ begin
 
   ReturnValue := FDynOutPort.Write(Obj);
   ResText := FTextOut.GetText;
+  ResText := NormalizeLines(ResText);
 
   // TODO: Validate method results
   Check(ReturnValue, 'Write');

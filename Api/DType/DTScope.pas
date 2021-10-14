@@ -247,7 +247,10 @@ end;
 
 procedure TBigScope.SetItem(const Key: dyn; const Value: dyn);
 begin
-  List.Add(Key, Value)
+  if List.ContainsKey(Key) then
+    List[Key] := Value
+  else
+    List.Add(Key, Value)
 end;
 
 function TBigScope.Debug: String;

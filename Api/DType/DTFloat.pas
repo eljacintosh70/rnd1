@@ -5,6 +5,9 @@ uses
   DynTypes, DTDatum, DUtils;
 
 type
+
+  { TDynFloat }
+
   TDynFloat = class(TDyn, IDynFloat)
   // InlineVMT requiere los siguientes métodos idénticos a los de IDynFloat
   public
@@ -24,6 +27,7 @@ type
     procedure CastToDouble(var Msg: TVarMessage); message MsgCastToDouble;
   protected
     procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;
+    procedure DoMsgEval(var Msg: TEvalMessage); message MsgEval;
   end;
 
 implementation /////////////////////////////////////////////////////////////////
@@ -77,6 +81,11 @@ var
 begin
   r := Msg.Port.WriteFloat(FValue);
   Msg.Res := Ord(r);
+end;
+
+procedure TDynFloat.DoMsgEval(var Msg: TEvalMessage);
+begin
+  Msg.Res := AsIDynFloat;
 end;
 
 end. ///////////////////////////////////////////////////////////////////////////

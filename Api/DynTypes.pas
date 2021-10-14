@@ -165,9 +165,9 @@ type
 
   IDynArray = interface(IDynDatum)
     function Length: TArraySize;
-    function GetItemA(i: Integer): TDynDatum;
-    procedure SetItemA(i: Integer; const Value: TDynDatum);
-    property Item[i: Integer]: TDynDatum read GetItemA write SetItemA; default;
+    function GetItemA(i: Integer): dyn;
+    procedure SetItemA(i: Integer; const Value: dyn);
+    property Item[i: Integer]: dyn read GetItemA write SetItemA; default;
     procedure Lock(var Block: TArrayBlock; Ofs: TArrayPos = 0; Count: TLockSize =
          UpToEnd; Writeable: Boolean = False);
     function DataPtr: Pointer;
@@ -438,10 +438,10 @@ procedure NeedString(Datum: TDynDatum; var Value: AnsiString); overload;
 
 {$REGION 'IDynSymbol'}
 // symbol? Nombre de una variable.
-function IsSymbol(Datum: TDynDatum): Boolean; overload;
-function IsSymbol(Datum: TDynDatum; out Ref: IDynSymbol): Boolean; overload;
-procedure NeedSymbol(Datum: TDynDatum); overload;
-procedure NeedSymbol(Datum: TDynDatum; out Ref: IDynSymbol); overload;
+function IsSymbol(Datum: dyn): Boolean; overload;
+function IsSymbol(Datum: dyn; out Ref: IDynSymbol): Boolean; overload;
+procedure NeedSymbol(Datum: dyn); overload;
+procedure NeedSymbol(Datum: dyn; out Ref: IDynSymbol); overload;
 
 function InitSymbol(pName: PAnsiChar; {Utf8} cbName: Integer): IDynSymbol;
   stdcall; overload;
@@ -794,7 +794,8 @@ begin
     Exit;
   end;
   Msg.Msg := MsgIsPair;
-  Msg.Res := 0;
+  Msg.Res := 0;  
+  Msg.VarPtr := nil;
   Datum.DispatchMsg(Msg);
   Result := (Msg.Res <> 0);
 end;
@@ -1071,7 +1072,7 @@ procedure InitSymbols(const Names: array of Utf8String; const Ref: array of
   PISymbol); stdcall; external dll name 'Symbol.Create*';
 {$endif}
 
-function IsSymbol(Datum: TDynDatum): Boolean;
+function IsSymbol(Datum: dyn): Boolean;
 var
   Msg: TVarMessage;
 begin
@@ -1086,7 +1087,7 @@ begin
   Result := (Msg.Res <> 0);
 end;
 
-function IsSymbol(Datum: TDynDatum; out Ref: IDynSymbol): Boolean;
+function IsSymbol(Datum: dyn; out Ref: IDynSymbol): Boolean;
 var
   Msg: TVarMessage;
 begin
@@ -1102,13 +1103,13 @@ begin
   Result := (Msg.Res <> 0);
 end;
 
-procedure NeedSymbol(Datum: TDynDatum);
+procedure NeedSymbol(Datum: dyn);
 begin
   if not IsSymbol(Datum) then
     raise EWrongType.Create(Datum, 'Symbol');
 end;
 
-procedure NeedSymbol(Datum: TDynDatum; out Ref: IDynSymbol);
+procedure NeedSymbol(Datum: dyn; out Ref: IDynSymbol);
 begin
   if not IsSymbol(Datum, Ref) then
     raise EWrongType.Create(Datum, 'Symbol');
