@@ -4,8 +4,6 @@ library DType;
   {$MODE Delphi}
 {$ENDIF}
 
-//{$IMAGEBASE $2E100000}
-
 uses
   DUtils in '..\Api\DUtils.pas',
   DTDatum in '..\Api\DType\DTDatum.pas',
@@ -17,7 +15,6 @@ uses
   DTString in '..\Api\DType\DTString.pas',
   DTSymbol in '..\Api\DType\DTSymbol.pas',
   DTProc in '..\Api\DType\DTProc.pas',
-  DTProcRTTI in '..\Api\DType\DTProcRTTI.pas',
   DTPort in '..\Api\DType\DTPort.pas',
   DTPortA in '..\Api\DType\DTPortA.pas',
   DTPortW in '..\Api\DType\DTPortW.pas',

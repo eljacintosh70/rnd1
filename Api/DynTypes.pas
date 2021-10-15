@@ -498,7 +498,7 @@ uses
 {$ifdef DTYPES}
   TypInfo,
   {$IFNDEF LINUX} Windows, MapFiles, {$ENDIF}
-  DTBool, DTInt, DTFloat, DTPair, DTArray, DTString, DTProc, DTProcRTTI,
+  DTBool, DTInt, DTFloat, DTPair, DTArray, DTString, DTProc,
   DTScript, DTSymbol, DTPortW,
 {$endif}
   DUtils;    // LispTypes, SchInterpreter, LispEnv,

@@ -27,7 +27,6 @@ uses
   DTString in '..\..\Api\DType\DTString.pas',
   DTSymbol in '..\..\Api\DType\DTSymbol.pas',
   DTProc in '..\..\Api\DType\DTProc.pas',
-  DTProcRTTI in '..\..\Api\DType\DTProcRTTI.pas',
   DTPort in '..\..\Api\DType\DTPort.pas',
   DTPortA in '..\..\Api\DType\DTPortA.pas',
   DTPortW in '..\..\Api\DType\DTPortW.pas',

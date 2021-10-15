@@ -3,7 +3,7 @@ interface //////////////////////////////////////////////////////////////////////
 
 uses
   SysUtils, Classes,
-  DynTypes, DTArray, DTProc, DTProcRTTI, DTScope;
+  DynTypes, DTArray, DTProc, DTScope;
 
 type
   TLispEval = class(TBigScope, ILibScope, IDelphiScope)
@@ -99,35 +99,7 @@ begin
 end;
 
 procedure TLispEval.RegisterSintax(List: TObject);
-var
-  p: PAnsiChar;
-  i, n: Integer;
-  pEntry: PFunctionInfo;
-  Datum: TDynDatum;
-  Method: TSintaxMethod;
-  Name: Utf8String;
-  NameW: string;
 begin
-  p := Pointer(List.ClassType);
-  Inc(p, vmtMethodTable);
-  p := PPointer(p)^;
-  if not Assigned(p) then Exit;
-
-  n := PFunctionTable(p).Len;
-  p := @PFunctionTable(p).Entry;
-  for i := 0 to n - 1 do
-  begin
-    pEntry := PFunctionInfo(p);
-    TMethod(Method).Code := pEntry.Def;
-    TMethod(Method).Data := List;
-    Name := pEntry.Name;
-    if PAnsiChar(Name)^ = '_' then
-      SimplifyName(Name);
-    NameW := string(Name);
-    Datum := SyntaxDatum(NameW, Method);
-    Define(Name, Datum);
-    Inc(p, pEntry.Len);
-  end;
 end;
 
 procedure TLispEval.Define(const Name: UTF8String; AValue: TDynDatum);
@@ -139,56 +111,7 @@ begin
 end;
 
 procedure TLispEval.RegisterFunctions(List: TObject);
-var
-  p: PAnsiChar;
-  i, n: Integer;
-  pMethodTable: PFunctionTable;
-  pMethodEntry: PFunctionInfo;
-  AutoTable: PAutoTable;
-  AutoEntry: PAutoEntry;
-  Datum: TDynDatum;
-  Method: TMethod;
-  Name: UTF8String;
 begin
-  p := Pointer(List.ClassType());
-  Inc(p, vmtMethodTable);
-  pMethodTable := PPointer(p)^;
-  if Assigned(pMethodTable) then
-  begin
-    n := pMethodTable.Len;
-    p := @pMethodTable.Entry;
-    for i := 0 to n - 1 do
-    begin
-      pMethodEntry := PFunctionInfo(p);
-      TMethod(Method).Code := pMethodEntry.Def;
-      TMethod(Method).Data := List;
-      Datum := ExtFuncDatum(pMethodEntry, Method);
-      Name := pMethodEntry.Name;
-      if PAnsiChar(Name)^ = '_' then
-        SimplifyName(Name);
-      Define(Name, Datum);
-      Inc(p, pMethodEntry.Len);
-    end;
-  end;
-
-  p := Pointer(List.ClassType);
-  Inc(p, vmtAutoTable);
-  AutoTable := PPointer(p)^;
-  if Assigned(AutoTable) then
-  begin
-    n := AutoTable.Len;
-    for i := 0 to n - 1 do
-    begin
-      AutoEntry := @AutoTable.Entry[i];
-      TMethod(Method).Code := AutoEntry.MethodAddr;
-      TMethod(Method).Data := List;
-      Datum := AutoFuncDatum(AutoEntry, Method);
-      Name := AutoEntry.Name^;
-      if PAnsiChar(Name)^ = '_' then
-        SimplifyName(Name);
-      Define(Name, Datum);
-    end;
-  end;
 end;
 
 procedure TLispEval.Rename(const OldNames, NewNames: array of UTF8String);

@@ -108,7 +108,6 @@
         <DCCReference Include="..\..\Api\DType\DTString.pas"/>
         <DCCReference Include="..\..\Api\DType\DTSymbol.pas"/>
         <DCCReference Include="..\..\Api\DType\DTProc.pas"/>
-        <DCCReference Include="..\..\Api\DType\DTProcRTTI.pas"/>
         <DCCReference Include="..\..\Api\DType\DTPort.pas"/>
         <DCCReference Include="..\..\Api\DType\DTPortA.pas"/>
         <DCCReference Include="..\..\Api\DType\DTPortW.pas"/>
@@ -168,17 +167,23 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="..\..\0ut\dcu\Rnd.exe" Configuration="Debug" Class="ProjectOutput">
-                    <Platform Name="Win32">
-                        <RemoteName>Rnd.exe</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\osx32\libcgunwind.1.0.dylib" Class="DependencyModule">
                     <Platform Name="OSX32">
                         <Overwrite>true</Overwrite>
                     </Platform>
                     <Platform Name="iOSSimulator">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="..\..\0ut\bin\Rnd.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>Rnd.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="..\..\0ut\dcu\Rnd.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>Rnd.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
