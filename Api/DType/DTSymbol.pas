@@ -24,7 +24,6 @@ type
     constructor Create(pName: PAnsiChar; cbName: Integer);
     destructor Destroy; override;
     function DatumType: TDatumType; override;
-    function DisplayStr(NeededChars: Integer): String; override;
   protected
     procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;
     procedure DoMsgEval(var Msg: TEvalMessage); message MsgEval;
@@ -134,11 +133,6 @@ end;
 function TDynSymbol.DatumType: TDatumType;
 begin
   Result := atSymbol
-end;
-
-function TDynSymbol.DisplayStr(NeededChars: Integer): String;
-begin
-  Result := string(Copy(Key, 1, NeededChars));
 end;
 
 procedure TDynSymbol.DoMsgDisplay(var Msg: TWriteMsg);

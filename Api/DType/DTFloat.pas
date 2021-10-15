@@ -18,8 +18,6 @@ type
     property AsIDynFloat: IDynFloat read GetAsIDynFloat {$if Declared(InlineVMT)} implements IDynFloat {$ifend};
   public
     function DatumType: TDatumType; override;
-    function AsVariant: Variant; override;
-    function DisplayStr(NeededChars: Integer): String; override;
   private
     FValue: Real;
   public
@@ -52,16 +50,6 @@ end;
 function TDynFloat.DatumType: TDatumType;
 begin
   Result := atReal;
-end;
-
-function TDynFloat.AsVariant: Variant;
-begin
-  Result := FValue;
-end;
-
-function TDynFloat.DisplayStr(NeededChars: Integer): String;
-begin
-  Result := FloatToStr(FValue);
 end;
 
 constructor TDynFloat.Create(AValue: Real);

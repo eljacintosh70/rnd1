@@ -22,8 +22,6 @@ type
   private
     FValue: Integer;
   public
-    function AsVariant: Variant; override;
-  public
     constructor Create(Value: Integer);
     function ByteCount: Integer; override;
     function BytePtr: PByte; override;
@@ -36,8 +34,6 @@ type
   TDynInt64 = class(TAbstractDynInt)
   private
     FValue: Int64;
-  public
-    function AsVariant: Variant; override;
   public
     constructor Create(Value: Int64);
     function ByteCount: Integer; override;
@@ -68,11 +64,6 @@ begin
 end;
 
 { TDynInt32 }
-
-function TDynInt32.AsVariant: Variant;
-begin
-  Result := FValue;
-end;
 
 constructor TDynInt32.Create(Value: Integer);
 begin
@@ -110,11 +101,6 @@ begin
 end;
 
 { TDynInt64 }
-
-function TDynInt64.AsVariant: Variant;
-begin
-  Result := FValue;
-end;
 
 constructor TDynInt64.Create(Value: Int64);
 begin

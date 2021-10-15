@@ -15,7 +15,6 @@ type
   // TDatumHelper = class(TInterfaceHelper, IDatum)
   public
     function DatumType: TDatumType; override;
-    function AsVariant: Variant; override;
     function DisplayStr(NeededChars: Integer): String; override;
     function WriteStr(NeededChars: Integer): String; override;
   // extra
@@ -48,10 +47,6 @@ end;
 function TDestroyed.DatumType: TDatumType;
 begin
   raise Exception.Create('Failed DatumType');
-end;
-function TDestroyed.AsVariant: Variant;
-begin
-  raise Exception.Create('Failed AsVariant');
 end;
 function TDestroyed.DisplayStr(NeededChars: Integer): String;
 begin

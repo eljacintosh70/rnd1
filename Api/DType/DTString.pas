@@ -13,9 +13,6 @@ type
     FValue: Char;
     constructor Create(AValue: Char);
     function DatumType: TDatumType; override;
-    function AsVariant: Variant; override;
-    function DisplayStr(NeededChars: Integer): String; override;
-    function WriteStr(NeededChars: Integer): String; override;
   protected
     procedure CastToChar(var Msg: TVarMessage); message MsgCastToChar;
     procedure CastToString(var Msg: TVarMessage); message MsgCastToString;
@@ -44,7 +41,6 @@ type
     property AsISchString: IDynString read GetAsIDynString;
   public
     function DatumType: TDatumType; override;
-    function DisplayStr(NeededChars: Integer): String; override;
   protected
     FItems: array[0..0] of WideChar;
   public
@@ -67,7 +63,6 @@ type
     property AsISchString: IDynString read GetAsIDynString;
   public
     function DatumType: TDatumType; override;
-    function DisplayStr(NeededChars: Integer): String; override;
   protected
     FItems: array[0..0] of AnsiChar;
   public
@@ -100,21 +95,6 @@ end;
 function TDynChar.DatumType: TDatumType;
 begin
   Result := atChar
-end;
-
-function TDynChar.AsVariant: Variant;
-begin
-  Result := FValue
-end;
-
-function TDynChar.DisplayStr(NeededChars: Integer): String;
-begin
-  Result := FValue
-end;
-
-function TDynChar.WriteStr(NeededChars: Integer): String;
-begin
-  Result := FValue
 end;
 
 procedure TDynChar.CastToChar(var Msg: TVarMessage);
@@ -170,21 +150,6 @@ end;
 function TDynString.DatumType: TDatumType;
 begin
   Result := atString
-end;
-
-function TDynString.DisplayStr(NeededChars: Integer): String;
-var
-  n: Integer;
-begin
-  n := FLength;
-  if n <= NeededChars - 2 then
-    Result := '"' + AsString + '"'
-  else
-  begin
-    Result := '"' + Copy(AsString, 1, NeededChars - 1);
-    if n < NeededChars - 1 then
-      Result := Result + '"';
-  end;
 end;
 
 class function TDynString.Create(pData: PWideChar; cbData: Integer): TDynString;
@@ -271,21 +236,6 @@ end;
 function TDynStringA.DatumType: TDatumType;
 begin
   Result := atString
-end;
-
-function TDynStringA.DisplayStr(NeededChars: Integer): String;
-var
-  n: Integer;
-begin
-  n := FLength;
-  if n <= NeededChars - 2 then
-    Result := '"' + AsString + '"'
-  else
-  begin
-    Result := '"' + Copy(AsString, 1, NeededChars - 1);
-    if n < NeededChars - 1 then
-      Result := Result + '"';
-  end;
 end;
 
 class function TDynStringA.Create(pData: PAnsiChar; cbData: Integer): TDynStringA;

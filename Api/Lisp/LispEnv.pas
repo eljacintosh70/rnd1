@@ -24,7 +24,7 @@ implementation /////////////////////////////////////////////////////////////////
 
 uses
   {$IFNDEF LINUX} Windows, {$ENDIF}
-  SysUtils, Classes, LispParserA, DTProc;
+  SysUtils, Classes, LispParserA, DTProc, DTPort;
 
 type
   TLibraryInfo = class
@@ -164,7 +164,7 @@ procedure WriteDatumToFile(Datum: TDynDatum; Path: String);
 var
   St : string;
 begin
-  St := Datum.WriteStr(MaxInt);
+  St := WriteStr(Datum);
   If ExtractFileDrive(Path) = '' then
     Path := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) + Path;
   SaveFile(Path, @St[1], Length(St));

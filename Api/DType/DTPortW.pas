@@ -87,11 +87,7 @@ type
     function Method(Id: dyn; Arg: array of dyn): dyn; stdcall;
     procedure DispatchMsg(var Message); stdcall;
     //IDynDatum = interface(IDyn)
-    function CommandExec(Command: Integer; Res: Pointer; Data: Pointer = nil): Integer;
     function DatumType: TDatumType;
-    function AsVariant: Variant;
-    function DisplayStr(NeededChars: Integer): string;
-    function WriteStr(NeededChars: Integer): string;
     //IDynOutPort = interface(IDynDatum)
     //function Write(Obj: dyn): Boolean; stdcall;
     //function WriteSepar: Boolean; stdcall;
@@ -481,11 +477,7 @@ procedure TDynOutPortIndent.SetItem(const Key: dyn; const Value: dyn); stdcall; 
 function TDynOutPortIndent.Method(Id: dyn; Arg: array of dyn): dyn; stdcall;                                                     begin Result := Port.Method(Id, Arg); end;
 procedure TDynOutPortIndent.DispatchMsg(var Message); stdcall;                                                                   begin           Port.DispatchMsg(Message); end;
 //IDynDatum = interface(IDyn)
-function TDynOutPortIndent.CommandExec(Command: Integer; Res: Pointer; Data: Pointer = nil): Integer;                            begin Result := Port.CommandExec(Command, Res, Data); end;
 function TDynOutPortIndent.DatumType: TDatumType;                                                                                begin Result := Port.DatumType; end;
-function TDynOutPortIndent.AsVariant: Variant;                                                                                   begin Result := Port.AsVariant; end;
-function TDynOutPortIndent.DisplayStr(NeededChars: Integer): string;                                                             begin Result := Port.DisplayStr(NeededChars); end;
-function TDynOutPortIndent.WriteStr(NeededChars: Integer): string;                                                               begin Result := Port.WriteStr(NeededChars); end;
 //IDynOutPort = interface(IDynDatum)
 //function Write(Obj: dyn): Boolean; stdcall;
 //function WriteSepar: Boolean; stdcall;

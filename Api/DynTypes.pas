@@ -101,28 +101,16 @@ type
 
   IDynDatum = interface(IDyn)
     ['{39D784FE-CB51-4503-8751-CD6CE98D5C81}']
-    function CommandExec(Command: Integer; Res: Pointer; Data: Pointer = nil): Integer;
     function DatumType: TDatumType;
-    function AsVariant: Variant;
-    function DisplayStr(NeededChars: Integer): String;
-    function WriteStr(NeededChars: Integer): String;
   end;
 
   TDynDatum = class(TDyn)
   public
-    function CommandExec(Command: Integer; Res: Pointer; Data: Pointer = nil): Integer; virtual; abstract;
     function _DatumType: TDatumType; virtual; abstract;
-    function _AsVariant: Variant; virtual; abstract;
-    function _DisplayStr(NeededChars: Integer): String; virtual; abstract;
-    function _WriteStr(NeededChars: Integer): String; virtual; abstract;
   {$ifdef IMP_DYNDATUM}
     function Data: Pointer; {$ifdef INLINE} inline; {$endif}
   public
     procedure Free;
-    function AsVariant: Variant;
-    function DisplayStr(NeededChars: Integer): String;
-    function WriteStr(NeededChars: Integer): String;
-    function AsTree(const Indent: String = ''): String;
     function NewRef: TDynDatum;
     function Kind: TDatumType;
     function AsInteger: Integer; {$ifdef INLINE} inline; {$endif}
@@ -1376,87 +1364,6 @@ asm
 {$endif}
 end;
 
-function TDynDatum.AsVariant: Variant;
-begin
-  case NativeInt(Pointer(Self)) and StorageMask of
-    smInterface:
-      begin
-        if Self = nil then
-          Result := '()'
-        else
-          Result := _AsVariant
-      end;
-    smInteger:
-        Result := FixNumValue(Self); //TIntegerAtom(Self).Value64;
-    else
-      case Kind of
-        {atPair:
-          Result := ListStr;
-        atStream:
-          Result := StreamStr;}
-        {atVector:
-          Result := VectStr;
-        atByteVector:
-          Result := ByteVectStr;
-        atRecord:
-          Result := RecordStr;
-        atReal:
-          Result := AsReal(Self).Val;  }
-        {atString:
-          Result :=  '"' + AsString + '"';
-        atSymbol:
-          Result := SymbolName; }
-        atInteger:
-          Result := FixNumValue(Self); //TIntegerAtom(Self).Value64;
-        atNil:
-          Result := '()';
-        atChar:
-          Result := WideString(WideChar(Integer(Self) shr 8)); // $10
-        atBool:
-          if Self = _f then
-            Result := '#f'
-          else
-            Result := '#t';
-        atUnbound:
-          Result := 'Unbound';
-        atUndefined:
-          Result := 'Undefined';
-        else
-          Result := Format('?:%p', [Pointer(Self)]);
-      end;
-  end;
-end;
-
-function TDynDatum.DisplayStr(NeededChars: Integer): String;
-begin
-  case NativeInt(Pointer(Self)) and StorageMask of
-    smInterface:
-      if Self <> nil then
-        Result := IDynDatum(Pointer(Self)).DisplayStr(NeededChars)
-      else
-        Result := '()';
-    smInteger:
-        Result := IntToStr(FixNumValue(Self));
-    else
-      Result := AsVariant;
-  end;
-end;
-
-function TDynDatum.WriteStr(NeededChars: Integer): String;
-begin
-  case NativeInt(Pointer(Self)) and StorageMask of
-    smInterface:
-      if Self <> nil then
-        Result := IDynDatum(Pointer(Self)).WriteStr(NeededChars)
-      else
-        Result := '()';
-    smInteger:
-        Result := IntToStr(FixNumValue(Self));
-    else
-      Result := AsVariant;
-  end;
-end;
-
 function TDynDatum.NewRef: TDynDatum;
 begin
   Result := Self;
@@ -1515,25 +1422,12 @@ end;
 
 {$ifndef DTYPES}
 
-function TDynDatum.AsTree(const Indent: String): String;
-  external dll name 'TDynDatum_AsTree';
 function TDynDatum.AsInteger: Integer;
   external dll name 'TDynDatum_AsInteger';
 function TDynDatum.AsString: String;
   external dll name 'TDynDatum_AsString';
 
 {$else}
-
-function TDynDatum.AsTree(const Indent: String): String;
-begin
-  case Kind of
-    atPair:
-      Result := ListStr2(Self, Indent);
-    else
-      Result := AsVariant;
-      Result := Indent + Result;
-  end
-end;
 
 function TDynDatum.AsInteger: Integer;
 begin
@@ -1557,11 +1451,6 @@ begin
   end
 end;
 
-function TDynDatum_AsTree(Self: TDynDatum; const Indent: String): String;
-begin
-  Result := TDynDatum(Self).AsTree(Indent)
-end;
-
 function TDynDatum_AsInteger(Self: TDynDatum): Integer;
 begin
   Result := TDynDatum(Self).AsInteger
@@ -1573,7 +1462,6 @@ begin
 end;
 
 exports
-  TDynDatum_AsTree name 'TDynDatum_AsTree',
   TDynDatum_AsInteger name 'TDynDatum_AsInteger',
   TDynDatum_AsString name 'TDynDatum_AsString';
 

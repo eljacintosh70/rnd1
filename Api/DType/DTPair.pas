@@ -34,7 +34,6 @@ type
     function _Release: Integer; override; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF};
     function GetEnumerator: IDynEnumerator; override; stdcall;
     function DatumType: TDatumType; override;
-    function DisplayStr(NeededChars: Integer): String; override;
     function Rest: IDynSeq; override;
     function First: TDynDatum; override;
     function Length: TArraySize;
@@ -68,7 +67,6 @@ function Assq(const Key: dyn; List: IDynPair): TDynDatum;
 function list_append(Lists: array of IDynPair; Obj: IDynDatum): IDynPair;
 // usadas para facilitar recursividad...
 function CdrRef(Pair: TDynDatum): PDatumRef;
-function ListStr2(Datum: TDynDatum; Indent: string): string;
 
 implementation /////////////////////////////////////////////////////////////////
 
@@ -86,50 +84,6 @@ var
 begin
   P := Pointer(Integer(Pair) and PointerMask);
   Result := @P.FCdr;
-end;
-
-function DatumAsTree(Datum: TDynDatum; const Indent: string): string;
-begin
-  case Datum.Kind of
-    atPair:
-      Result := ListStr2(Datum, Indent);
-    else
-      Result := Datum.AsVariant;
-      Result := Indent + Result;
-  end
-end;
-
-function ListStr2(Datum: TDynDatum; Indent: string): string;
-var
-  p: IDynPair;
-  s: string;
-  First: Boolean;
-begin
-  Result := Indent + '( ';
-  Indent := Indent + '  ';
-  First := True;
-  while Datum.Kind = atPair do
-  begin
-    p := IDynPair(Pointer(Datum));
-    if First then
-    begin
-      First := False;
-      s := p.car.AsVariant;
-      Result := Result + s;
-    end
-    else
-    begin
-      s := DatumAsTree(p.car, Indent);
-      Result := Result + #13#10 + s;
-    end;
-    Datum := p.cdr;
-  end;
-  if Datum.Kind <> atNil then
-  begin
-    s := Datum.AsVariant;
-    Result := Result  + ' . ' + s;
-  end;
-  Result := Result + ')';
 end;
 
 function Assq(const Key: dyn; List: IDynPair): TDynDatum;
@@ -268,32 +222,6 @@ end;
 function TDynPair.DatumType: TDatumType;
 begin
   Result := atPair;
-end;
-
-function TDynPair.DisplayStr(NeededChars: Integer): String;
-var
-  s: string;
-  Datum: TDynDatum;
-begin
-  Result := '(';
-  Dec(NeededChars, System.Length(Result));
-
-  Datum := Pointer(Self);
-  while IsPair(Datum) do
-  begin
-    s := DynTypes.car(Datum).DisplayStr(NeededChars);
-    Result := Result + s + ' ';
-    Dec(NeededChars, System.Length(s) + 1);
-    if NeededChars <= 0 then
-      Exit;
-    Datum := DynTypes.cdr(Datum);
-  end;
-  if not IsNull(Datum) then
-  begin
-    s := Datum.DisplayStr(NeededChars);
-    Result := Result  + '. ' + s;
-  end;
-  Result := Result + ')';
 end;
 
 function TDynPair.Rest: IDynSeq;

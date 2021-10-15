@@ -32,7 +32,6 @@ type
     //FSymbols: IDynPair;
   public
     procedure SetItem(const Key: dyn; const Value: dyn); override;
-    function DisplayStr(NeededChars: Integer): String; override;
     //procedure CalcSymbols;
   public
     constructor Create(const AParent: IDynScope; const PropNames: array of TDynDatum;
@@ -106,36 +105,6 @@ begin
     Val := ConstToDatum(PropValues[i]);
     Value[Key] := Val;
   end;
-end;
-
-function TScriptObject.DisplayStr(NeededChars: Integer): String;
-var
-  v: TDynDatum;
-  SymbolList, Id, Pair: TDynDatum;
-  SymbolsR: IDynPair;
-begin
-  v := Value[syType];
-  Result := '{';
-  if v <> Unbound then
-    Result := Result + v.WriteStr(NeededChars) + ' ';
-
-  SymbolsR := Reverse(FPublic);
-  SymbolList := Pointer(SymbolsR);
-
-  while (SymbolList <> nil) do
-  begin
-    Id := car(SymbolList);
-    SymbolList := cdr(SymbolList);
-
-    if Id <> SyType then
-    begin
-      Pair := Assq(Id, List);
-      Result := Result + Pair.WriteStr(NeededChars - Length(Result));
-    end;
-  end;
-
-  if Length(Result) < NeededChars then
-    Result := Result + '}';
 end;
 
 procedure TScriptObject.SetItem(const Key: dyn; const Value: dyn);

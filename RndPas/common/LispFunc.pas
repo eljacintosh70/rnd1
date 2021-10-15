@@ -168,12 +168,12 @@ const
 implementation /////////////////////////////////////////////////////////////////
 
 var
-  TempDebug: Variant;
+  TempDebug: String;
 
 procedure Debug(a: TDynDatum);
 begin
   try
-    TempDebug := a.AsVariant;
+    TempDebug := Deb(a);
   except
     TempDebug := 'Error';
   end;

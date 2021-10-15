@@ -35,7 +35,6 @@ type
   TCustomDynArray = class(TAbstractDynArray)
   public
     function DatumType: TDatumType; override;
-    function DisplayStr(NeededChars: Integer): String; override;
   end;
 
   TDynArray = class(TCustomDynArray)
@@ -70,7 +69,6 @@ type
     property AsIDynMemory: IDynMemory read GetAsIDynMemory {$if Declared(InlineVMT)} implements IDynMemory {$ifend};
   public
     function DatumType: TDatumType; override;
-    function DisplayStr(NeededChars: Integer): String; override;
     function GetItemA(i: Integer): dyn; override;
     procedure SetItemA(i: Integer; const Value: dyn); override;
   end;
@@ -193,28 +191,6 @@ end;
 function TCustomDynArray.DatumType: TDatumType;
 begin
   Result := atVector
-end;
-
-function TCustomDynArray.DisplayStr(NeededChars: Integer): String;
-var
-  s: string;
-  Datum: TDynDatum;
-  i: Integer;
-begin
-  Result := '#(';
-  Dec(NeededChars, System.Length(Result));
-  if NeededChars <= 0 then
-    Exit;
-  for i := 0 to length - 1 do
-  begin
-    Datum := ItemA[i];
-    s := Datum.DisplayStr(NeededChars);
-    Result := Result + s + ' ';
-    Dec(NeededChars, System.Length(s) + 1);
-    if NeededChars <= 0 then
-      Exit;
-  end;
-  Result := Result + ')';
 end;
 
 { TDynArray }
@@ -363,28 +339,6 @@ end;
 function TAbstractDynMemory.DatumType: TDatumType;
 begin
   Result := atByteVector
-end;
-
-function TAbstractDynMemory.DisplayStr(NeededChars: Integer): String;
-var
-  s: string;
-  b: Byte;
-  i: Integer;
-  n, MaxN: Integer;
-begin
-  Result := '#m(';
-  Dec(NeededChars, System.Length(Result));
-  n := length;
-  MaxN := (NeededChars + 2) div 3;
-  if n > MaxN then
-    n := MaxN;
-  for i := 0 to n - 1 do
-  begin
-    b := Bytes[i];
-    s := IntToHex(b, 2);
-    Result := Result + s + ' ';
-  end;
-  Result := Result + ')';
 end;
 
 function TAbstractDynMemory.GetItemA(i: Integer): dyn;

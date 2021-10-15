@@ -21,7 +21,6 @@ type
   public
     property AsIDynFunc: IDynFunc read GetAsIDynFunc {$if Declared(InlineVMT)} implements IDynFunc {$ifend};
   public
-    function DisplayStr(NeededChars: Integer): String; override;
     procedure DoMsgEvalCall(var Msg: TEvalCallMessage); message MsgEvalCall;
   end;
 
@@ -43,7 +42,6 @@ type
     property AsIDynMethod: IDynMethod read GetAsIDynMethod {$if Declared(InlineVMT)} implements IDynMethod {$ifend};
   public
     function DatumType: TDatumType; override;
-    function DisplayStr(NeededChars: Integer): String; override;
   end;
 
   TDynMethodObjG = class(TDynMethod)
@@ -65,7 +63,6 @@ type
     Method: TDynFuncO;
     Name: IDynSymbol;
     function DatumType: TDatumType; override;
-    function DisplayStr(NeededChars: Integer): String; override;
     procedure Call(out Result: TDatumRef; Par: TDynDatum); override;
     constructor Create(AName: IDynSymbol; AMethod: TDynFuncO);
   end;
@@ -75,7 +72,6 @@ type
     Method: TDynFuncG;
     Name: IDynSymbol;
     function DatumType: TDatumType; override;
-    function DisplayStr(NeededChars: Integer): String; override;
     procedure Call(out Result: TDatumRef; Par: TDynDatum); override;
     constructor Create(AName: IDynSymbol; AMethod: TDynFuncG);
   end;
@@ -86,7 +82,6 @@ type
     Body: TDatumRef;
     Scope: IDynScope;
     function DatumType: TDatumType; override;
-    function DisplayStr(NeededChars: Integer): String; override;
     procedure Call(out Result: TDatumRef; Par: TDynDatum); override;
   public
     constructor Create(AArg, ABody: TDynDatum; AScope: IDynScope);
@@ -101,7 +96,6 @@ type
   public
     property AsIDynSyntax: IDynSyntax read GetAsIDynSyntax {$if Declared(InlineVMT)} implements IDynSyntax {$ifend};
   public
-    function DisplayStr(NeededChars: Integer): String; override;
     procedure DoMsgEvalCall(var Msg: TEvalCallMessage); message MsgEvalCall;
   end;
 
@@ -110,7 +104,6 @@ type
     Method: TSintaxMethod;
     Name: String;
     function DatumType: TDatumType; override;
-    function DisplayStr(NeededChars: Integer): String; override;
     procedure Eval(out Result: TDatumRef; Params: TDynDatum; Scope: IDynScope);
         override;
     constructor Create(const AName: String; AMethod: TSintaxMethod);
@@ -121,7 +114,6 @@ type
     Name: String;
     Fn: TLispSyntax;
     function DatumType: TDatumType; override;
-    function DisplayStr(NeededChars: Integer): String; override;
     procedure Eval(out Result: TDatumRef; Params: TDynDatum; Scope: IDynScope);
         override;
     constructor Create(const Def: TLispSyntaxRec);
@@ -173,11 +165,6 @@ begin
   {$endif}
 end;
 
-function TDynFunc.DisplayStr(NeededChars: Integer): String;
-begin
-  Result := Format(':Proc:%p', [Pointer(Self)]);
-end;
-
 { TDynMethod }
 
 function TDynMethod.GetAsIDynMethod: IDynMethod;
@@ -190,11 +177,6 @@ end;
 function TDynMethod.DatumType: TDatumType;
 begin
   Result := atMethod;
-end;
-
-function TDynMethod.DisplayStr(NeededChars: Integer): String;
-begin
-  Result := Format('method:%p', [Pointer(Self)]);
 end;
 
 { TDynMethodObjG }
@@ -230,11 +212,6 @@ begin
   Result := atExtFunc
 end;
 
-function TNamedDynFunc.DisplayStr(NeededChars: Integer): String;
-begin
-  Result := Format('?:%p:%s', [Pointer(Self), Deb(Name)]);
-end;
-
 procedure TNamedDynFunc.Call(out Result: TDatumRef; Par: TDynDatum);
 begin
   Method(Result, Par);
@@ -251,11 +228,6 @@ end;
 function TNamedDynFuncG.DatumType: TDatumType;
 begin
   Result := atExtFunc
-end;
-
-function TNamedDynFuncG.DisplayStr(NeededChars: Integer): String;
-begin
-  Result := Format('?:%p:%s', [Pointer(Self), Deb(Name)]);
 end;
 
 procedure TNamedDynFuncG.Call(out Result: TDatumRef; Par: TDynDatum);
@@ -307,11 +279,6 @@ begin
   Result := atLambda
 end;
 
-function TDynLambda.DisplayStr(NeededChars: Integer): String;
-begin
-  Result := Format('?:%p', [Pointer(Self)]);
-end;
-
 { TCustomDynSyntax }
 
 procedure TCustomDynSyntax.DoMsgEvalCall(var Msg: TEvalCallMessage);
@@ -326,21 +293,11 @@ begin
   {$endif}
 end;
 
-function TCustomDynSyntax.DisplayStr(NeededChars: Integer): String;
-begin
-  Result := Format(':Syntax:%p', [Pointer(Self)]);
-end;
-
 { TDynSyntax }
 
 function TDynSyntax.DatumType: TDatumType;
 begin
   Result := atSyntax
-end;
-
-function TDynSyntax.DisplayStr(NeededChars: Integer): String;
-begin
-  Result := Format('?:%p', [Pointer(Self)]);
 end;
 
 procedure TDynSyntax.Eval(out Result: TDatumRef;
@@ -383,11 +340,6 @@ end;
 function TDynSyntaxNat.DatumType: TDatumType;
 begin
   Result := atSyntax
-end;
-
-function TDynSyntaxNat.DisplayStr(NeededChars: Integer): String;
-begin
-  Result := Format('?:%p', [Pointer(Self)]);
 end;
 
 procedure TDynSyntaxNat.Eval(out Result: TDatumRef; Params: TDynDatum;

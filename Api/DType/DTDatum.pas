@@ -75,11 +75,7 @@ type
   TDyn = class(TCustomDyn, IDynDatum)
   // InlineVMT requiere los siguientes métodos idénticos a los de IDynDatum
   public
-    function CommandExec(Command: Integer; Res: Pointer; Data: Pointer = nil): Integer; virtual;
     function DatumType: TDatumType; virtual; abstract;
-    function AsVariant: Variant; virtual;
-    function DisplayStr(NeededChars: Integer): String; virtual;
-    function WriteStr(NeededChars: Integer): String; virtual;
   private
     function GetAsIDatum: IDynDatum;
   public
@@ -281,33 +277,6 @@ begin
 end;
 
 { TDyn }
-
-function TDyn.CommandExec(Command: Integer; Res,
-  Data: Pointer): Integer;
-begin
-  Result := E_NOTIMPL
-end;
-
-function TDyn.AsVariant: Variant;
-var
-  DisplayStrFn: function (NeededChars: Integer): String of object;
-begin
-  DisplayStrFn := DisplayStr;
-  if TMethod(DisplayStrFn).Code <> @TDyn.DisplayStr then
-    Result := DisplayStrFn(MaxInt)
-  else
-    Result := Format('%s(%p)', [ClassName, Pointer(Self)]);
-end;
-
-function TDyn.DisplayStr(NeededChars: Integer): String;
-begin
-  Result := AsVariant;
-end;
-
-function TDyn.WriteStr(NeededChars: Integer): String;
-begin
-  Result := DisplayStr(NeededChars);
-end;
 
 function TDyn.GetAsIDatum: IDynDatum;
 begin

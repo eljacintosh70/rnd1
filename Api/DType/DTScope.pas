@@ -25,7 +25,6 @@ type
     property AsIDynScope: IDynScope read GetAsIDynScope {$if Declared(InlineVMT)} implements IDynScope {$ifend};
   public
     function DatumType: TDatumType; override;
-    function AsVariant: Variant; override;
     function Method(Id: dyn; Arg: array of dyn): dyn; override; stdcall;
   end;
 
@@ -37,9 +36,6 @@ type
     procedure SetItem(const Key: dyn; const Value: dyn); override; stdcall;
   public
     function Debug: String;
-    function CommandExec(Command: Integer; Res: Pointer; Data: Pointer = nil): Integer; override;
-    function WriteStr(NeededChars: Integer): String; override;
-    function DisplayStr(NeededChars: Integer): String; override;
   protected
     FParent: IDynScope;
     List: IDynPair;
@@ -68,8 +64,6 @@ type
     FParent: IDynScope;
   public
     function Debug: String;
-    function CommandExec(Command: Integer; Res: Pointer; Data: Pointer = nil): Integer; override;
-    function WriteStr(NeededChars: Integer): String; override;
   protected
     List: TSSymbolList;
   public
@@ -78,7 +72,6 @@ type
     {$else}
     function QueryInterface(const IID: TGUID; out Obj): HResult; override; stdcall;
     {$endif}
-    function DisplayStr(NeededChars: Integer): String; override;
   public
     constructor Create(AParent: IDynScope = nil);
     destructor Destroy; override;
@@ -100,11 +93,6 @@ end;
 function TAbstractDynScope.DatumType: TDatumType;
 begin
   Result := atScope
-end;
-
-function TAbstractDynScope.AsVariant: Variant;
-begin
-  Result := DisplayStr(200);
 end;
 
 function TAbstractDynScope.Method(Id: dyn; Arg: array of dyn): dyn;
@@ -155,21 +143,6 @@ end;
 function TListScope.Debug: String;
 begin
   Result := Deb(List)
-end;
-
-function TListScope.DisplayStr(NeededChars: Integer): String;
-begin
-  Result := Format('%s:%p', [ClassName, Pointer(Self)]);
-end;
-
-function TListScope.WriteStr(NeededChars: Integer): String;
-begin
-  Result := DisplayStr(NeededChars);
-end;
-
-function TListScope.CommandExec(Command: Integer; Res: Pointer; Data: Pointer = nil): Integer;
-begin
-  Result := E_NOTIMPL;
 end;
 
 constructor TListScope.Create(AParent: IDynScope = nil);
@@ -265,21 +238,6 @@ begin
     Result := Result + Deb(e.Key) + '= ' + Deb(e.Value) + ', ';
   end;
   Result := Result + ')';
-end;
-
-function TBigScope.DisplayStr(NeededChars: Integer): String;
-begin
-  Result := Format('%s:%p', [ClassName, Pointer(Self)]);
-end;
-
-function TBigScope.WriteStr(NeededChars: Integer): String;
-begin
-  Result := DisplayStr(NeededChars);
-end;
-
-function TBigScope.CommandExec(Command: Integer; Res: Pointer; Data: Pointer = nil): Integer;
-begin
-  Result := E_NOTIMPL;
 end;
 
 constructor TBigScope.Create(AParent: IDynScope = nil);

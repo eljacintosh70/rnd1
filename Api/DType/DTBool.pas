@@ -16,20 +16,12 @@ type
   end;
 
   TFalseObj = class(TCustomBool)
-  public
-    function AsVariant: Variant; override;
-    function DisplayStr(NeededChars: Integer): String; override;
-    function WriteStr(NeededChars: Integer): String; override;
   protected
     procedure CastToBool(var Msg: TVarMessage); message MsgCastToBool;
     procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;
   end;
 
   TTrueObj = class(TCustomBool)
-  public
-    function AsVariant: Variant; override;
-    function DisplayStr(NeededChars: Integer): String; override;
-    function WriteStr(NeededChars: Integer): String; override;
   protected
     procedure CastToBool(var Msg: TVarMessage); message MsgCastToBool;
     procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;
@@ -56,21 +48,6 @@ end;
 
 { TFalseObj }
 
-function TFalseObj.AsVariant: Variant;
-begin
-  Result := False
-end;
-
-function TFalseObj.DisplayStr(NeededChars: Integer): String;
-begin
-  Result := '#f'
-end;
-
-function TFalseObj.WriteStr(NeededChars: Integer): String;
-begin
-  Result := '#f'
-end;
-
 procedure TFalseObj.CastToBool(var Msg: TVarMessage);
 begin
   PBoolean(Msg.VarPtr)^ := False;
@@ -86,21 +63,6 @@ begin
 end;
 
 { TTrueObj }
-
-function TTrueObj.AsVariant: Variant;
-begin
-  Result := True
-end;
-
-function TTrueObj.DisplayStr(NeededChars: Integer): String;
-begin
-  Result := '#t'
-end;
-
-function TTrueObj.WriteStr(NeededChars: Integer): String;
-begin
-  Result := '#t'
-end;
 
 procedure TTrueObj.CastToBool(var Msg: TVarMessage);
 begin
