@@ -51,6 +51,7 @@ type
   end;
 
   TKVPair = TPair<dyn, dyn>;
+  TKVArray = TArray<TKVPair>;
   TSSymbolList = class(TDictionary<dyn, dyn>)
   public
     destructor Destroy; override;

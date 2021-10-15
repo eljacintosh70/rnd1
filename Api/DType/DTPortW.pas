@@ -63,15 +63,21 @@ type
     Close: UnicodeString;
   protected
     // sobreescribir los que no deban llamarse desde el objeto Port
-    function _AddRef : longint;{$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-    function _Release : longint;{$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+    {$ifdef FPC}
+    function _AddRef: longint;{$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+    function _Release: longint;{$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+    {$else}
+    function _AddRef: Integer; virtual; stdcall;
+    function _Release: Integer; virtual; stdcall;
+    {$endif}
+
     function Write(Obj: dyn): Boolean; stdcall;
     function WriteSepar: Boolean; stdcall;
     function BeginList(Kind: TListKind): IDynOutPort; virtual; stdcall;
   public
     constructor Create(APort: TCustomDynOutPortW; AOpen, ASepar, AClose: UnicodeString);
     property Port: TCustomDynOutPortW read FPort {$IFNDEF LINUX} implements IDynOutPort{$ENDIF};
-  {$IFDEF LINUX}
+
   protected
     //IDyn = interface(IInterface)
     function Invoke(const Arg: array of dyn): dyn; stdcall;
@@ -99,7 +105,7 @@ type
     function WriteMem (p: PAnsiChar; cb: Integer; Kind: TMemKind = mkFull): Boolean; stdcall;
     function WriteList(const val: array of dyn; Kind: TListKind = lkList): Boolean; stdcall;
     //function BeginList(Kind: TListKind): IDynOutPort; stdcall;
-  {$ENDIF}
+
   end;
 
 implementation
@@ -466,7 +472,7 @@ begin
   Port.WriteText(Open);
 end;
 
-{$IFDEF LINUX}
+
 //IDyn = interface(IInterface)
 function TDynOutPortIndent.Invoke(const Arg: array of dyn): dyn; stdcall;                                                        begin Result := Port.Invoke(Arg); end;
 function TDynOutPortIndent.GetEnumerator: IDynEnumerator; stdcall;                                                               begin Result := Port.GetEnumerator; end;
@@ -486,14 +492,14 @@ function TDynOutPortIndent.WriteStr(NeededChars: Integer): string;              
 function TDynOutPortIndent.WriteLn: Boolean; stdcall;                                                                            begin Result := Port.WriteLn; end;
 function TDynOutPortIndent.WriteSpecial(v: TSpecialValue): Boolean; stdcall;                                                     begin Result := Port.WriteSpecial(v); end;
 function TDynOutPortIndent.WriteInt(p: Pointer; cb: Integer; Sign: TIntSign): Boolean; stdcall;                                  begin Result := Port.WriteInt(p, cb, Sign); end;
-function TDynOutPortIndent.WriteFloat(v: Single): Boolean; overload; stdcall;                                                    begin Result := Port.WriteFloat(v); end;
-function TDynOutPortIndent.WriteFloat(v: Double): Boolean; overload; stdcall;                                                    begin Result := Port.WriteFloat(v); end;
+function TDynOutPortIndent.WriteFloat(v: Single): Boolean; stdcall;                                                              begin Result := Port.WriteFloat(v); end;
+function TDynOutPortIndent.WriteFloat(v: Double): Boolean; stdcall;                                                              begin Result := Port.WriteFloat(v); end;
 function TDynOutPortIndent.WriteStrA(p: PAnsiChar; cc: Integer; Kind: TStrKind = skFull; CodePage: Word = 0): Boolean; stdcall;  begin Result := Port.WriteStrA(p, cc, Kind, CodePage); end;
 function TDynOutPortIndent.WriteStrW(p: PWideChar; cc: Integer; Kind: TStrKind = skFull): Boolean; stdcall;                      begin Result := Port.WriteStrW(p, cc, Kind); end;
 function TDynOutPortIndent.WriteMem (p: PAnsiChar; cb: Integer; Kind: TMemKind = mkFull): Boolean; stdcall;                      begin Result := Port.WriteMem (p, cb, Kind); end;
 function TDynOutPortIndent.WriteList(const val: array of dyn; Kind: TListKind = lkList): Boolean; stdcall;                       begin Result := Port.WriteList(val, Kind); end;
 //function BeginList(Kind: TListKind): IDynOutPort; stdcall;
-{$ENDIF}
+
 
 end.
 
