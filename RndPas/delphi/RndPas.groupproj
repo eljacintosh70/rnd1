@@ -3,10 +3,10 @@
         <ProjectGuid>{BAC6D6D0-87FF-4964-9536-D05C65865A22}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
-        <Projects Include="..\..\Lib\DType.dproj">
+        <Projects Include="DType.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="..\..\Lib\DTypeTests.dproj">
+        <Projects Include="DTypeTests.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="Rnd.dproj">
@@ -21,22 +21,22 @@
         </BorlandProject>
     </ProjectExtensions>
     <Target Name="DType">
-        <MSBuild Projects="..\..\Lib\DType.dproj"/>
+        <MSBuild Projects="DType.dproj"/>
     </Target>
     <Target Name="DType:Clean">
-        <MSBuild Projects="..\..\Lib\DType.dproj" Targets="Clean"/>
+        <MSBuild Projects="DType.dproj" Targets="Clean"/>
     </Target>
     <Target Name="DType:Make">
-        <MSBuild Projects="..\..\Lib\DType.dproj" Targets="Make"/>
+        <MSBuild Projects="DType.dproj" Targets="Make"/>
     </Target>
     <Target Name="DTypeTests">
-        <MSBuild Projects="..\..\Lib\DTypeTests.dproj"/>
+        <MSBuild Projects="DTypeTests.dproj"/>
     </Target>
     <Target Name="DTypeTests:Clean">
-        <MSBuild Projects="..\..\Lib\DTypeTests.dproj" Targets="Clean"/>
+        <MSBuild Projects="DTypeTests.dproj" Targets="Clean"/>
     </Target>
     <Target Name="DTypeTests:Make">
-        <MSBuild Projects="..\..\Lib\DTypeTests.dproj" Targets="Make"/>
+        <MSBuild Projects="DTypeTests.dproj" Targets="Make"/>
     </Target>
     <Target Name="Rnd">
         <MSBuild Projects="Rnd.dproj"/>
