@@ -6,9 +6,6 @@ uses
   DynTypes, DUtils, DTDatum;
 
 type
-
-  { TDynSymbol }
-
   TDynSymbol = class(TDyn, IDynSymbol)
   // InlineVMT requiere los siguientes métodos idénticos a los de IDynSymbol
   public

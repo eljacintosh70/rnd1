@@ -15,8 +15,6 @@ uses
 type
   // Test methods for class TDynOutPortD
 
-  { TestEvalCore }
-
   TestEvalCore = class(TTestCase)
   strict private
     FTextOut: TStrTextOutW;

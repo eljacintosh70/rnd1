@@ -79,12 +79,12 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <DCC_UnitSearchPath>..\..\Api\Inc\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_DcpOutput>..\0ut\dcu\</DCC_DcpOutput>
-        <DCC_ExeOutput>..\0ut\bin\</DCC_ExeOutput>
+        <DCC_DcpOutput>..\..\0ut\dcu\</DCC_DcpOutput>
+        <DCC_ExeOutput>..\..\0ut\bin\</DCC_ExeOutput>
         <Manifest_File>None</Manifest_File>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_DcuOutput>..\0ut\dcu\</DCC_DcuOutput>
-        <DCC_BplOutput>..\0ut\dcu\</DCC_BplOutput>
+        <DCC_BplOutput>..\..\0ut\dcu\</DCC_BplOutput>
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
@@ -97,47 +97,47 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="..\Api\DUtils.pas"/>
-        <DCCReference Include="..\Api\DType\DTDatum.pas"/>
-        <DCCReference Include="..\Api\DType\DTBool.pas"/>
-        <DCCReference Include="..\Api\DType\DTInt.pas"/>
-        <DCCReference Include="..\Api\DType\DTFloat.pas"/>
-        <DCCReference Include="..\Api\DType\DTPair.pas"/>
-        <DCCReference Include="..\Api\DType\DTArray.pas"/>
-        <DCCReference Include="..\Api\DType\MapFiles.pas"/>
-        <DCCReference Include="..\Api\DType\DTString.pas"/>
-        <DCCReference Include="..\Api\DType\DTSymbol.pas"/>
-        <DCCReference Include="..\Api\DType\DTProc.pas"/>
-        <DCCReference Include="..\Api\DType\DTProcRTTI.pas"/>
-        <DCCReference Include="..\Api\DType\DTPort.pas"/>
-        <DCCReference Include="..\Api\DType\DTPortA.pas"/>
-        <DCCReference Include="..\Api\DType\DTPortW.pas"/>
-        <DCCReference Include="..\Api\DType\DTFile.pas"/>
-        <DCCReference Include="..\Api\DType\DTScope.pas"/>
-        <DCCReference Include="..\Api\DType\DTScript.pas"/>
-        <DCCReference Include="..\Api\DType\DTParser.pas"/>
-        <DCCReference Include="..\Api\DynTypes.pas"/>
-        <DCCReference Include="..\Api\Lisp\LispWrite.pas"/>
-        <DCCReference Include="..\Api\Lisp\LispLexer.pas"/>
-        <DCCReference Include="..\Api\Lisp\LispLexerA.pas"/>
-        <DCCReference Include="..\Api\Lisp\LispParser.pas"/>
-        <DCCReference Include="..\Api\Lisp\LispParserA.pas"/>
-        <DCCReference Include="..\Api\Lisp\LispEval.pas"/>
-        <DCCReference Include="..\Api\Lisp\LispEnv.pas"/>
-        <DCCReference Include="..\Api\Lisp\LispFiles.pas"/>
-        <DCCReference Include="..\Api\Lisp\LispInterpreter.pas"/>
-        <DCCReference Include="..\Api\Rnd\RndWrite.pas"/>
-        <DCCReference Include="..\Api\Rnd\RndLexer.pas"/>
-        <DCCReference Include="..\Api\Rnd\RndParser.pas"/>
-        <DCCReference Include="..\RndPas\common\rnrs_lists.pas"/>
-        <DCCReference Include="..\RndPas\common\SchFunc.pas"/>
-        <DCCReference Include="..\RndPas\common\LispFunc.pas"/>
-        <DCCReference Include="..\RndPas\common\LispSintax.pas"/>
-        <DCCReference Include="..\RndPas\common\RndSintax.pas"/>
-        <DCCReference Include="..\RndPas\common\Core.pas"/>
-        <DCCReference Include="Test\TestFiles.pas"/>
-        <DCCReference Include="Test\Test_DTPort.pas"/>
-        <DCCReference Include="Test\Test_Eval.pas"/>
+        <DCCReference Include="..\..\Api\DUtils.pas"/>
+        <DCCReference Include="..\..\Api\DType\DTDatum.pas"/>
+        <DCCReference Include="..\..\Api\DType\DTBool.pas"/>
+        <DCCReference Include="..\..\Api\DType\DTInt.pas"/>
+        <DCCReference Include="..\..\Api\DType\DTFloat.pas"/>
+        <DCCReference Include="..\..\Api\DType\DTPair.pas"/>
+        <DCCReference Include="..\..\Api\DType\DTArray.pas"/>
+        <DCCReference Include="..\..\Api\DType\MapFiles.pas"/>
+        <DCCReference Include="..\..\Api\DType\DTString.pas"/>
+        <DCCReference Include="..\..\Api\DType\DTSymbol.pas"/>
+        <DCCReference Include="..\..\Api\DType\DTProc.pas"/>
+        <DCCReference Include="..\..\Api\DType\DTProcRTTI.pas"/>
+        <DCCReference Include="..\..\Api\DType\DTPort.pas"/>
+        <DCCReference Include="..\..\Api\DType\DTPortA.pas"/>
+        <DCCReference Include="..\..\Api\DType\DTPortW.pas"/>
+        <DCCReference Include="..\..\Api\DType\DTFile.pas"/>
+        <DCCReference Include="..\..\Api\DType\DTScope.pas"/>
+        <DCCReference Include="..\..\Api\DType\DTScript.pas"/>
+        <DCCReference Include="..\..\Api\DType\DTParser.pas"/>
+        <DCCReference Include="..\..\Api\DynTypes.pas"/>
+        <DCCReference Include="..\..\Api\Lisp\LispWrite.pas"/>
+        <DCCReference Include="..\..\Api\Lisp\LispLexer.pas"/>
+        <DCCReference Include="..\..\Api\Lisp\LispLexerA.pas"/>
+        <DCCReference Include="..\..\Api\Lisp\LispParser.pas"/>
+        <DCCReference Include="..\..\Api\Lisp\LispParserA.pas"/>
+        <DCCReference Include="..\..\Api\Lisp\LispEval.pas"/>
+        <DCCReference Include="..\..\Api\Lisp\LispEnv.pas"/>
+        <DCCReference Include="..\..\Api\Lisp\LispFiles.pas"/>
+        <DCCReference Include="..\..\Api\Lisp\LispInterpreter.pas"/>
+        <DCCReference Include="..\..\Api\Rnd\RndWrite.pas"/>
+        <DCCReference Include="..\..\Api\Rnd\RndLexer.pas"/>
+        <DCCReference Include="..\..\Api\Rnd\RndParser.pas"/>
+        <DCCReference Include="..\common\rnrs_lists.pas"/>
+        <DCCReference Include="..\common\SchFunc.pas"/>
+        <DCCReference Include="..\common\LispFunc.pas"/>
+        <DCCReference Include="..\common\LispSintax.pas"/>
+        <DCCReference Include="..\common\RndSintax.pas"/>
+        <DCCReference Include="..\common\Core.pas"/>
+        <DCCReference Include="..\..\Lib\Test\TestFiles.pas"/>
+        <DCCReference Include="..\..\Lib\Test\Test_DTPort.pas"/>
+        <DCCReference Include="..\..\Lib\Test\Test_Eval.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -164,6 +164,12 @@
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment>
+                <DeployFile LocalName="..\0ut\bin\DTypeTests.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>DTypeTests.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\osx32\libcgunwind.1.0.dylib" Class="DependencyModule">
                     <Platform Name="OSX32">
                         <Overwrite>true</Overwrite>

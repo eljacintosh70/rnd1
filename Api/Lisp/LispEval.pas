@@ -222,8 +222,7 @@ function TLispEval.Symbols: IDynArray;
 var
   i, n: Integer;
   Item: IDynPair;
-  e: TKVPair;
-  Arr: array of TKVPair;
+  Arr: TKVArray;
 begin
   Arr := List.ToArray;
   n := Length(Arr);

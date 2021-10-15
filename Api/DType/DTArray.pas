@@ -1,5 +1,4 @@
 unit DTArray;
-{$WARN 3043 off : use of NEW or DISPOSE for untyped pointers is meaningless}
 interface
 
 uses
