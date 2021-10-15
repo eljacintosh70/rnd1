@@ -31,7 +31,7 @@ type
     FPublic: IDynPair;
     //FSymbols: IDynPair;
   public
-    procedure SetValue(Symbol: TDynDatum; const Value: TDynDatum); override;
+    procedure SetItem(const Key: dyn; const Value: dyn); override;
     function DisplayStr(NeededChars: Integer): String; override;
     //procedure CalcSymbols;
   public
@@ -44,7 +44,7 @@ type
   end;
 
 var
-  SyType: TDynDatum;
+  SyType: dyn;
 
 implementation
 
@@ -138,13 +138,13 @@ begin
     Result := Result + '}';
 end;
 
-procedure TScriptObject.SetValue(Symbol: TDynDatum; const Value: TDynDatum);
+procedure TScriptObject.SetItem(const Key: dyn; const Value: dyn);
 var
   Pair: IDynPair;
 begin
-  Pair := make_list([Symbol, Value]);
+  Pair := make_list([Key.Value, Value.Value]);
   List := DynTypes.cons(Pair, List);
-  FPublic := DynTypes.cons(Symbol, FPublic);
+  FPublic := DynTypes.cons(Key, FPublic);
 end;
 
 function TScriptObject.Symbols: IDynPair;

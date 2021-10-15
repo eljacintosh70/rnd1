@@ -230,7 +230,7 @@ end;
 
 procedure TCustomDyn.DefaultHandler(var Message);
 var
-  Msg: TVarMessage;
+  Msg: TVarMessage absolute Message;
 begin
   case Msg.Msg of
     MsgCastToBool:   CastError(Self, 'bool');

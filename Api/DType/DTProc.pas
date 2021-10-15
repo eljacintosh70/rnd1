@@ -63,21 +63,21 @@ type
   TNamedDynFunc = class(TDynFunc)
   public
     Method: TDynFuncO;
-    Name: TDynDatum;
+    Name: IDynSymbol;
     function DatumType: TDatumType; override;
     function DisplayStr(NeededChars: Integer): String; override;
     procedure Call(out Result: TDatumRef; Par: TDynDatum); override;
-    constructor Create(AName: TDynDatum; AMethod: TDynFuncO);
+    constructor Create(AName: IDynSymbol; AMethod: TDynFuncO);
   end;
 
   TNamedDynFuncG = class(TDynFunc)
   public
     Method: TDynFuncG;
-    Name: TDynDatum;
+    Name: IDynSymbol;
     function DatumType: TDatumType; override;
     function DisplayStr(NeededChars: Integer): String; override;
     procedure Call(out Result: TDatumRef; Par: TDynDatum); override;
-    constructor Create(AName: TDynDatum; AMethod: TDynFuncG);
+    constructor Create(AName: IDynSymbol; AMethod: TDynFuncG);
   end;
 
   TDynLambda = class(TDynFunc)
@@ -240,7 +240,7 @@ begin
   Method(Result, Par);
 end;
 
-constructor TNamedDynFunc.Create(AName: TDynDatum; AMethod: TDynFuncO);
+constructor TNamedDynFunc.Create(AName: IDynSymbol; AMethod: TDynFuncO);
 begin
   Name := AName;
   Method := AMethod;
@@ -263,7 +263,7 @@ begin
   Method(Result, Par);
 end;
 
-constructor TNamedDynFuncG.Create(AName: TDynDatum; AMethod: TDynFuncG);
+constructor TNamedDynFuncG.Create(AName: IDynSymbol; AMethod: TDynFuncG);
 begin
   Name := AName;
   Method := AMethod;

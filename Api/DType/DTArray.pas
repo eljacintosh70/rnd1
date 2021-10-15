@@ -16,9 +16,9 @@ type
   public
     //~ function HasData: Boolean; override;
     function Length: TArraySize; virtual;
-    function GetItemA(i: Integer): TDynDatum; virtual; abstract;
-    procedure SetItemA(i: Integer; const Value: TDynDatum); virtual; abstract;
-    property ItemA[i: Integer]: TDynDatum read GetItemA write SetItemA;
+    function GetItemA(i: Integer): dyn; virtual; abstract;
+    procedure SetItemA(i: Integer; const Value: dyn); virtual; abstract;
+    property ItemA[i: Integer]: dyn read GetItemA write SetItemA;
     procedure Lock(var Block: TArrayBlock; Ofs: TArrayPos = 0; Size: TLockSize =
         UpToEnd; Writeable: Boolean = False); virtual;
     function DataPtr: Pointer; virtual;
@@ -47,8 +47,8 @@ type
     class function Create(const Arr: array of const): TDynArray; overload;
     class function Create(n: Integer; Fill: TDynDatum): TDynArray; overload;
     function _Release: Integer; override; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF};
-    function GetItemA(i: Integer): TDynDatum; override;
-    procedure SetItemA(i: Integer; const First: TDynDatum); override;
+    function GetItemA(i: Integer): dyn; override;
+    procedure SetItemA(i: Integer; const First: dyn); override;
     // deben seguir el mismo orden que en ISchVector
     procedure Lock(var Block: TArrayBlock; Ofs: TArrayPos = 0; Size: TLockSize =
         UpToEnd; Writeable: Boolean = False); override;
@@ -71,8 +71,8 @@ type
   public
     function DatumType: TDatumType; override;
     function DisplayStr(NeededChars: Integer): String; override;
-    function GetItemA(i: Integer): TDynDatum; override;
-    procedure SetItemA(i: Integer; const First: TDynDatum); override;
+    function GetItemA(i: Integer): dyn; override;
+    procedure SetItemA(i: Integer; const Value: dyn); override;
   end;
 
   TDynMemory = class(TAbstractDynMemory)
@@ -277,12 +277,12 @@ begin
     DisposeInstance;
 end;
 
-function TDynArray.GetItemA(i: Integer): TDynDatum;
+function TDynArray.GetItemA(i: Integer): dyn;
 begin
   Result := FItems[i]
 end;
 
-procedure TDynArray.SetItemA(i: Integer; const First: TDynDatum);
+procedure TDynArray.SetItemA(i: Integer; const First: dyn);
 begin
   FItems[i] := First
 end;
@@ -387,7 +387,7 @@ begin
   Result := Result + ')';
 end;
 
-function TAbstractDynMemory.GetItemA(i: Integer): TDynDatum;
+function TAbstractDynMemory.GetItemA(i: Integer): dyn;
 var
   b: dyn;
 begin
@@ -396,9 +396,9 @@ begin
 end;
 
 procedure TAbstractDynMemory.SetItemA(i: Integer;
-  const First: TDynDatum);
+  const Value: dyn);
 begin
-  Bytes[i] := First.AsInteger;
+  Bytes[i] := Int64(Value);
 end;
 
 { TDynMemory }

@@ -54,7 +54,7 @@ var
   i, n: Integer;
   Datum: IDynFunc;
   Method: TDynFuncO;
-  Name: TDynDatum;
+  Name: IDynSymbol;
 begin
   n := Length(Names);
   if Length(Func) <> n then
@@ -74,7 +74,7 @@ var
   i, n: Integer;
   Datum: IDynFunc;
   Method: TDynFuncG;
-  Name: TDynDatum;
+  Name: IDynSymbol;
 begin
   n := Length(Names);
   if Length(Func) <> n then

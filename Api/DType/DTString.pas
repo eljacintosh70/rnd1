@@ -50,8 +50,8 @@ type
   public
     class function Create(pData: PWideChar; cbData: Integer): TDynString;
     class function CreateI(pData: PWideChar; cbData: Integer): IDynString;
-    function GetItemA(i: Integer): TDynDatum; override;
-    procedure SetItemA(i: Integer; const First: TDynDatum); override;
+    function GetItemA(i: Integer): dyn; override;
+    procedure SetItemA(i: Integer; const Value: dyn); override;
     function _Release: Integer; override; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF};
   protected
     procedure CastToString(var Msg: TVarMessage); message MsgCastToString;
@@ -73,8 +73,8 @@ type
   public
     class function Create(pData: PAnsiChar; cbData: Integer): TDynStringA;
     class function CreateI(pData: PAnsiChar; cbData: Integer): IDynString;
-    function GetItemA(i: Integer): TDynDatum; override;
-    procedure SetItemA(i: Integer; const First: TDynDatum); override;
+    function GetItemA(i: Integer): dyn; override;
+    procedure SetItemA(i: Integer; const Value: dyn); override;
     function _Release: Integer; override; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF};
   protected
     procedure CastToString(var Msg: TVarMessage); message MsgCastToString;
@@ -205,7 +205,7 @@ begin
   Result := IDynString(Obj)
 end;
 
-function TDynString.GetItemA(i: Integer): TDynDatum;
+function TDynString.GetItemA(i: Integer): dyn;
 var
   ch: WideChar;
   r: dyn;
@@ -215,7 +215,7 @@ begin
   Result := r;
 end;
 
-procedure TDynString.SetItemA(i: Integer; const First: TDynDatum);
+procedure TDynString.SetItemA(i: Integer; const Value: dyn);
 begin
   { TODO : implementar }
 end;
@@ -306,7 +306,7 @@ begin
   Result := IDynString(Obj)
 end;
 
-function TDynStringA.GetItemA(i: Integer): TDynDatum;
+function TDynStringA.GetItemA(i: Integer): dyn;
 var
   ch: WideChar;
   r: dyn;
@@ -316,7 +316,7 @@ begin
   Result := r;
 end;
 
-procedure TDynStringA.SetItemA(i: Integer; const First: TDynDatum);
+procedure TDynStringA.SetItemA(i: Integer; const Value: dyn);
 begin
   { TODO : implementar }
 end;

@@ -165,9 +165,9 @@ type
 
   IDynArray = interface(IDynDatum)
     function Length: TArraySize;
-    function GetItemA(i: Integer): TDynDatum;
-    procedure SetItemA(i: Integer; const Value: TDynDatum);
-    property Item[i: Integer]: TDynDatum read GetItemA write SetItemA; default;
+    function GetItemA(i: Integer): dyn;
+    procedure SetItemA(i: Integer; const Value: dyn);
+    property Item[i: Integer]: dyn read GetItemA write SetItemA; default;
     procedure Lock(var Block: TArrayBlock; Ofs: TArrayPos = 0; Count: TLockSize =
          UpToEnd; Writeable: Boolean = False);
     function DataPtr: Pointer;
@@ -198,10 +198,8 @@ type
   IDynScope = interface(IDynDatum)
     ['{F253350A-BE45-4D1F-A02B-64D8C2EE7510}']
     function GetParent: IDynScope;
-    function GetValue(Symbol: TDynDatum): TDynDatum;
-    function GetLocalValue(Symbol: TDynDatum): TDynDatum;
-    procedure SetValue(Symbol: TDynDatum; const Value: TDynDatum);
-    property Value[Symbol: TDynDatum]: TDynDatum read GetValue write SetValue;
+    function GetLocalValue(Symbol: TDynDatum): TDynDatum;        
+    property Value[const Key: dyn]: dyn read GetItem write SetItem;
     property Parent: IDynScope read GetParent;
   end;
 
@@ -370,13 +368,13 @@ function GetNext(var Seq: IDynSeq; var Item: TDynDatum): Boolean; overload;
 
 {$REGION 'IDynPair'}
 // (pair? Datum) Elemento de una lista.
-function IsPair(Datum: TDynDatum): Boolean; overload;
-function IsPair(Datum: TDynDatum; out Ref: IDynPair): Boolean; overload;
+function IsPair(Datum: dyn): Boolean; overload;
+function IsPair(Datum: dyn; out Ref: IDynPair): Boolean; overload;
 
-procedure NeedPair(Datum: TDynDatum); overload;
-procedure NeedPair(Datum: TDynDatum; var Value: IDynPair); overload;
-procedure NeedPairNonNil(Datum: TDynDatum); overload;
-procedure NeedPairNonNil(Datum: TDynDatum; var Value: IDynPair); overload;
+procedure NeedPair(Datum: dyn); overload;
+procedure NeedPair(Datum: dyn; var Value: IDynPair); overload;
+procedure NeedPairNonNil(Datum: dyn); overload;
+procedure NeedPairNonNil(Datum: dyn; var Value: IDynPair); overload;
 
 //  external dll name 'const->datum';
 function cons(const Car, Cdr: dyn): IDynPair; stdcall;
@@ -440,16 +438,14 @@ procedure NeedString(Datum: TDynDatum; var Value: AnsiString); overload;
 
 {$REGION 'IDynSymbol'}
 // symbol? Nombre de una variable.
-function IsSymbol(Datum: TDynDatum): Boolean; overload;
-function IsSymbol(Datum: TDynDatum; out Ref: IDynSymbol): Boolean; overload;
-procedure NeedSymbol(Datum: TDynDatum); overload;
-procedure NeedSymbol(Datum: TDynDatum; out Ref: IDynSymbol); overload;
+function IsSymbol(Datum: dyn): Boolean; overload;
+function IsSymbol(Datum: dyn; out Ref: IDynSymbol): Boolean; overload;
+procedure NeedSymbol(Datum: dyn); overload;
+procedure NeedSymbol(Datum: dyn; out Ref: IDynSymbol); overload;
 
-function InitSymbol(pName: PAnsiChar; {Utf8} cbName: Integer): TDynDatum;
+function InitSymbol(pName: PAnsiChar; {Utf8} cbName: Integer): IDynSymbol;
   stdcall; overload;
-function InitSymbol(const Name: Utf8String): TDynDatum; overload;
-function InitSymbolI(pName: PAnsiChar; {Utf8} cbName: Integer): IDynSymbol; overload;
-function InitSymbolI(const Name: Utf8String): IDynSymbol; overload;
+function InitSymbol(const Name: Utf8String): IDynSymbol; overload;
 procedure InitSymbols(const Names: array of Utf8String; const Ref: array of
   PISymbol); stdcall;
 {$ENDREGION}
@@ -788,7 +784,7 @@ function Reverse(const List: IDynPair): IDynPair;
   external dll name 'Reverse';
 {$endif}
 
-function IsPair(Datum: TDynDatum): Boolean;
+function IsPair(Datum: dyn): Boolean;
 var
   Msg: TVarMessage;
 begin
@@ -798,12 +794,13 @@ begin
     Exit;
   end;
   Msg.Msg := MsgIsPair;
-  Msg.Res := 0;
+  Msg.Res := 0;  
+  Msg.VarPtr := nil;
   Datum.DispatchMsg(Msg);
   Result := (Msg.Res <> 0);
 end;
 
-function IsPair(Datum: TDynDatum; out Ref: IDynPair): Boolean;
+function IsPair(Datum: dyn; out Ref: IDynPair): Boolean;
 var
   Msg: TVarMessage;
 begin
@@ -819,7 +816,7 @@ begin
   Result := (Msg.Res <> 0);
 end;
 
-procedure NeedPair(Datum: TDynDatum);
+procedure NeedPair(Datum: dyn);
 begin
   if Datum = nil then
     Exit;
@@ -827,7 +824,7 @@ begin
     raise EWrongType.Create(Datum, 'Pair');
 end;
 
-procedure NeedPair(Datum: TDynDatum; var Value: IDynPair);
+procedure NeedPair(Datum: dyn; var Value: IDynPair);
 begin
   if Datum = nil then
   begin
@@ -838,7 +835,7 @@ begin
     raise EWrongType.Create(Datum, 'Pair');
 end;
 
-procedure NeedPairNonNil(Datum: TDynDatum);
+procedure NeedPairNonNil(Datum: dyn);
 begin
   if Datum = nil then
     raise EWrongType.Create(Datum, 'Pair is nil');
@@ -846,7 +843,7 @@ begin
     raise EWrongType.Create(Datum, 'Pair');
 end;
 
-procedure NeedPairNonNil(Datum: TDynDatum; var Value: IDynPair);
+procedure NeedPairNonNil(Datum: dyn; var Value: IDynPair);
 begin
   if Datum = nil then
     raise EWrongType.Create(Datum, 'Pair is nil');
@@ -1075,7 +1072,7 @@ procedure InitSymbols(const Names: array of Utf8String; const Ref: array of
   PISymbol); stdcall; external dll name 'Symbol.Create*';
 {$endif}
 
-function IsSymbol(Datum: TDynDatum): Boolean;
+function IsSymbol(Datum: dyn): Boolean;
 var
   Msg: TVarMessage;
 begin
@@ -1090,7 +1087,7 @@ begin
   Result := (Msg.Res <> 0);
 end;
 
-function IsSymbol(Datum: TDynDatum; out Ref: IDynSymbol): Boolean;
+function IsSymbol(Datum: dyn; out Ref: IDynSymbol): Boolean;
 var
   Msg: TVarMessage;
 begin
@@ -1106,38 +1103,23 @@ begin
   Result := (Msg.Res <> 0);
 end;
 
-procedure NeedSymbol(Datum: TDynDatum);
+procedure NeedSymbol(Datum: dyn);
 begin
   if not IsSymbol(Datum) then
     raise EWrongType.Create(Datum, 'Symbol');
 end;
 
-procedure NeedSymbol(Datum: TDynDatum; out Ref: IDynSymbol);
+procedure NeedSymbol(Datum: dyn; out Ref: IDynSymbol);
 begin
   if not IsSymbol(Datum, Ref) then
     raise EWrongType.Create(Datum, 'Symbol');
 end;
 
-function InitSymbol(const Name: Utf8String): TDynDatum;
+function InitSymbol(const Name: Utf8String): IDynSymbol;
 begin
   Result := InitSymbol(Pointer(Name), Length(Name));
 end;
 
-function InitSymbolI(pName: PAnsiChar; {Utf8} cbName: Integer): IDynSymbol;
-var
-  Ptr: TDynDatum;
-begin
-  Ptr := InitSymbol(pName, cbName);
-  Result := IDynSymbol(Pointer(Ptr));
-end;
-
-function InitSymbolI(const Name: Utf8String): IDynSymbol;
-var
-  Ptr: TDynDatum;
-begin
-  Ptr := InitSymbol(Pointer(Name), Length(Name));
-  Result := IDynSymbol(Pointer(Ptr));
-end;
 {$ENDREGION}
 
 {$REGION 'IDynScope'}
@@ -1358,6 +1340,12 @@ begin
 end;
 
 procedure TDynDatum.Free;
+{$ifdef FPC}
+begin
+  if Self <> nil then
+    if NativeInt(Self) and 3 = 0 then
+      _Release
+{$else}
 {var
   p: PRefDatum;
   Itfc: Pointer;
@@ -1385,6 +1373,7 @@ asm
   jz   DisposePRefDatum        // if p.RefCount = 0 then
 }                               //   Dispose(p);
 @@end:
+{$endif}
 end;
 
 function TDynDatum.AsVariant: Variant;
@@ -1471,10 +1460,10 @@ end;
 function TDynDatum.NewRef: TDynDatum;
 begin
   Result := Self;
-  case Integer(Pointer(Result)) and StorageMask of
+  case NativeInt(Pointer(Result)) and StorageMask of
     smInterface:
       if Assigned(Result) then
-        IInterface(Integer(Pointer(Result)) and PointerMask)._AddRef;
+        IInterface(Pointer(Result))._AddRef;
     //smRef:
     //  Inc(PRefDatum(Integer(Pointer(Result)) and PointerMask).RefCount);
   end;

@@ -35,7 +35,20 @@ type
     destructor Destroy; override;
     function DatumType: TDatumType; override;
     function WriteProc(p: Pointer; cb: Integer): Boolean;
-    property Stream: TStream read FStream implements IDynStream;
+    property Stream: TStream read FStream {$IFNDEF LINUX} implements IDynStream {$ENDIF};
+  {$IFDEF LINUX}
+  protected
+  // IDynStream = interface(IDynDatum)
+  function GetSize: Int64;
+  procedure SetSize(const Value: Int64);
+  property Size: Int64 read GetSize write SetSize;
+  function GetPosition: Int64;
+  procedure SetPosition(const Pos: Int64);
+  property Position: Int64 read GetPosition write SetPosition;
+  function Seek(const Offset: Int64; Origin: TSeekOrigin): Int64;
+  function Read(var Buffer; Count: Longint): Longint;
+  function Write(const Buffer; Count: Longint): Longint;
+  {$ENDIF}
   end;
 
   TDynObjOutStream = class(TDynStream, IDynObjStream)
@@ -45,7 +58,7 @@ type
     constructor Create(AStream: TStream; AFormat: TCustomDynOutPort);
     function ReadObj(var Obj: dyn): Longint;
     function WriteObj(const Obj: dyn): Longint;
-    property Stream read FStream implements IDynObjStream;
+    property Stream read FStream {$IFNDEF LINUX} implements IDynObjStream {$ENDIF};
   end;
 
 implementation
@@ -73,6 +86,16 @@ begin
   FStream.Write(p^, cb);
   Result := True;
 end;
+
+{$IFDEF LINUX}
+function TDynStream.GetSize: Int64;                                         begin Result := FStream.Size; end;
+procedure TDynStream.SetSize(const Value: Int64);                           begin           FStream.Size := Value; end;
+function TDynStream.GetPosition: Int64;                                     begin Result := FStream.Position; end;
+procedure TDynStream.SetPosition(const Pos: Int64);                         begin           FStream.Position := Pos; end;
+function TDynStream.Seek(const Offset: Int64; Origin: TSeekOrigin): Int64;  begin Result := FStream.Seek(Offset, Origin); end;
+function TDynStream.Read(var Buffer; Count: Longint): Longint;              begin Result := FStream.Read(Buffer, Count); end;
+function TDynStream.Write(const Buffer; Count: Longint): Longint;           begin Result := FStream.Write(Buffer, Count); end;
+{$ENDIF}
 
 { TDynObjStream }
 

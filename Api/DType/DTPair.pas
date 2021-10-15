@@ -349,6 +349,7 @@ begin
     end;
   end;
   Msg.Res := Ord(r);
+  List := nil;
 end;
 
 procedure TDynPair.DoMsgEval(var Msg: TEvalMessage);

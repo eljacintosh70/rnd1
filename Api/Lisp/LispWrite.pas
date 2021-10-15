@@ -17,7 +17,7 @@ type
 
   TDynOutPortLispIndent = class(TDynOutPortIndent)
   public
-    function IDynOutPort_BeginList(Kind: TListKind): IDynOutPort; override; stdcall;
+    function BeginList(Kind: TListKind): IDynOutPort; override; stdcall;
   end;
 
 function LispOutFn(AWriteProc: TWriteProc): IDynOutPort;
@@ -141,7 +141,7 @@ end;
 
 { TDynOutPortLispIndent }
 
-function TDynOutPortLispIndent.IDynOutPort_BeginList(Kind: TListKind): IDynOutPort;
+function TDynOutPortLispIndent.BeginList(Kind: TListKind): IDynOutPort;
 var
   AOpen, ASepar, AClose: string;
 begin

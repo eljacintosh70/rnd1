@@ -2,13 +2,9 @@
 function cons(const Car, Cdr: dyn): IDynPair; stdcall;
 var
   Helper: TDynPair;
-  Last: Pointer;
 begin
-  Last := Pointer(Cdr);
-  if not Assigned(Last) then
-    Last := _null;
-  Helper := TDynPair.Create(Pointer(Car), Last);
-  Result := IDynPair(Pointer(Helper))
+  Helper := TDynPair.Create(Car, Cdr);
+  Result := Helper.AsISchPair;
 end;
 
 function cons_(const elem: array of dyn): IDynPair; stdcall;
@@ -43,26 +39,29 @@ begin
 end;
 
 function list_length(list: dyn): Integer; stdcall;
+var
+  p: IDynPair;
 begin
   Result := 0;
-  while IsPair(list) do
+  while IsPair(list, p) do
   begin
     Inc(Result);
-    list := cdr(list)
+    list := p.cdr;
   end;
 end;
 
 function Reverse(const List: IDynPair): IDynPair;
 var
-  car, Rest: Pointer;
+  car, Rest: dyn;
+  p: IDynPair;
 begin
   Result := nil;
-  Rest := Pointer(List);
-  while (NativeInt(Rest) and PointerMask <> 0) do
+  Rest := List;
+  while IsPair(Rest, p) do
   begin
-    car := IDynPair(Rest).car;
-    Result := DynTypes.cons(IDynDatum(car), IDynDatum(Result));
-    Rest := IDynPair(Rest).cdr;
+    car := p.car;
+    Result := DynTypes.cons(car, Result);
+    Rest := p.cdr;
   end;
 end;
 

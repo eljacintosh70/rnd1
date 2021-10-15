@@ -24,6 +24,7 @@ type
     procedure SetUp; override;
     procedure TearDown; override;
   published
+    procedure TestSymbols;
     procedure TestFromLisp;
     procedure TestFromRnd;
   end;
@@ -46,9 +47,23 @@ begin
   FDynOutPort := nil;
 end;
 
+procedure TestEvalCore.TestSymbols;
+const
+  Names: array[0..9] of Utf8String = (
+   'if', 'begin', '+', '-', '*', '&', 'Abc', 'ABC', 'áei', '%%' );
+var
+  Values: array[0..9] of IDynSymbol;
+  i: Integer;
+begin
+  for i := 0 to High(Names) do
+    Values[i] := InitSymbol(Names[i]);
+  for i := 0 to High(Names) do     
+    CheckEquals(Names[i], Values[i].Name, 'Symbol Name')
+end;
+
 procedure TestEvalCore.TestFromLisp;
 var
-  SrcText, RefText: string;
+  SrcText, RefText, ParsedText: string;
   ReturnValue: Boolean;
   Obj: dyn;
   ResText, s: string;
@@ -57,6 +72,7 @@ var
 begin
   SrcText := LoadTestFile('TestLispEval.txt');
   RefText := LoadTestFile('TestLispEval_Res.txt');
+  ParsedText := LoadTestFile('TestLispEval_Parsed.txt');
 
   Parser := TLispParser.Create;
   Parser.Evaluate(Res, SrcText);
@@ -64,12 +80,15 @@ begin
 
   Obj := Res.Value;
   s := DisplayL(obj);
+  s := NormalizeLines(s);
+  CheckEquals(ParsedText, s, 'DisplayL');
 
   Core.Scope.Eval(Res2, Obj);
   Obj := Res2.Value;
 
   ReturnValue := FDynOutPort.Write(Obj);
   ResText := FTextOut.GetText;
+  ResText := NormalizeLines(ResText);
 
   // TODO: Validate method results
   Check(ReturnValue, 'Write');
@@ -78,7 +97,7 @@ end;
 
 procedure TestEvalCore.TestFromRnd;
 var
-  SrcText, RefText: string;
+  SrcText, RefText, ParsedText: string;
   ReturnValue: Boolean;
   Obj: dyn;
   ResText, s: string;
@@ -86,13 +105,17 @@ var
   Parser: TParser;
 begin
   SrcText := LoadTestFile('TestRndEval.txt');
-  RefText := LoadTestFile('TestRndEval_Res.txt');
+  RefText := LoadTestFile('TestRndEval_Res.txt');   
+  ParsedText := LoadTestFile('TestRndEval_Parsed.txt');
 
   Parser := TParser.Create(SrcText);
   Parser.GetNextTerm(Obj);
   Parser.Free;
 
   s := DisplayL(obj);
+  s := NormalizeLines(s);
+  //SaveTestFile('TestRndEval_Parsed.txt', s);
+  CheckEquals(ParsedText, s, 'DisplayL');
 
   Core.Scope.Eval(Res2, Obj);
   Obj := Res2.Value;

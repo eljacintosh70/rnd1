@@ -183,7 +183,7 @@ procedure RegisterFunctionG(Scope: IDynScope; const NameStr: Utf8String;
   const Method: TDynFuncG);
 var
   Datum: IDynFunc;
-  Name: TDynDatum;
+  Name: IDynSymbol;
 begin
   Name := InitSymbol(PAnsiChar(NameStr), Length(NameStr));
   Datum := TNamedDynFuncG.Create(Name, Method).AsIDynFunc;
@@ -197,7 +197,8 @@ var
   ExpName: String;
   FnDatum: IDynFunc;
   Method: TDynFuncG;
-  ResEntry: IDynDatum;
+  ResEntry: IDynDatum;    
+  Name: IDynSymbol;
 begin
   Result := nil;
   while Assigned(Symbols) do
@@ -206,7 +207,7 @@ begin
     Symbols := cdr(Symbols);
     // (name ref list "exported_name")
     NeedParams(Entry, [@ArgName, @ArgRes, @ArgParams], @ArgOpt);
-    NeedSymbol(ArgName);
+    NeedSymbol(ArgName, Name);
     if Assigned(ArgOpt) then
     begin
       NeedParams(ArgOpt, [@ArgExpName]);
@@ -219,7 +220,7 @@ begin
     {$ENDIF}
     if Assigned(@Method) then
     begin
-      FnDatum := TNamedDynFuncG.Create(ArgName, Method).AsIDynFunc;
+      FnDatum := TNamedDynFuncG.Create(Name, Method).AsIDynFunc;
       Scope.Value[Pointer(ArgName)] := Pointer(FnDatum);
       ResEntry := make_list([ArgName, FnDatum]);
       Result := cons(ResEntry, Result)
@@ -278,13 +279,16 @@ end;
 procedure RegisterFunctions(Scope: IDynScope; Fn: array of TLispProcRec);
 var
   e: TLispProcRec;
-  Symbol: TDynDatum;
+  Symbol: dyn;
   f: dyn;
+  i: Integer;
 begin
-  for e in Fn do
+  //for e in Fn do
+  for i := 0 to High(Fn) do
   begin
+    e := Fn[i];
     Symbol := InitSymbol(e.Name);
-    f := TDynFuncNat.Create(e) as IDynFunc;
+    f := TDynFuncNat.Create(e).AsIDynFunc;
     Scope.Value[Symbol] := f;
   end;
 end;
@@ -292,13 +296,16 @@ end;
 procedure RegisterSyntax(Scope: IDynScope; Fn: array of TLispSyntaxRec);
 var
   e: TLispSyntaxRec;
-  Symbol: TDynDatum;
-  f: dyn;
+  Symbol: dyn;
+  f: dyn;         
+  i: Integer;
 begin
-  for e in Fn do
-  begin
+  //for e in Fn do
+  for i := 0 to High(Fn) do
+  begin   
+    e := Fn[i];
     Symbol := InitSymbol(e.Name);
-    f := TDynSyntaxNat.Create(e) as IDynSyntax;
+    f := TDynSyntaxNat.Create(e).AsIDynSyntax;
     Scope.Value[Symbol] := f;
   end;
 end;

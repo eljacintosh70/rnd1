@@ -58,10 +58,15 @@ uses
 procedure InitQuoteFn;
 var
   i: TQuoteTokens;
+  Obj: IDynSymbol;
 begin
-  if IsSymbol(QuoteFn[High(QuoteFn)].Value) then Exit;
+  if QuoteFn[High(QuoteFn)].Ptr <> nil then Exit;
+  //if IsSymbol(QuoteFn[High(QuoteFn)].Value) then Exit;
   for i := Low(QuoteFn) to High(QuoteFn) do
-    QuoteFn[i] := (InitSymbol(QuoteFnName[i]));
+  begin
+    Obj := InitSymbol(QuoteFnName[i]);
+    QuoteFn[i] := Obj;
+  end;
 end;
 
 { TLispParser }

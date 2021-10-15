@@ -104,7 +104,7 @@ type
      Port: IDynOutPort;
    end;
 
-function WriteToPort(const Port: IDynOutPort; s: string): Boolean;
+function WriteToPort(const Port: IDynOutPort; s: UnicodeString): Boolean;
 
 implementation
 
@@ -141,7 +141,7 @@ begin
   end;
 end;
 
-function WriteToPort(const Port: IDynOutPort; s: string): Boolean;
+function WriteToPort(const Port: IDynOutPort; s: UnicodeString): Boolean;
 begin
   Result := Port.WriteStrW(Pointer(s), Length(s), skRaw);
 end;
