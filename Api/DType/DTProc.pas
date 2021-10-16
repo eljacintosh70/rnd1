@@ -14,19 +14,21 @@ type
 type
   TDynFunc = class(TDyn, IDynFunc)
   // InlineVMT requiere los siguientes métodos idénticos a los de IDynFunc
-  public
+  public                                                                     public
+    function DatumType: TDatumType; override;
     procedure Call(out Result: TDatumRef; Params: TDynDatum); virtual; abstract;
   private
     function GetAsIDynFunc: IDynFunc;
   public
     property AsIDynFunc: IDynFunc read GetAsIDynFunc {$if Declared(InlineVMT)} implements IDynFunc {$ifend};
   public
+    Name: String;
+    procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;
     procedure DoMsgEvalCall(var Msg: TEvalCallMessage); message MsgEvalCall;
   end;
 
   TDynFuncNat = class(TDynFunc)
   public
-    Name: String;
     Fn: TLispProc;
     procedure Call(out Result: TDatumRef; Params: TDynDatum); override;
     constructor Create(const Def: TLispProcRec);
@@ -96,13 +98,14 @@ type
   public
     property AsIDynSyntax: IDynSyntax read GetAsIDynSyntax {$if Declared(InlineVMT)} implements IDynSyntax {$ifend};
   public
+    Name: String;
+    procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;
     procedure DoMsgEvalCall(var Msg: TEvalCallMessage); message MsgEvalCall;
   end;
 
   TDynSyntax = class(TCustomDynSyntax)
   public
     Method: TSintaxMethod;
-    Name: String;
     function DatumType: TDatumType; override;
     procedure Eval(out Result: TDatumRef; Params: TDynDatum; Scope: IDynScope);
         override;
@@ -111,7 +114,6 @@ type
 
   TDynSyntaxNat = class(TCustomDynSyntax)
   public
-    Name: String;
     Fn: TLispSyntax;
     function DatumType: TDatumType; override;
     procedure Eval(out Result: TDatumRef; Params: TDynDatum; Scope: IDynScope);
@@ -147,6 +149,19 @@ begin
 end;
 
 { TDynFunc }
+
+function TDynFunc.DatumType: TDatumType;
+begin
+  Result := atExtFunc
+end;
+
+procedure TDynFunc.DoMsgDisplay(var Msg: TWriteMsg);
+var
+  s: string;
+begin
+  s := Format('(f:%s: %s %p)', [Name, ClassName(), Pointer(Self)]);
+  Msg.Res := Ord(WriteToPort(Msg.Port, s));
+end;
 
 procedure TDynFunc.DoMsgEvalCall(var Msg: TEvalCallMessage);
 var
@@ -280,6 +295,14 @@ begin
 end;
 
 { TCustomDynSyntax }
+
+procedure TCustomDynSyntax.DoMsgDisplay(var Msg: TWriteMsg);
+var
+  s: string;
+begin
+  s := Format('(s:%s: %s %p)', [Name, ClassName(), Pointer(Self)]);
+  Msg.Res := Ord(WriteToPort(Msg.Port, s));
+end;
 
 procedure TCustomDynSyntax.DoMsgEvalCall(var Msg: TEvalCallMessage);
 begin

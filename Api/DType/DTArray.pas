@@ -22,6 +22,9 @@ type
     procedure Lock(var Block: TArrayBlock; Ofs: TArrayPos = 0; Size: TLockSize =
         UpToEnd; Writeable: Boolean = False); virtual;
     function DataPtr: Pointer; virtual;
+  public
+    function GetItem(const Key: dyn): dyn; override; stdcall;
+    procedure SetItem(const Key: dyn; const Value: dyn); override; stdcall;
   private
     function GetAsIDynArray: IDynArray;
   public
@@ -150,6 +153,14 @@ begin
   end
 end;
 
+procedure TAbstractDynArray.SetItem(const Key, Value: dyn);
+var
+  i: Integer;
+begin
+  i := Key;
+  SetItemA(I, Value)
+end;
+
 function TAbstractDynArray.DataPtr: Pointer;
 begin
   Result := @DataLabel;
@@ -160,6 +171,14 @@ begin
   {$if Declared(InlineVMT)} Result := IDynArray(Pointer(Self));
   {$else}                   Result := Self;
   {$endif}
+end;
+
+function TAbstractDynArray.GetItem(const Key: dyn): dyn;
+var
+  i: Integer;
+begin
+  i := Key;
+  Result := GetItemA(i)
 end;
 
 procedure TAbstractDynArray.DoMsgDisplay(var Msg: TWriteMsg);

@@ -1,4 +1,4 @@
-unit Test_Eval;
+﻿unit Test_Eval;
 
 interface
 
@@ -17,16 +17,13 @@ type
 
   TestEvalCore = class(TTestCase)
   strict private
-    FTextOut: TStrTextOutW;
-    FDynOutPort: TDynOutPortLisp;
-    Ref: IDynOutPort;
   public
     procedure SetUp; override;
     procedure TearDown; override;
   published
     procedure TestSymbols;
-    procedure TestFromLisp;
-    procedure TestFromRnd;
+    procedure TestEvalLisp;
+    procedure TestEvalRnd;
   end;
 
 implementation
@@ -36,15 +33,10 @@ implementation
 procedure TestEvalCore.SetUp;
 begin
   //InitCore;
-  FTextOut := TStrTextOutW.Create(200);
-  FDynOutPort := TDynOutPortLisp.Create(FTextOut.WriteProc);
-  Ref := FDynOutPort;
 end;
 
 procedure TestEvalCore.TearDown;
 begin
-  Ref := nil; //FDynOutPort.Free;
-  FDynOutPort := nil;
 end;
 
 procedure TestEvalCore.TestSymbols;
@@ -61,7 +53,7 @@ begin
     CheckEquals(Names[i], Values[i].Name, 'Symbol Name')
 end;
 
-procedure TestEvalCore.TestFromLisp;
+procedure TestEvalCore.TestEvalLisp;
 var
   SrcText, RefText, ParsedText: string;
   ReturnValue: Boolean;
@@ -69,6 +61,9 @@ var
   ResText, s: string;
   Res, Res2: TDatumRef;
   Parser: TLispParser;
+  FTextOut: TStrTextOutW;
+  FDynOutPort: TDynOutPortLisp;
+  Ref: IDynOutPort;
 begin
   SrcText := LoadTestFile('TestLispEval.txt');
   RefText := LoadTestFile('TestLispEval_Res.txt');
@@ -86,6 +81,9 @@ begin
   Core.Scope.Eval(Res2, Obj);
   Obj := Res2.Value;
 
+  FTextOut := TStrTextOutW.Create(200);
+  FDynOutPort := TDynOutPortLisp.Create(FTextOut.WriteProc);
+  Ref := FDynOutPort;
   ReturnValue := FDynOutPort.Write(Obj);
   ResText := FTextOut.GetText;
   ResText := NormalizeLines(ResText);
@@ -95,7 +93,7 @@ begin
   CheckEquals(RefText, ResText, 'Error')
 end;
 
-procedure TestEvalCore.TestFromRnd;
+procedure TestEvalCore.TestEvalRnd;
 var
   SrcText, RefText, ParsedText: string;
   ReturnValue: Boolean;
@@ -103,9 +101,12 @@ var
   ResText, s: string;
   Res2: TDatumRef;
   Parser: TParser;
+  FTextOut: TStrTextOutW;
+  FDynOutPort: TDynOutPortRnd;
+  Ref: IDynOutPort;
 begin
   SrcText := LoadTestFile('TestRndEval.txt');
-  RefText := LoadTestFile('TestRndEval_Res.txt');   
+  RefText := LoadTestFile('TestRndEval_Res.txt');
   ParsedText := LoadTestFile('TestRndEval_Parsed.txt');
 
   Parser := TParser.Create(SrcText);
@@ -120,6 +121,9 @@ begin
   Core.Scope.Eval(Res2, Obj);
   Obj := Res2.Value;
 
+  FTextOut := TStrTextOutW.Create(200);
+  FDynOutPort := TDynOutPortRnd.Create(FTextOut.WriteProc);
+  Ref := FDynOutPort;
   ReturnValue := FDynOutPort.Write(Obj);
   ResText := FTextOut.GetText;
 

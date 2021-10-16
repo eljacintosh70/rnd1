@@ -7,11 +7,11 @@ function Deb(const Obj: IDynDatum; Max: Integer = 256): String; overload;
 var
   Msg: TWriteMsg;
   TextOut: TStrTextOutW;
-  Port: TDynOutPort;
+  Port: TDynOutPortLisp;
   Res: Boolean;
 begin
   TextOut := TStrTextOutW.Create(200);
-  Port := TDynOutPort.Create(TextOut.WriteProc);
+  Port := TDynOutPortLisp.Create(TextOut.WriteProc);
 
   if Obj <> nil then
   begin

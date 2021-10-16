@@ -88,6 +88,13 @@ begin
   end;
 end;
 
+function CreateLambda(Params, FnDef: dyn; Scope: IDynScope): dyn;
+begin
+  //DebStr := Deb(Params) + ' | ' + Deb(FnDef);
+  NeedPair(Params);
+  Result := (TDynLambda.Create(Params, FnDef, Scope)).AsIDynFunc;
+end;
+
 exports
   CreateObject name 'CreateObject',
   {$IFNDEF LINUX}

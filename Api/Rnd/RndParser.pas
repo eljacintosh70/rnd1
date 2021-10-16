@@ -147,14 +147,18 @@ type
 implementation
 
 var
-  sySetX, SyPoint, SyElem, SyCall: dyn;
+  syBegin, syAsign, syDefine, SyPoint, SyElem, SyCall: dyn;
+
+  DebStr: string;
 
 { TParser }
 
 constructor TParser.Create(s: String);
 begin
   Lexer := TLexer.Create(s);
-  sySetX := MakeSymbol('set!');
+  syBegin := MakeSymbol('begin');
+  syDefine := MakeSymbol('define');
+  syAsign := MakeSymbol(':=');
   SyPoint := MakeSymbol('.');
   SyElem := MakeSymbol('elem');
   SyCall := MakeSymbol('call');
@@ -171,7 +175,13 @@ begin
   Result := False;
   if Lexer.GetNext(CurToken) then
     if StatementList(Term) then
+    begin
+      if list_length(Term) = 1 then
+        Term := car(Term)
+      else
+        Term := cons(SyBegin, Term);
       Result := True;
+    end;
 end;
 
 procedure TParser.Next;
@@ -198,21 +208,25 @@ begin
   Result := Statement(Res);
   if PeekTerminal(tkSeCo) then
     Result := StatementList2(Res, Res)
+  else
+    if Result then
+      Res := cons(Res, nil);
+  //DebStr := Deb(Res);
 end;
 
 function TParser.StatementList2(S1: dyn; var Res: dyn): Boolean;
 var
-  Item: dyn;
+  S2: dyn;
   List: IDynPair;
 begin
   List := cons(S1, nil);
   while Terminal(tkSeCo) do
   begin
-    if not Statement(Res) then
+    if not Statement(S2) then
       Break;
-    List := cons(Item, List);
+    List := cons(S2, List);
   end;
-  List := Reverse(List); // invertir porque los items se agregan al principio
+  Res := Reverse(List); // invertir porque los items se agregan al principio
   Result := True;
 end;
 
@@ -262,7 +276,7 @@ begin
   Terminal(tkAsig);
   if Expression(Res) then
   begin
-    Res := List([sySetX, S1, Res]);
+    Res := List([syAsign, S1, Res]);
     Result := True;
   end
   else

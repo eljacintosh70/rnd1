@@ -22,7 +22,8 @@ uses
   DTScript in '..\..\Api\DType\DTScript.pas',
   DTParser in '..\..\Api\DType\DTParser.pas',
   DynTypes in '..\..\Api\DynTypes.pas',
-  LispEval in '..\..\Api\Lisp\LispEval.pas';
+  LispEval in '..\..\Api\Lisp\LispEval.pas',
+  LispWrite in '..\..\Api\Lisp\LispWrite.pas';
 
 {$R *.res}
 

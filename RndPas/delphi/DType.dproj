@@ -127,6 +127,7 @@
         <DCCReference Include="..\..\Api\DType\DTParser.pas"/>
         <DCCReference Include="..\..\Api\DynTypes.pas"/>
         <DCCReference Include="..\..\Api\Lisp\LispEval.pas"/>
+        <DCCReference Include="..\..\Api\Lisp\LispWrite.pas"/>
         <None Include="..\..\Api\Inc\Destroyed.inc"/>
         <None Include="..\..\Api\Inc\DTypes_General.inc"/>
         <None Include="..\..\Api\Inc\DTypes_IDynPair.inc"/>

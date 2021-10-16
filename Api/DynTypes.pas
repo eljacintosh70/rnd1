@@ -222,16 +222,6 @@ type
     procedure Eval(out Result: TDatumRef; Params: TDynDatum; Scope: IDynScope);
   end;
 
-  // equivalente a Modular.TObserver
-  TObserverMethod = procedure(Sender: TObject; const Value) of object;
-
-  // equivalente a Modular.IObservAble
-  IObservableNode = interface(IInterface)
-    ['{4A460002-1DC8-11D4-9004-00A0CC25A253}']
-    procedure AddObserver(const Obs: TObserverMethod);
-    procedure DelObserver(const Obs: TObserverMethod);
-  end;
-
   ILibScope = interface(IDynScope)
     ['{B5BC8C1B-4899-4D7A-A953-9950BDD1781F}']
     function Imported: IDynDatum;
@@ -455,6 +445,8 @@ function TestParams(Params: TDynDatum; const Required: array of PDynDatum; Rest:
     PDynDatum = nil): Boolean;
 procedure NeedParams(Params: TDynDatum; const Required: array of PDynDatum;
     Rest: PDynDatum = nil);
+
+function CreateLambda(Params, FnDef: dyn; Scope: IDynScope): dyn;
 {$ENDREGION}
 
 {$REGION 'General'}
@@ -479,6 +471,7 @@ function EnsureInterface(A: weak_IDyn): IDyn;
 
 procedure DynError(const MsgFormat: String; const Params: array of dyn);
 function Eval(Exp: dyn; Scope: IDynScope): dyn;
+function EvalItems(List: dyn; Scope: IDynScope): dyn;
 
 implementation /////////////////////////////////////////////////////////////////
 
@@ -487,10 +480,12 @@ uses
   TypInfo,
   {$IFNDEF LINUX} Windows, MapFiles, {$ENDIF}
   DTBool, DTInt, DTFloat, DTPair, DTArray, DTString, DTProc,
-  DTScript, DTSymbol, DTPortW,
+  DTScript, DTSymbol, DTPortW, LispWrite,
 {$endif}
   DUtils;    // LispTypes, SchInterpreter, LispEnv,
 
+var
+  DebStr: string;
 
 procedure DynError(const MsgFormat: String; const Params: array of dyn);
 
@@ -1046,6 +1041,16 @@ begin
   Msg.Msg := MsgEval;
   Msg.Scope := Scope;
   Exp.DispatchMsg(Msg);
+  Result := Msg.Res;
+end;
+
+function EvalItems(List: dyn; Scope: IDynScope): dyn;
+var
+  Msg: TEvalMessage;
+begin
+  Msg.Msg := MsgEvalItems;
+  Msg.Scope := Scope;
+  List.DispatchMsg(Msg);
   Result := Msg.Res;
 end;
 
