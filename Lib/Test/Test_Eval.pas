@@ -125,7 +125,8 @@ begin
   FDynOutPort := TDynOutPortRnd.Create(FTextOut.WriteProc);
   Ref := FDynOutPort;
   ReturnValue := FDynOutPort.Write(Obj);
-  ResText := FTextOut.GetText;
+  ResText := FTextOut.GetText;   
+  ResText := NormalizeLines(ResText);
 
   // TODO: Validate method results
   Check(ReturnValue, 'Write');

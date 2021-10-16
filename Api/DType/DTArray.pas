@@ -157,7 +157,7 @@ procedure TAbstractDynArray.SetItem(const Key, Value: dyn);
 var
   i: Integer;
 begin
-  i := Key;
+  i := Int64(Key);
   SetItemA(I, Value)
 end;
 
@@ -177,7 +177,7 @@ function TAbstractDynArray.GetItem(const Key: dyn): dyn;
 var
   i: Integer;
 begin
-  i := Key;
+  i := Int64(Key);
   Result := GetItemA(i)
 end;
 
