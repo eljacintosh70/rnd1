@@ -46,9 +46,9 @@ function arccoth(x: Real): Real;
 
 const
   Functions1R: array[0..30] of TFunc1RRec = (
-    (Name: 'abs';          Fn: abs       ),
-    (Name: 'sqr';          Fn: sqr       ),
-    (Name: 'sqrt';         Fn: sqrt      ),
+    (Name: 'abs';          Fn: abs      ),
+    (Name: 'sqr';          Fn: sqr      ),
+    (Name: 'sqrt';         Fn: sqrt     ),
 
     (Name: 'log';          Fn: log      ),
     (Name: 'pow10';        Fn: pow10    ),

@@ -229,11 +229,11 @@ var
   Msg: TVarMessage absolute Message;
 begin
   case Msg.Msg of
-    MsgCastToBool:   CastError(Self, 'bool');
-    MsgCastToChar:   CastError(Self, 'char');
-    MsgCastToInt64:  CastError(Self, 'int');
-    MsgCastToDouble: CastError(Self, 'float');
-    MsgCastToString: CastError(Self, 'str');
+    MsgCastToBool,
+    MsgCastToChar,
+    MsgCastToInt64,
+    MsgCastToDouble,
+    MsgCastToString: Msg.Res := ResWrongType;
   end;
 end;
 

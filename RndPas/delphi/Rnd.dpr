@@ -2,6 +2,7 @@ program Rnd;
 
 uses
   Vcl.Forms,
+  SysUtils,
   DUtils in '..\..\Api\DUtils.pas',
   DTDatum in '..\..\Api\DType\DTDatum.pas',
   DTBool in '..\..\Api\DType\DTBool.pas',
@@ -45,6 +46,7 @@ uses
 {$R *.RES}
 
 begin
+  {$if Declared(FormatSettings)}FormatSettings.{$ifend} DecimalSeparator := '.';
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TForm2, Form2);

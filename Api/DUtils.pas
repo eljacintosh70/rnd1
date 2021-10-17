@@ -72,6 +72,7 @@ const
 const
   ResOK = 0;
   ResNotImpl = -1;
+  ResWrongType = -2;
 
 function  HandleMessageWithPointer(Obj: dyn; Msg: Integer; Ptr: Pointer): Boolean;
 procedure HandleMessageWithPointer_Err(Obj: dyn; Msg: Integer; Ptr: Pointer; Err: PDynErrorInfo);
