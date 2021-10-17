@@ -6,7 +6,8 @@ uses
   SysUtils,
   DTPort, DTPortW, DUtils, DynTypes,
   LispWrite, RndWrite,
-  LispSintax, LispFiles, LispFunc, RndSintax,
+  LispSintax, LispFiles, LispFunc, RndSintax, Math,
+  Func1R,
   LispInterpreter;
 
 var
@@ -21,6 +22,9 @@ implementation
 
 uses LispEnv;
 
+var
+  syPi, syE: IDynDatum;
+
 procedure InitCore;
 begin
   Scope := TInterpreter.Create(nil);
@@ -30,6 +34,12 @@ begin
   LispEnv.RegisterSyntax   (Scope, TRndSintax);
   LispEnv.RegisterFunctions(Scope, TBasicFunctions);
   LispEnv.RegisterFunctions(Scope, TMathOpers);
+
+  InitSymbols(['pi',  'e'],
+            [@syPi, @syE]);
+  Scope[syPi] := pi;
+  Scope[syE]  := exp(1);
+  LispEnv.RegisterFunctions1R(Scope, Functions1R);
 end;
 
 function DisplayL(obj: dyn): string;

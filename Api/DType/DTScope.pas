@@ -2,9 +2,9 @@ unit DTScope;
 interface //////////////////////////////////////////////////////////////////////
 
 uses
-  SysUtils, Classes,
+  SysUtils,
   Generics.Collections,
-  DynTypes, DTDatum, DTPair, DTSymbol;
+  DynTypes, DTDatum, DTPair;
 
 type
   IDebug = interface(IInterface)

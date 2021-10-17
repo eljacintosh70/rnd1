@@ -200,6 +200,8 @@ type
   TLispSyntax = procedure (out Result: TDatumRef; Datum: TDynDatum; Scope: IDynScope);
   TLispProcRec = record Name: Utf8String; Fn: TLispProc end;
   TLispSyntaxRec = record Name: Utf8String; Fn: TLispSyntax end;
+  TFunc1R = function (x: Real): Real;
+  TFunc1RRec = record Name: Utf8String; Fn: TFunc1R end;
 
   IDynFunc = interface(IDynDatum)
     ['{F374F0B3-A60D-40C6-A228-8A26A6B841F8}']
@@ -477,7 +479,6 @@ implementation /////////////////////////////////////////////////////////////////
 
 uses
 {$ifdef DTYPES}
-  TypInfo,
   {$IFNDEF LINUX} Windows, MapFiles, {$ENDIF}
   DTBool, DTInt, DTFloat, DTPair, DTArray, DTString, DTProc,
   DTScript, DTSymbol, DTPortW, LispWrite,

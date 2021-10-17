@@ -133,6 +133,7 @@
         <DCCReference Include="..\common\LispFunc.pas"/>
         <DCCReference Include="..\common\LispSintax.pas"/>
         <DCCReference Include="..\common\RndSintax.pas"/>
+        <DCCReference Include="..\common\Func1R.pas"/>
         <DCCReference Include="..\common\Core.pas"/>
         <DCCReference Include="FrRnd.pas"/>
         <BuildConfiguration Include="Release">

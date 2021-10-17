@@ -38,6 +38,7 @@ uses
   LispFunc in '..\common\LispFunc.pas',
   LispSintax in '..\common\LispSintax.pas',
   RndSintax in '..\common\RndSintax.pas',
+  Func1R in '..\common\Func1R.pas',
   Core in '..\common\Core.pas',
   FrRnd in 'FrRnd.pas';
 

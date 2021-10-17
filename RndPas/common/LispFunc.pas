@@ -1,8 +1,6 @@
 unit LispFunc;
 interface //////////////////////////////////////////////////////////////////////
 
-{$WARN SYMBOL_DEPRECATED OFF} // en Delphi200x no recomiendan usar automated
-
 uses
   SysUtils,
   DUtils, DynTypes, SchFunc, rnrs_lists;

@@ -2,8 +2,8 @@ unit LispEval;
 interface //////////////////////////////////////////////////////////////////////
 
 uses
-  SysUtils, Classes,
-  DynTypes, DTArray, DTProc, DTScope;
+  SysUtils,
+  DynTypes, DTArray, DTScope;
 
 type
   TLispEval = class(TBigScope, ILibScope, IDelphiScope)

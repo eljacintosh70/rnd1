@@ -34,6 +34,13 @@ type
     constructor Create(const Def: TLispProcRec);
   end;
 
+  TDynFunc1R = class(TDynFunc)
+  public
+    Fn: TFunc1R;
+    procedure Call(out Result: TDatumRef; Params: TDynDatum); override;
+    constructor Create(const Def: TFunc1RRec);
+  end;
+
   TDynMethod = class(TDyn, IDynMethod)
   // InlineVMT requiere los siguientes métodos idénticos a los de IDynMethod
   public
@@ -347,6 +354,25 @@ begin
 end;
 
 constructor TDynFuncNat.Create(const Def: TLispProcRec);
+begin
+  Name := Def.Name;
+  Fn   := Def.Fn;
+end;
+
+{ TDynFunc1R }
+
+procedure TDynFunc1R.Call(out Result: TDatumRef; Params: TDynDatum);
+var
+  ArgX: TDynDatum;
+  x, y: Real;
+begin
+  NeedParams(Params, [@ArgX]);
+  x := dyn(ArgX);
+  y := Fn(x);
+  Result := y;
+end;
+
+constructor TDynFunc1R.Create(const Def: TFunc1RRec);
 begin
   Name := Def.Name;
   Fn   := Def.Fn;

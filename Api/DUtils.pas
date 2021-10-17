@@ -3,7 +3,7 @@ unit DUtils;
 interface
 
 uses
-  SysUtils, Classes,
+  SysUtils,
   DynTypes;
 
 type

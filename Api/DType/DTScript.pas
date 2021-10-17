@@ -4,7 +4,8 @@ interface
 
 uses
   SysUtils,
-  DynTypes, DTPair, DTProc, DTScope;
+  DynTypes, DTPair, DTProc, DTScope,
+  DTSymbol; // requiere que se llame InitSymbolSource
 
 type
   IScriptObjectEx = interface(IScriptObject)

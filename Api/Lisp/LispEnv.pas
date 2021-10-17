@@ -4,8 +4,9 @@ interface //////////////////////////////////////////////////////////////////////
 uses
   DynTypes;
 
-procedure RegisterFunctions(Scope: IDynScope; Fn: array of TLispProcRec);
 procedure RegisterSyntax(Scope: IDynScope; Fn: array of TLispSyntaxRec);
+procedure RegisterFunctions(Scope: IDynScope; Fn: array of TLispProcRec);
+procedure RegisterFunctions1R(Scope: IDynScope; Fn: array of TFunc1RRec);
 
 procedure ReadDatumFromFile(out Result: TDatumRef; Path: String);
 procedure EvalDatumFromFile(out Result: TDatumRef; Path: String; Scope: IDynScope);
@@ -289,6 +290,23 @@ begin
     e := Fn[i];
     Symbol := InitSymbol(e.Name);
     f := TDynFuncNat.Create(e).AsIDynFunc;
+    Scope.Value[Symbol] := f;
+  end;
+end;
+
+procedure RegisterFunctions1R(Scope: IDynScope; Fn: array of TFunc1RRec);
+var
+  e: TFunc1RRec;
+  Symbol: dyn;
+  f: dyn;
+  i: Integer;
+begin
+  //for e in Fn do
+  for i := 0 to High(Fn) do
+  begin
+    e := Fn[i];
+    Symbol := InitSymbol(e.Name);
+    f := TDynFunc1R.Create(e).AsIDynFunc;
     Scope.Value[Symbol] := f;
   end;
 end;
