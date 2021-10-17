@@ -118,7 +118,7 @@
     <Version Value="11"/>
     <SearchPaths>
       <IncludeFiles Value="../../Api;../../Api/DType;../../Api/Lisp;$(ProjOutDir)"/>
-      <OtherUnitFiles Value="../../Api;../../Api/DType;../../Api/Lisp"/>
+      <OtherUnitFiles Value="../../Api;../../Api/DType;../../Api/Lisp;../../generics.collections/src;../../Api/Rnd;../../RndPas/common;../../Lib/Test"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>

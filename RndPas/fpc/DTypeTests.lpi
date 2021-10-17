@@ -38,7 +38,7 @@
         <PackageName Value="FCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="41">
+    <Units Count="42">
       <Unit0>
         <Filename Value="DTypeTests.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -204,6 +204,10 @@
         <Filename Value="../../Lib/Test/Test_Eval.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit40>
+      <Unit41>
+        <Filename Value="../common/Func1R.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit41>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

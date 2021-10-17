@@ -44,7 +44,8 @@ uses
   SchFunc in '..\common\SchFunc.pas',
   LispFunc in '..\common\LispFunc.pas',
   LispSintax in '..\common\LispSintax.pas',
-  RndSintax in '..\common\RndSintax.pas',
+  RndSintax in '..\common\RndSintax.pas',    
+  Func1R in '..\common\Func1R.pas',
   TestFiles in '..\..\Lib\Test\TestFiles.pas',
   Test_DTPort in '..\..\Lib\Test\Test_DTPort.pas',
   Test_Eval in '..\..\Lib\Test\Test_Eval.pas';

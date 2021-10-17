@@ -105,23 +105,36 @@ function cot    (x: Real): Real; begin Result := Math.cot(x);      end;
 function arcsin (x: Real): Real; begin Result := Math.arcsin(x);   end;
 function arccos (x: Real): Real; begin Result := Math.arccos(x);   end;
 function arctan (x: Real): Real; begin Result := System.arctan(x); end;
-function arcsec (x: Real): Real; begin Result := Math.arcsec(x);   end;
-function arccsc (x: Real): Real; begin Result := Math.arccsc(x);   end;
-function arccot (x: Real): Real; begin Result := Math.arccot(x);   end;
 
 function sinh   (x: Real): Real; begin Result := Math.sinh(x);     end;
 function cosh   (x: Real): Real; begin Result := Math.cosh(x);     end;
 function tanh   (x: Real): Real; begin Result := Math.tanh(x);     end;
-function sech   (x: Real): Real; begin Result := Math.sech(x);     end;
-function csch   (x: Real): Real; begin Result := Math.csch(x);     end;
-function coth   (x: Real): Real; begin Result := Math.coth(x);     end;
 
 function arcsinh(x: Real): Real; begin Result := Math.arcsinh(x);  end;
 function arccosh(x: Real): Real; begin Result := Math.arccosh(x);  end;
 function arctanh(x: Real): Real; begin Result := Math.arctanh(x);  end;
+
+{$ifdef FPC}
+function arcsec (x: Real): Real; begin Result := Math.arccos(1/x);   end;
+function arccsc (x: Real): Real; begin Result := Math.arcsin(1/x);   end;
+function arccot (x: Real): Real; begin Result := System.arctan(1/x); end;
+function sech   (x: Real): Real; begin Result := 1/Math.cosh(x);     end;
+function csch   (x: Real): Real; begin Result := 1/Math.sinh(x);     end;
+function coth   (x: Real): Real; begin Result := 1/Math.tanh(x);     end;
+function arcsech(x: Real): Real; begin Result := Math.arccosh(1/x);  end;
+function arccsch(x: Real): Real; begin Result := Math.arcsinh(1/x);  end;
+function arccoth(x: Real): Real; begin Result := Math.arctanh(1/x);  end;
+{$else}
+function arcsec (x: Real): Real; begin Result := Math.arcsec(x);   end;
+function arccsc (x: Real): Real; begin Result := Math.arccsc(x);   end;
+function arccot (x: Real): Real; begin Result := Math.arccot(x);   end;
+function sech   (x: Real): Real; begin Result := Math.sech(x);     end;
+function csch   (x: Real): Real; begin Result := Math.csch(x);     end;
+function coth   (x: Real): Real; begin Result := Math.coth(x);     end;
 function arcsech(x: Real): Real; begin Result := Math.arcsech(x);  end;
 function arccsch(x: Real): Real; begin Result := Math.arccsch(x);  end;
 function arccoth(x: Real): Real; begin Result := Math.arccoth(x);  end;
+{$endif}
 
 end.
 
