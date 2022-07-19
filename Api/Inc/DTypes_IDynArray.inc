@@ -30,7 +30,7 @@ begin
 end;
 
 exports
-  {$IFNDEF LINUX}
+  {$IFNDEF FPC}
   make_vector(n: Integer; Fill: TDynDatum)   name 'make_vectorN',
   make_vector(const Arr: array of const)     name 'make_vector',
   {$ENDIF}

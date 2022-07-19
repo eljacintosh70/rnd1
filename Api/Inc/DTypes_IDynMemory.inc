@@ -74,7 +74,7 @@ begin
 end;
 
 exports
-  {$IFNDEF LINUX}
+  {$IFNDEF FPC}
   CreateDynMem(cbData: Integer) name 'DynMem.Create@1', // (make-bytevector k)
                                                         // (make-bytevector k fill)
   CreateDynMem(pData: Pointer; cbData: Integer) name 'DynMem.Create@2',

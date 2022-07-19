@@ -138,7 +138,7 @@ uses
 
 function AsSintax(Self: TDynDatum): TDynSyntax;
 begin
-  Result := Pointer(Integer(Self) and PointerMask);
+  Result := Pointer(NativeInt(Self) and PointerMask);
 end;
 
 function SyntaxDatum(const AName: String; AMethod: TSintaxMethod): TDynDatum;

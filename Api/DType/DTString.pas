@@ -48,7 +48,7 @@ type
     class function CreateI(pData: PWideChar; cbData: Integer): IDynString;
     function GetItemA(i: Integer): dyn; override;
     procedure SetItemA(i: Integer; const Value: dyn); override;
-    function _Release: Integer; override; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF};
+    function _Release: Integer; override; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
   protected
     procedure CastToString(var Msg: TVarMessage); message MsgCastToString;
     procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;
@@ -70,7 +70,7 @@ type
     class function CreateI(pData: PAnsiChar; cbData: Integer): IDynString;
     function GetItemA(i: Integer): dyn; override;
     procedure SetItemA(i: Integer; const Value: dyn); override;
-    function _Release: Integer; override; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF};
+    function _Release: Integer; override; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
   protected
     procedure CastToString(var Msg: TVarMessage); message MsgCastToString;
     procedure DoMsgDisplay(var Msg: TWriteMsg); message MsgDisplay;

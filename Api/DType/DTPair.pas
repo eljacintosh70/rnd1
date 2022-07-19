@@ -31,7 +31,7 @@ type
   public
     property AsISchPair: IDynPair read GetAsISchPair {$if Declared(InlineVMT)} implements IDynPair {$ifend};
   public
-    function _Release: Integer; override; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF};
+    function _Release: Integer; override; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
     function GetEnumerator: IDynEnumerator; override; stdcall;
     function DatumType: TDatumType; override;
     function Rest: IDynSeq; override;
@@ -82,7 +82,7 @@ function CdrRef(Pair: TDynDatum): PDatumRef;
 var
   P: TDynPair;
 begin
-  P := Pointer(Integer(Pair) and PointerMask);
+  P := Pointer(NativeInt(Pair) and PointerMask);
   Result := @P.FCdr;
 end;
 
@@ -179,7 +179,7 @@ begin
 end;
 
 function TDynPair._Release: Integer;
-{$IFDEF LINUX}
+{$IFDEF FPC}
 begin
   Result := inherited _Release;
 {$ELSE}

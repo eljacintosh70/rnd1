@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="11"/>
+    <Version Value="12"/>
     <General>
       <Flags>
         <MainUnitHasUsesSectionForAllUnits Value="False"/>
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
         <MainUnitHasScaledStatement Value="False"/>
+        <CompatibilityMode Value="True"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
-      <MainUnit Value="0"/>
       <Title Value="Rnd"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
@@ -24,7 +24,6 @@
     </PublishOptions>
     <RunParams>
       <FormatVersion Value="2"/>
-      <Modes Count="0"/>
     </RunParams>
     <RequiredPackages Count="1">
       <Item1>
@@ -220,14 +219,6 @@
 -dCompiler6_Up
 -dPUREPASCAL
 -dDTYPES"/>
-      <OtherDefines Count="6">
-        <Define0 Value="Borland"/>
-        <Define1 Value="Ver150"/>
-        <Define2 Value="Delphi7"/>
-        <Define3 Value="Compiler6_Up"/>
-        <Define4 Value="PUREPASCAL"/>
-        <Define5 Value="DTYPES"/>
-      </OtherDefines>
     </Other>
   </CompilerOptions>
   <Debugging>

@@ -41,9 +41,11 @@ implementation
 uses
   DTPortW;
 
+{$ifdef ENABLE_EXPORTS}
 exports
   WriteStr name 'WriteStr',
   DisplayStr name 'DisplayStr';
+{$endif}
 
 function WriteStr(v: dyn): string; stdcall;
 var

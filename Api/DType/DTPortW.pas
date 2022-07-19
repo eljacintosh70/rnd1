@@ -76,7 +76,7 @@ type
     function BeginList(Kind: TListKind): IDynOutPort; virtual; stdcall;
   public
     constructor Create(APort: TCustomDynOutPortW; AOpen, ASepar, AClose: UnicodeString);
-    property Port: TCustomDynOutPortW read FPort {$IFNDEF LINUX} implements IDynOutPort{$ENDIF};
+    property Port: TCustomDynOutPortW read FPort {$IFNDEF FPC} implements IDynOutPort{$ENDIF};
 
   protected
     //IDyn = interface(IInterface)

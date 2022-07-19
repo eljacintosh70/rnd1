@@ -1330,7 +1330,7 @@ end;}
 
 function TDynDatum.Data: Pointer;
 begin
-  Result := Pointer(Integer(Pointer(Self)) and PointerMask);
+  Result := Pointer(NativeInt(Pointer(Self)) and PointerMask);
 end;
 
 procedure TDynDatum.Free;
@@ -1467,11 +1467,13 @@ begin
   Result := TDynDatum(Self).AsString
 end;
 
+{$ifdef ENABLE_EXPORTS}
 exports
   TDynDatum_AsInteger name 'TDynDatum_AsInteger',
-  TDynDatum_AsString name 'TDynDatum_AsString';
-
+  TDynDatum_AsString name 'TDynDatum_AsString';  
 {$endif}
+
+{$endif} // DTYPES
 
 function EnsureInterface(A: weak_IDyn): IDyn;
 begin

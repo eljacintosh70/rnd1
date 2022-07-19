@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="11"/>
+    <Version Value="12"/>
     <General>
       <Flags>
         <MainUnitHasUsesSectionForAllUnits Value="False"/>
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
         <MainUnitHasScaledStatement Value="False"/>
+        <CompatibilityMode Value="True"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
-      <MainUnit Value="0"/>
       <Title Value="DTypeTests"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
@@ -25,7 +25,6 @@
     </PublishOptions>
     <RunParams>
       <FormatVersion Value="2"/>
-      <Modes Count="0"/>
     </RunParams>
     <RequiredPackages Count="3">
       <Item1>
@@ -226,6 +225,9 @@
       </SyntaxOptions>
     </Parsing>
     <Linking>
+      <Debugging>
+        <DebugInfoType Value="dsDwarf3"/>
+      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>

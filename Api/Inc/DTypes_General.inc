@@ -26,7 +26,7 @@ begin
   Result := TextOut.GetText;
 end;
 
-{$IFNDEF LINUX}
+{$IFNDEF FPC}
 exports
   Deb(X: TDynDatum; Max: Integer = 256)      name 'DebDatum';
 {$ENDIF}

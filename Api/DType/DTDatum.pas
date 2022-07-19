@@ -2,13 +2,21 @@ unit DTDatum;
 
 interface
 
+{$ifdef MSWINDOWS}
+  // Delphi define MSWINDOWS y FPC WINDOWS,
+  // Este código requiere que se defina "WINDOWS" en las opciones del proyecto
+  {$ifndef WINDOWS}
+    {$MESSAGE Fatal 'You must manually define WINDOWS in project options for Delphi Windows Target'}
+  {$ENDIF}
+{$ENDIF}
+
 uses
   //Messages, ActiveX, Classes, ComObj,
   SysUtils,
   {$IFNDEF LINUX} Windows, {$ENDIF}
   DynTypes, DUtils;
 
-{$IFNDEF LINUX} {$define INLINE_VMT} {$ENDIF}
+{$IFNDEF FPC} {$define INLINE_VMT} {$ENDIF}
 
 {$ifdef INLINE_VMT} // Esta constante activa un hack para reducir el tamaño de
 const               // los objetos que implementan interfaces, reusando la misma
@@ -21,13 +29,9 @@ type
   TCustomInterface = class(TObject, IInterface)
   // InlineVMT requiere los siguientes métodos idénticos a los de IInterface
   public
-    {$ifdef FPC}
-    function QueryInterface(constref IID: TGUID; out Obj): HResult; virtual; Cdecl;
-    {$else}
-    function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall;
-    {$endif}
-    function _AddRef: Integer; virtual; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF};
-    function _Release: Integer; virtual; {$IFDEF LINUX} Cdecl {$ELSE} stdcall {$ENDIF};
+    function QueryInterface({$IFDEF FPC_HAS_CONSTREF}constref{$ELSE}const{$ENDIF} iid : tguid;out obj) : HResult; virtual; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+    function _AddRef: Integer; virtual; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+    function _Release: Integer; virtual; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
   private
     function GetAsIInterface: IInterface;
   public

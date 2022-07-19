@@ -97,7 +97,7 @@ end;
 
 exports
   CreateObject name 'CreateObject',
-  {$IFNDEF LINUX}
+  {$IFNDEF FPC}
   CreateMethod(AMethod: TDynMethodG) name 'CreateMethodG',
   CreateMethod(AMethod: TDynMethodO) name 'CreateMethodO',
   {$ENDIF}

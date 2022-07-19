@@ -24,8 +24,13 @@ function LoadedLibraries: IDynArray;
 implementation /////////////////////////////////////////////////////////////////
 
 uses
-  {$IFNDEF LINUX} Windows, {$ENDIF}
+  {$IFDEF FPC} dynlibs, {$ELSE} Windows, {$ENDIF}
   SysUtils, Classes, LispParserA, DTProc, DTPort;
+
+{$IFDEF FPC}
+const
+  INVALID_HANDLE_VALUE = NilHandle;
+{$ENDIF}
 
 type
   TLibraryInfo = class
@@ -89,9 +94,7 @@ begin
   begin
     LibI := TLibraryInfo(Lib.Objects[i]);
     hDll := LibI.hDll;
-    {$IFNDEF LINUX}
     FreeLibrary(hDll);
-    {$ENDIF}
     LibI.Free;
   end;
   Lib.Free;
@@ -198,7 +201,7 @@ var
   ExpName: String;
   FnDatum: IDynFunc;
   Method: TDynFuncG;
-  ResEntry: IDynDatum;    
+  ResEntry: IDynDatum;
   Name: IDynSymbol;
 begin
   Result := nil;
@@ -216,9 +219,7 @@ begin
     end
     else
       ExpName := Deb(ArgName);
-    {$IFNDEF LINUX}
     @Method := GetProcAddress(hDll, PChar(ExpName));
-    {$ENDIF}
     if Assigned(@Method) then
     begin
       FnDatum := TNamedDynFuncG.Create(Name, Method).AsIDynFunc;
@@ -245,13 +246,10 @@ begin
   else
     FileName := FileName + Name;
   try
-    {$IFNDEF LINUX}
     hDll := LoadLibrary(PChar(FileName));
-    {$ENDIF}
   except
     Exit;
   end;
-  {$IFNDEF LINUX}
   if hDll = INVALID_HANDLE_VALUE then
     Exit;
   ExportSymbols := GetProcAddress(hDll, 'ExportSymbols');
@@ -264,7 +262,6 @@ begin
   end;
   if Result then
     AddLoadedLibrary(FileName, hDll, Imp);
-  {$ENDIF}
 end;
 
 function LoadSrcLib(const Name: String; Scope: IDelphiScope): Boolean;
@@ -315,12 +312,12 @@ procedure RegisterSyntax(Scope: IDynScope; Fn: array of TLispSyntaxRec);
 var
   e: TLispSyntaxRec;
   Symbol: dyn;
-  f: dyn;         
+  f: dyn;
   i: Integer;
 begin
   //for e in Fn do
   for i := 0 to High(Fn) do
-  begin   
+  begin
     e := Fn[i];
     Symbol := InitSymbol(e.Name);
     f := TDynSyntaxNat.Create(e).AsIDynSyntax;

@@ -18,7 +18,7 @@ begin
 end;
 
 exports
-{$IFNDEF LINUX}
+{$IFNDEF FPC}
   InitSymbol(pName: PAnsiChar; {Utf8} cbName: Integer)  name 'Symbol.Create',
 {$ENDIF}
   InitSymbols name 'Symbol.Create*';

@@ -67,11 +67,7 @@ type
   protected
     List: TSSymbolList;
   public
-    {$ifdef FPC}
-    function QueryInterface(constref IID: TGUID; out Obj): HResult; override; Cdecl;
-    {$else}
-    function QueryInterface(const IID: TGUID; out Obj): HResult; override; stdcall;
-    {$endif}
+    function QueryInterface({$IFDEF FPC_HAS_CONSTREF}constref{$ELSE}const{$ENDIF} iid : tguid;out obj) : HResult; override; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
   public
     constructor Create(AParent: IDynScope = nil);
     destructor Destroy; override;

@@ -35,8 +35,8 @@ type
     destructor Destroy; override;
     function DatumType: TDatumType; override;
     function WriteProc(p: Pointer; cb: Integer): Boolean;
-    property Stream: TStream read FStream {$IFNDEF LINUX} implements IDynStream {$ENDIF};
-  {$IFDEF LINUX}
+    property Stream: TStream read FStream {$IFNDEF FPC} implements IDynStream {$ENDIF};
+  {$IFDEF FPC}
   protected
   // IDynStream = interface(IDynDatum)
   function GetSize: Int64;
@@ -58,7 +58,7 @@ type
     constructor Create(AStream: TStream; AFormat: TCustomDynOutPort);
     function ReadObj(var Obj: dyn): Longint;
     function WriteObj(const Obj: dyn): Longint;
-    property Stream read FStream {$IFNDEF LINUX} implements IDynObjStream {$ENDIF};
+    property Stream read FStream {$IFNDEF FPC} implements IDynObjStream {$ENDIF};
   end;
 
 implementation
@@ -87,7 +87,7 @@ begin
   Result := True;
 end;
 
-{$IFDEF LINUX}
+{$IFDEF FPC}
 function TDynStream.GetSize: Int64;                                         begin Result := FStream.Size; end;
 procedure TDynStream.SetSize(const Value: Int64);                           begin           FStream.Size := Value; end;
 function TDynStream.GetPosition: Int64;                                     begin Result := FStream.Position; end;

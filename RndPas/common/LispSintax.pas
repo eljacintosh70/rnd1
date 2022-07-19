@@ -173,7 +173,7 @@ begin
     Formal := p.cdr;
     VarDatum := p.car;
     NeedSymbol(VarDatum);  // (define (<variable> . <formal>) <body>)
-    Result := (TDynLambda.Create(Formal, Rest, Scope));
+    Result := TDynLambda.Create(Formal, Rest, Scope).AsIDyn;
   end
   else
     raise Exception.Create(Format('invalid define %s . %s', [Deb(Datum), Deb(Rest)]));
