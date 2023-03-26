@@ -1,13 +1,13 @@
 type
-  TDynOutAssignFn = function (var Dest; const src: dyn): Boolean;
+  TDynMatchFn = function (const src: dyn; var Dest): Boolean;
 
   dynout = record
   public
-    AsigFn: TDynOutAssignFn;
+    MatchFn: TDynMatchFn;
     DestVar: Pointer;
   public
     procedure Assign(const src: dyn);
-    function CanAssign(const src: dyn): Boolean;
+    function Match(const src: dyn): Boolean;
   public
     class operator Implicit(var A: dyn): dynout; inline;
     class operator Implicit(var A: IDyn): dynout; inline;
@@ -19,23 +19,25 @@ type
     class operator Implicit(var A: UnicodeString): dynout; inline;
   end;
 
-function AsignToDyn(var Dest; const src: dyn): Boolean;
-function AsignToIDyn(var Dest; const src: dyn): Boolean;
-function AsignToBoolean(var Dest; const src: dyn): Boolean;
-function AsignToInt64(var Dest; const src: dyn): Boolean;
-function AsignToDouble(var Dest; const src: dyn): Boolean;
-function AsignToWideChar(var Dest; const src: dyn): Boolean;
-function AsignToAnsiChar(var Dest; const src: dyn): Boolean;
-function AsignToString(var Dest; const src: dyn): Boolean;
+function MatchDyn(const src: dyn; var Dest): Boolean;
+function MatchIDyn(const src: dyn; var Dest): Boolean;
+function MatchBoolean(const src: dyn; var Dest): Boolean;
+function MatchInt64(const src: dyn; var Dest): Boolean;
+function MatchDouble(const src: dyn; var Dest): Boolean;
+function MatchWideChar(const src: dyn; var Dest): Boolean;
+function MatchAnsiChar(const src: dyn; var Dest): Boolean;
+function MatchString(const src: dyn; var Dest): Boolean;
 
-function AsignIgnore(var Dest; const src: dyn): Boolean;
-function AsignIsNil(var Dest; const src: dyn): Boolean;
+function IgnoreMatch(const src: dyn; var Dest): Boolean;
+function MatchNil(const src: dyn; var Dest): Boolean;
 
+function Match(const src: dyn; const Required: array of dynout): Boolean; overload;
+function Match(const src: dyn; const Required: array of dynout; Rest: dynout): Boolean; overload;
 function MatchCount(const src: dyn; const Required: array of dynout): Integer; overload;
 function MatchCount(const src: dyn; const Required: array of dynout; Rest: dynout): Integer; overload;
 
 
 const
-  _: dynout = (AsigFn: AsignIgnore);
-  _nil: dynout = (AsigFn: AsignIsNil);
+  _: dynout = (MatchFn: IgnoreMatch);
+  _nil: dynout = (MatchFn: MatchNil);
 

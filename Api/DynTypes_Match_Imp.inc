@@ -1,37 +1,37 @@
 
-function AsignToDyn(var Dest; const src: dyn): Boolean;
+function MatchDyn(const src: dyn; var Dest): Boolean;
 begin
   dyn(Dest) := src;
   Result := True;
 end;
 
-function AsignToIDyn(var Dest; const src: dyn): Boolean;
+function MatchIDyn(const src: dyn; var Dest): Boolean;
 begin
   IDyn(Dest) := src.Ref;
   Result := True;
 end;
 
-function AsignToBoolean(var Dest; const src: dyn): Boolean;
+function MatchBoolean(const src: dyn; var Dest): Boolean;
 begin
   Result := HandleMessageWithPointer(src, MsgCastToBool, @Dest)
 end;
 
-function AsignToInt64(var Dest; const src: dyn): Boolean;
+function MatchInt64(const src: dyn; var Dest): Boolean;
 begin
   Result := HandleMessageWithPointer(src, MsgCastToInt64, @Dest)
 end;
 
-function AsignToDouble(var Dest; const src: dyn): Boolean;
+function MatchDouble(const src: dyn; var Dest): Boolean;
 begin
   Result := HandleMessageWithPointer(src, MsgCastToDouble, @Dest)
 end;
 
-function AsignToWideChar(var Dest; const src: dyn): Boolean;
+function MatchWideChar(const src: dyn; var Dest): Boolean;
 begin
   Result := HandleMessageWithPointer(src, MsgCastToChar, @Dest)
 end;
 
-function AsignToAnsiChar(var Dest; const src: dyn): Boolean;
+function MatchAnsiChar(const src: dyn; var Dest): Boolean;
 var
   ch: WideChar;
 begin
@@ -44,19 +44,35 @@ begin
     end;
 end;
 
-function AsignToString(var Dest; const src: dyn): Boolean;
+function MatchString(const src: dyn; var Dest): Boolean;
 begin
   Result := HandleMessageWithPointer(src, MsgCastToString, @Dest)
 end;
 
-function AsignIgnore(var Dest; const src: dyn): Boolean;
+function IgnoreMatch(const src: dyn; var Dest): Boolean;
 begin
   Result := True;
 end;
 
-function AsignIsNil(var Dest; const src: dyn): Boolean;
+function MatchNil(const src: dyn; var Dest): Boolean;
 begin
   Result := (src = nil);
+end;
+
+function Match(const src: dyn; const Required: array of dynout): Boolean; overload;
+var
+  n: Integer;
+begin
+  n := MatchCount(src, Required, _nil);
+  Result := (n = Length(Required) + 1)
+end;
+
+function Match(const src: dyn; const Required: array of dynout; Rest: dynout): Boolean; overload;
+var
+  n: Integer;
+begin
+  n := MatchCount(src, Required, Rest);
+  Result := (n = Length(Required) + 1)
 end;
 
 function MatchCount(const src: dyn; const Required: array of dynout): Integer;
@@ -77,7 +93,7 @@ begin
   begin
     NeedPair(L, P);
     V := P.car;
-    if not Required[i].CanAssign(V) then
+    if not Required[i].Match(V) then
     begin
       Result := i;
       Exit;
@@ -85,7 +101,7 @@ begin
     L := P.cdr;
   end;
   Result := n;
-  if Rest.CanAssign(L) then
+  if Rest.Match(L) then
     Inc(Result);
 end;
 
@@ -93,61 +109,61 @@ end;
 
 procedure dynout.Assign(const src: dyn);
 begin
-  if not AsigFn(DestVar^, src) then
+  if not MatchFn(src, DestVar^) then
     raise Exception.Create('invalid type');
 end;
 
-function dynout.CanAssign(const src: dyn): Boolean;
+function dynout.Match(const src: dyn): Boolean;
 begin
-  Result := AsigFn(DestVar^, src)
+  Result := MatchFn(src, DestVar^)
 end;
 
 class operator dynout.Implicit(var A: dyn): dynout;
 begin
   Result.DestVar := @A;
-  Result.AsigFn := AsignToDyn
+  Result.MatchFn := MatchDyn
 end;
 
 class operator dynout.Implicit(var A: IDyn): dynout;
 begin
   Result.DestVar := @A;
-  Result.AsigFn := AsignToIDyn
+  Result.MatchFn := MatchIDyn
 end;
 
 class operator dynout.Implicit(var A: Boolean): dynout;
 begin
   Result.DestVar := @A;
-  Result.AsigFn := AsignToBoolean
+  Result.MatchFn := MatchBoolean
 end;
 
 class operator dynout.Implicit(var A: Int64): dynout;
 begin
   Result.DestVar := @A;
-  Result.AsigFn := AsignToInt64
+  Result.MatchFn := MatchInt64
 end;
 
 class operator dynout.Implicit(var A: Double): dynout;
 begin
   Result.DestVar := @A;
-  Result.AsigFn := AsignToDouble
+  Result.MatchFn := MatchDouble
 end;
 
 class operator dynout.Implicit(var A: WideChar): dynout;
 begin
   Result.DestVar := @A;
-  Result.AsigFn := AsignToWideChar
+  Result.MatchFn := MatchWideChar
 end;
 
 class operator dynout.Implicit(var A: AnsiChar): dynout;
 begin
   Result.DestVar := @A;
-  Result.AsigFn := AsignToAnsiChar
+  Result.MatchFn := MatchAnsiChar
 end;
 
 class operator dynout.Implicit(var A: UnicodeString): dynout;
 begin
   Result.DestVar := @A;
-  Result.AsigFn := AsignToString
+  Result.MatchFn := MatchString
 end;
 
 
