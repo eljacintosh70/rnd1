@@ -471,6 +471,8 @@ const
 function EnsureInterface(A: weak_IDyn): IDyn;
 {$include 'DynTypes_BaseFunc.inc'}
 
+{$include 'DynTypes_Match.inc'}
+
 procedure DynError(const MsgFormat: String; const Params: array of dyn);
 function Eval(Exp: dyn; Scope: IDynScope): dyn;
 function EvalItems(List: dyn; Scope: IDynScope): dyn;
@@ -1487,6 +1489,7 @@ end;
 {$include 'DynTypes_BaseFunc_Imp.inc'}
 {$endif}
 {$include 'DynTypes_BaseTypes_Imp.inc'}
+{$include 'DynTypes_Match_Imp.inc'}
 
 
 {$ifdef LINK_DEB}

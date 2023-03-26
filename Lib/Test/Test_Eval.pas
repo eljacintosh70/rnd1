@@ -15,6 +15,8 @@ uses
 type
   // Test methods for class TDynOutPortD
 
+  { TestEvalCore }
+
   TestEvalCore = class(TTestCase)
   strict private
   public
@@ -24,6 +26,7 @@ type
     procedure TestSymbols;
     procedure TestEvalLisp;
     procedure TestEvalRnd;
+    procedure TestMatch;
   end;
 
 implementation
@@ -131,6 +134,47 @@ begin
   // TODO: Validate method results
   Check(ReturnValue, 'Write');
   CheckEquals(RefText, ResText, 'Error')
+end;
+
+procedure TestEvalCore.TestMatch;
+var
+  SrcText: string;   
+  Parser: TLispParser;
+  Obj: dyn;
+  n: Integer;
+
+  a: Double;
+  i1, i2, i3: Int64;
+  c: dyn;
+  d: UnicodeString;
+  e: dyn;
+  ch: WideChar;
+begin
+  SrcText := '(1.25 10 (1 2 3) "abc" 4 () 6 #\A)';
+
+  Parser := TLispParser.Create;
+  Parser.Evaluate(Obj, SrcText);
+  Parser.Free;
+
+  n := MatchCount(Obj, [a, i1, c, d], e);
+
+  CheckEquals(n, 5);
+  CheckEquals(a, 1.25);
+  CheckEquals(i1, 10);
+  //CheckEquals(c, );
+  CheckEquals(d, 'abc');
+  //CheckEquals(e, );    //  (4 () 6 #\A)
+
+  n := MatchCount(c, [i1, _, i3]);
+
+  CheckEquals(n, 4); // además de los 3, cuadra que no hay extra
+  CheckEquals(i1, 1);
+  CheckEquals(i3, 3);
+
+  n := MatchCount(e, [_, _nil, i1, ch]);
+  CheckEquals(n, 5); // además de los 4, cuadra que no hay extra
+  CheckEquals(i1, 6);
+  CheckEquals(ch, 'A');
 end;
 
 initialization
